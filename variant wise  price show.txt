@@ -1,0 +1,63 @@
+getVariantBySize(index,event) {
+const selectedOption = event.target.options[event.target.selectedIndex];
+const price = selectedOption.getAttribute('data-variant-item');
+console.log("Variant price:", price);
+// Update the form data
+this.form.products[index].total= price;
+},
+
+
+
+<td>
+<select class="form-control"
+v-model="form.products[index].size" style="width: 80px"
+@change="getVariantBySize(index, $event)">
+    <option disabled value>select size</option>
+    <option v-for="(item, idx) in product.product_variant"
+        :key="idx" :value="item.variant.name"
+        :data-variant-item="item.price"
+        v-if="item.variant.attribute_id == 1">
+            {{ item.variant.name }}
+    </option>
+</select>
+</td>
+
+
+// Updated variant handling methods
+        getVariantBySize(index, event) {
+            this.updateVariantPrice(index);
+        },
+
+        getVariantByColor(index, event) {
+            this.updateVariantPrice(index);
+        },
+
+        getVariantByWeight(index, event) {
+            this.updateVariantPrice(index);
+        },
+
+        // New method to handle variant price calculation
+        updateVariantPrice(index) {
+            const product = this.products[index];
+            const selectedSize = this.form.products[index].size;
+            const selectedColor = this.form.products[index].color;
+            const selectedWeight = this.form.products[index].weight;
+
+            // Find the matching variant
+            const variant = product.product_variant.find(item => {
+                const sizeMatch = !selectedSize ||
+                    (item.variant.attribute_id == 1 && item.variant.name === selectedSize);
+                const colorMatch = !selectedColor ||
+                    (item.variant.attribute_id == 2 && item.variant.name === selectedColor);
+                const weightMatch = !selectedWeight ||
+                    (item.variant.attribute_id == 3 && item.variant.name === selectedWeight);
+                return sizeMatch && colorMatch && weightMatch;
+            });
+
+            if (variant) {
+                this.form.products[index].price = variant.price;
+                this.form.products[index].total = parseInt(variant.price) *
+                    parseInt(this.form.products[index].quantity);
+                this.totalCalculation();
+            }
+        },

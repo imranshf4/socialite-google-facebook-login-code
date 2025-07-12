@@ -1,0 +1,56 @@
+config->auth.php
+'guards' => [
+       
+        'member' => [
+            'driver' => 'session',
+            'provider' => 'members',
+        ],
+]
+
+
+'providers' => [
+        
+        'members' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Member::class,
+        ],
+]
+
+
+################################model ####################
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+class Member extends Authenticatable
+{
+    use Notifiable;
+    protected $guard = 'member';
+    use HasFactory;
+    protected $guarded = [];
+
+    protected $hidden = [
+        'password',
+    ];
+}
+
+middleware member.php
+public function handle(Request $request, Closure $next, $guard ='member')
+
+    {
+        if(Auth::guard($guard)->guest()){
+            if ($request->ajax() || $request->wantsJson()) {
+                return response('Unauthorized.', 401);
+            } else {
+                return response('Unauthorized.', 401);
+            }
+        }
+        return $next($request);
+    }
+
+
+Route::group(['namespace' => 'Member', 'middleware' => 'member', 'prefix' => 'api/member/'], function () {
+/* ======================== Dashboard Router ======================== */
+Route::get('logout', 'LoginController@logout');
+Route::get('dashboard/projects/information', 'DashboardController@projectInformation');
+
+});

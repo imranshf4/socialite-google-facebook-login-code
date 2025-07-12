@@ -1,0 +1,69 @@
+//-------------------- top selling product ---------------------
+        $top_selling_product_id = OrderItem::where('created_at', '>=', Carbon::today()->subDays('7'))
+            ->select('product_id', DB::raw('count(*) as total'))
+            ->groupBy('product_id')
+            ->orderBy('total', 'desc')
+            ->take(12)
+            ->pluck('product_id');
+
+        $top_selling_products = Product::WhereIn('id', $top_selling_product_id)
+            ->select('id', 'name', 'price', 'sale_price', 'reselling_price', 'slug', 'discount', 'thumbnail_img', 'stock', 'is_free_delivery')
+            ->where('status', 1)
+            ->where('is_reseller_product', 1)
+            ->orderBy('id', 'asc')
+            ->get();
+
+
+
+<?php
+
+namespace App\Providers;
+
+use App\Models\Category;
+use App\Services\HelperService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
+use App\View\Composers\GeneralComposer;
+use Illuminate\Support\ServiceProvider;
+
+class ShopMasterServiceProvider extends ServiceProvider
+{
+    /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
+     * Bootstrap services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $slider_position = HelperService::getProductName();
+        $product_position = request()->getHost();
+        if (substr($product_position, 0, 4) == 'www.') {
+            $product_position  = substr($product_position, 4);
+        }
+        if ($slider_position == $product_position) {
+            $categories = Category::with(['subCategory:id,name,slug,status,category_id', 'subSubCategory:id,name,slug,status,category_id,subcategory_id'])
+                ->select('id', 'name', 'slug', 'status')
+                ->where('status', 1)->orderBy('position', 'ASC')->limit(8)->get();
+            Paginator::useBootstrap();
+            Schema::defaultStringLength(191);
+            View::composer(['shop.master'], GeneralComposer::class);
+            $general_settings   = DB::table('general_settings')->first();
+            $site_configurations   = DB::table('site_configurations')->first();
+            View::share('site_configurations', $site_configurations);
+            View::share('general_settings', $general_settings);
+            View::share('categories', $categories);
+        }
+    }
+}

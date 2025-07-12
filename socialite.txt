@@ -1,0 +1,35 @@
+Route::get('/sociallogin/google', 'SocialiteController@login')->name('login.google');
+Route::get('/callback/google', 'SocialiteController@redirect');
+
+
+public function login()
+    {
+        return Socialite::driver('google')->redirect();
+    }
+
+    public function redirect()
+    {
+        $googleUser = Socialite::driver('google')->user();
+            $user = Customer::updateOrCreate(
+                ['email' => $googleUser->getEmail()],
+                [
+                    'name' => $googleUser->getName(),
+                    'google_id' => $googleUser->getId(),
+                    'image' => $googleUser->getAvatar(),
+                    'status' => 1,
+                    'password' => Hash::make(Str::random(16)),
+                ]
+            );
+        // }
+        Auth::guard('customer')->login($user);
+
+        return redirect()->intended('/user/dashboard');
+    }
+
+
+ config/services.php
+'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],

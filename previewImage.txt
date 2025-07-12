@@ -1,0 +1,24 @@
+<input type="file" name="images" class="form-control img_input"
+  @change="uploadImage" />
+     <div v-if="imagePreview" class="mt-2">
+      <img :src="imagePreview" alt="Image Preview"
+          style="max-width: 200px; max-height: 200px;" />
+   </div>
+
+
+form: new Form({
+                name: '',
+                email: "",
+                password: "",
+                images: "",
+            }),
+
+
+uploadImage(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            console.log(file);
+            this.form.images = file;
+            // Set preview
+            this.imagePreview = URL.createObjectURL(file);
+        },

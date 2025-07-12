@@ -1,0 +1,92 @@
+php selector (php version update)
+config(app.php,database.php)
+app.php set:
+    'url' => 'https://shihabfabricon.com',
+    'asset_url' => 'https://shihabfabricon.com/public',
+
+database.php set:
+       'mysql' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => 'shihabfa_com_db',
+            'username' => 'shihabfa_com_db',
+            'password' => 'cTYPjLQ2Vd',
+        ],
+
+public index.php set:
+$app = require_once __DIR__.'/../bootstrap/app.php';
+require __DIR__.'/vendor/autoload.php';
+
+
+New site setup process: 
+
+#   first - setup hash domain in local database in admin table click sql
+then run query : 
+==================================
+
+UPDATE admins  SET remember_tokens = SHA2('',256); 
+
+UPDATE admins  SET remember_tokens = SHA2('127.0.0.1',256);
+
+==================================
+
+#  then hit:      clear/domain
+
+#  then run,      php artisan optimize:clear 
+
+#  then,            npm run watch and
+                           npm run production
+
+#  then zip the file 
+
+#  upload the hashed database in live
+=================
+#  then          api/empty/table
+#  then          /reboot
+#  then          admin/login
+=============
+For auto login :
+
+#  direct login by hitting :     /login/super/admin/dashboard 
+
+#  after htting browse :      /admin/dashboard
+
+or can be login from 
+#  site configuration :    /admin/site/configuration
+
+#  password for viewing site configuration : 
+
+Hp)+E7A^DVGq2r,h9tw8Cx
+
+
+RewriteEngine On
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://shihabfabricon.com/$1 [R,L]
+
+Empty DB Table Data :      /api/empty/table
+
+Optimize Clear :               /reboot
+
+Site Configuration URL :   /admin/site/configuration
+
+Site Configuration Password  :     Hp)+E7A^DVGq2r,h9tw8Cx
+
+UNICODE :  "utf8mb4_0900_ai_ci" is replace with "utf8mb4_unicode_ci"
+
+
+After making the site "hase" wise in MySQL admins table or make/set remember_tokens, but still show 403 forbidden then understand the cache issue is there, 
+
+for solved this trouble, go to HelperService.php -> 
+    public static function siteRememberToken()
+    {
+// return Admin::query()->value('remember_tokens');
+
+        return Cache::rememberForever('site_remember_token', function () {
+            return Admin::query()->value('remember_tokens');
+        });
+    }
+
+
+
