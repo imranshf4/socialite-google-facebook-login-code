@@ -1,0 +1,7 @@
+getTotalAmount() {
+            if (!this.projects || !Array.isArray(this.projects)) return 0;
+
+            return this.projects.reduce((total, project) => {
+                return total + Number(project.total_amount);
+            }, 0);
+        },
