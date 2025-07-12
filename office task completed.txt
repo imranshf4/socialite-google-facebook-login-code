@@ -1,0 +1,10 @@
+completed task:
+https://dutyfreebd.com/
+1. affiliate registration page setup and image upload code change
+2. affiliate registration dynamic
+
+
+12-7-25
+https://aponcommunity.com/
+1. multi admin login system
+2. team member login/registration system and dashboard setup

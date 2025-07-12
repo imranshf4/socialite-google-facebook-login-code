@@ -25,10 +25,7 @@ php------7.4
 http://127.0.0.1:8000/admin/site/configuration
 
 
-completed task:
-https://dutyfreebd.com/
-1. affiliate registration page setup and image upload code change
-2. affiliate registration dynamic
+
 
 
 my contribution

@@ -1,0 +1,8 @@
+public function lowStockReport(){
+        ini_set('memory_limit', '2048M');
+        $setting = GeneralSetting::latest()->first(); 
+        // return $ddd;
+        $products = Product::where('stock', '<=', 5)->get();
+        $pdf = PDF::loadView('admin.pdf.low_stock_report', compact('products','setting'));
+        return $pdf->download('low_stock_report.pdf');
+    }
