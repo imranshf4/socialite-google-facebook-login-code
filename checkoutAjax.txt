@@ -1,0 +1,2299 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Site Title -->
+    <title>@yield('title')</title>
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!--Base URL -->
+    <meta name="base_url" content="{{ url('') }}">
+
+
+    <!-- Place favicon.ico in the root directory -->
+    <link rel="shortcut icon" href="{{ asset('storage/' . $general_settings->icon) }}" type="image/x-icon" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ asset('frontend') }}/css/bootstrap.min.css">
+    <!-- Font Awesome icon -->
+    <link rel="stylesheet" href="{{ asset('frontend') }}/css/fontawesome.min.css">
+    <link rel="stylesheet" href="{{ asset('frontend') }}/line-awesome/css/line-awesome.min.css">
+    <!--Owl Carousel -->
+    <link rel="stylesheet" href="{{ asset('frontend') }}/css/plugin/owl.carousel.min.css">
+
+    <!--loadmore css-->
+    <link rel="stylesheet" href="{{ asset('frontend/css/jquery.loadMore.css') }}">
+
+
+    <!-- Toastr css -->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+
+
+
+
+    <?php
+    $setting = DB::table('general_settings')->latest()->first();
+    $template = 'template' . $site_configurations->template_id;
+    ?>
+
+    <!-- Open Graph / Facebook -->
+    {{-- <meta property="og:type" content="website" />
+    <meta name="description" content="{{ $setting->meta_content }}">
+    <meta property="og:url" content="{{ $setting->title }}" />
+    <meta property="og:title" content="{{ $setting->meta_content }}" />
+    <meta property="og:description" content="{{ $setting->meta_content }}" />
+    <meta property="og:image" content="{{ asset('storage/' . $setting->logo) }}" /> --}}
+
+
+    <!-- Twitter -->
+    <meta property="twitter:url" content="{{ $setting->title }}" />
+    <meta property="twitter:title" content="{{ $setting->meta_content }}" />
+    <meta property="twitter:description" content="{{ $setting->meta_content }}" />
+
+    <!---------------------------site meta for SEO------------------------->
+    <meta name="title" content="@yield('meta_title')" />
+    <meta name="keywords" content="@yield('meta_key')" />
+    <meta name="content" content="@yield('meta_content')">
+
+    <!-- Facebook Domain Verification --->
+    @if (!empty($setting->facebook_domain_verification))
+        {!! $setting->facebook_domain_verification !!}
+    @endif
+    <!-- Facebook Domain Verification End --->
+
+
+    <!-- Facebook Pixel Code -->
+    @if (!empty($setting->facebook_pixel))
+        {!! $setting->facebook_pixel !!}
+    @endif
+    <!-- End Facebook Pixel Code -->
+
+
+    <!---------------------facebook open graph------------------------------>
+    @stack('facebook_open_graph')
+
+    <!-- Google Domain Verification --->
+    @if (!empty($setting->google_domain_verification))
+        {!! $setting->google_domain_verification !!}
+    @endif
+    <!-- Google Domain Verification End --->
+
+    <!--================= Google tag (gtag.js) ===========================-->
+    @if (isset($general_settings->google_analytics) && !empty($general_settings->google_analytics))
+        {!! $general_settings->google_analytics !!}
+    @else
+        <!-- Google Tag Manager -->
+        <script>
+            (function(w, d, s, l, i) {
+                w[l] = w[l] || [];
+                w[l].push({
+                    'gtm.start': new Date().getTime(),
+                    event: 'gtm.js'
+                });
+                var f = d.getElementsByTagName(s)[0],
+                    j = d.createElement(s),
+                    dl = l != 'dataLayer' ? '&l=' + l : '';
+                j.async = true;
+                j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-MPT28Cfg');
+        </script>
+        <!-- End Google Tag Manager -->
+    @endif
+
+    @include("frontend.partials.css.$template")
+
+</head>
+
+<body>
+
+    <!-- Your Chat Plugin code -->
+    @if (!empty($setting->facebook_chat_plugin))
+        {!! $setting->facebook_chat_plugin !!}
+    @endif
+
+
+    <!-- Your google tag body -->
+    @if (!empty($setting->google_body_tag))
+        {!! $setting->google_body_tag !!}
+    @endif
+
+
+
+    <!--============ Header Area Start ============-->
+    @include("frontend.partials.header.$template")
+
+    <!--============ Header Area End ============-->
+
+
+    <div class="content">
+        @yield('content')
+    </div>
+
+
+    <!--============ Footer Area Start ============-->
+    @include("frontend.partials.footer.$template")
+    <!--============ Footer Area End ============-->
+
+    <!--============ Product Add To Card Modal Area Start ============-->
+    <div class="modal fade product_click_card_modal" id="product_add_to_card_modal" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content cart_order_modal_container">
+                <div class="modal-header">
+                    <h5 class="modal_cart_order_title">Add to cart this product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="product_select_attribute_container_modal">
+                        <p>Select Size</p>
+
+                        <div class="product_select_attribute_modal">
+                            <ul>
+                                <li>
+                                    <div class="select_size_name_modal"><span>XL</span></div>
+                                    <div class="select_price_btn_modal">
+                                        <span class="select_price_modal">500TK</span>
+                                        <span class="select_price_modal">300TK</span>
+                                        <button>
+                                            <i class="las la-shopping-basket"></i>
+                                            Add to cart
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--============ Product Add To Card Modal Area End ============-->
+
+    <!--============ Product Order Now Modal Area Start ============-->
+    <div class="modal fade product_click_card_modal" id="product_order_now_modal" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content cart_order_modal_container">
+                <div class="modal-header">
+                    <h5 class="modal_cart_order_title">Order now this product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="product_select_attribute_container_modal">
+                        <p>Select Size</p>
+
+                        <div class="product_select_attribute_modal">
+                            <ul>
+                                <li>
+                                    <div class="select_size_name_modal"><span>XL</span></div>
+                                    <div class="select_price_btn_modal">
+                                        <span class="select_price_modal">500TK</span>
+                                        <span class="select_price_modal">300TK</span>
+                                        <button>
+                                            <i class="las la-shopping-basket"></i>
+                                            Add to cart
+                                        </button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="select_size_name_modal"><span>XL</span></div>
+                                    <div class="select_price_btn_modal">
+                                        <span class="select_price_modal">500TK</span>
+                                        <span class="select_price_modal">300TK</span>
+                                        <button>
+                                            <i class="las la-shopping-basket"></i>
+                                            Add to cart
+                                        </button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="select_size_name_modal"><span>XL</span></div>
+                                    <div class="select_price_btn_modal">
+                                        <span class="select_price_modal">500TK</span>
+                                        <span class="select_price_modal">300TK</span>
+                                        <button>
+                                            <i class="las la-shopping-basket"></i>
+                                            Add to cart
+                                        </button>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="select_size_name_modal"><span>XL</span></div>
+                                    <div class="select_price_btn_modal">
+                                        <span class="select_price_modal">500TK</span>
+                                        <span class="select_price_modal">300TK</span>
+                                        <button>
+                                            <i class="las la-shopping-basket"></i>
+                                            Add to cart
+                                        </button>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--============ Product Order Now  Modal Area End ============-->
+
+
+
+    <!--============ Fixed Footer Menu Start ============-->
+    @if ($site_configurations->template_id == 3)
+        <div class="fixed_footer_menu">
+            <ul>
+                <li>
+                    <a href="{{ route('root') }}" class="fixed_footer_menu_link">
+                        <i class="las la-home"></i>
+                        <p class="home_text">Home</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="#offcanvasMenuId" data-bs-toggle="offcanvas" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-grid">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        <p>Category</p>
+                    </a>
+                </li>
+                <li>
+                    <a data-bs-toggle="offcanvas" href="#fixed_product_sticky_id" class="fixed_footer_menu_link">
+                        <i class="las la-shopping-basket"></i>
+                        <p>Cart</p>
+                        <span class="fixed_footer_cart_count cart_item_total">0</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="tel:{{ $general_settings->header_contact_number }}" class="fixed_footer_menu_link">
+                        <i class="las la-phone"></i>
+                        <p>Call</p>
+                    </a>
+                </li>
+                <li>
+                    @if (session()->get('reseller'))
+                        <a href="/dropshipper/dashboard" class="fixed_footer_menu_link">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="feather feather-user">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <p>{{ Str::words(session()->get('reseller')['name'], 1, '..') }}</p>
+                        </a>
+                    @else
+                        <a href="/dropshipper/dashboard" class="fixed_footer_menu_link">
+                            <i class="las la-user"></i>
+                            <p>Login</p>
+                        </a>
+                    @endif
+                </li>
+            </ul>
+        </div>
+    @else
+        <div class="fixed_footer_menu">
+            <ul>
+                <li>
+                    <a href="{{ route('root') }}" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-home">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <p class="home_text">Home</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="#offcanvasMenuId" data-bs-toggle="offcanvas" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-grid">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                        <p>Category</p>
+                    </a>
+                </li>
+                <li>
+                    <a data-bs-toggle="offcanvas" href="#fixed_product_sticky_id" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-shopping-cart">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <p>Cart</p>
+                        <span class="fixed_footer_cart_count cart_item_total">0</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="tel:{{ $general_settings->header_contact_number }}" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-phone-call">
+                            <path
+                                d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                            </path>
+                        </svg>
+                        <p>Call</p>
+                    </a>
+                </li>
+                <li>
+                    {{-- @if (session()->get('reseller'))
+                    <a href="/dropshipper/dashboard" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-user">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <p>{{ Str::words(session()->get('reseller')['name'], 1, '..') }}</p>
+                    </a>
+                @else
+                    
+                    <a href="/dropshipper/login" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-user">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <p>Login</p>
+                    </a>
+                @endif --}}
+
+                    <a href="/reseller/user" class="fixed_footer_menu_link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-user">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        <p>Login</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    @endif
+
+    <!--============ Fixed Footer Menu End ============-->
+
+    <!--============ Header Mobile Menu Area Start ============-->
+    <div class="header_mobile_menu offcanvas offcanvas-start" tabindex="-1" id="offcanvasMenuId">
+        <div class="header_mobile_top">
+            <div class="header_mobile_logo">
+                <a href="{{ route('root') }}">
+                    <img src="{{ asset('storage/' . $general_settings->logo) }}"
+                        alt="{{ $general_settings->title }}">
+                </a>
+            </div>
+            <div class="header_mobile_close_icon" data-bs-dismiss="offcanvas">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+        <div class="header_mobile_middle">
+            <div class="mobile_main_menu">
+                <!--include mobile view-->
+                <ul>
+                    @foreach ($categories as $category)
+                        <li>
+
+                            <a href="{{ route('product.category', [$category->slug]) }}"
+                                class="mobile_main_menu_link">{{ $category->name }}</a>
+                            @if (count($category->subCategory) > 0)
+                                {{-- <i class="fa-solid fa-angle-down" id="rotate_angle_id_{{ $category->id }}" onclick="mobileSubmenu('mobile_submenu_id_'+{{ $category->id }})"></i> --}}
+                                <i class="fa-solid fa-angle-down" id="rotate_angle_id_{{ $category->id }}"
+                                    onclick="mobileSubmenu('mobile_submenu_id_{{ $category->id }}', 'rotate_angle_id_{{ $category->id }}')"></i>
+                            @endif
+
+                            <ul id="mobile_submenu_id_{{ $category->id }}"
+                                class="mobile_main_submenu mobile_submenu_class">
+                                @foreach ($category->subCategory as $subCategory)
+                                    <li>
+                                        <a href="{{ route('product.category', [$category->slug, $subCategory->slug]) }}"
+                                            class="mobile_main_submenu_link">{{ $subCategory->name }}</a>
+                                        @if (count($subCategory->subSubCategory) > 0)
+                                            <i class="fa-solid fa-angle-down"
+                                                onclick="toggleSubMenu('mobile_sub_submenu_id_'+{{ $subCategory->id }})"></i>
+                                        @endif
+                                        <ul id="mobile_sub_submenu_id_{{ $subCategory->id }}"
+                                            class="mobile_main_sub_submenu mobile_sub_submenu_class">
+                                            @foreach ($subCategory->subSubCategory as $sub_SubCategory)
+                                                <li>
+                                                    <a href="{{ route('product.category', [$category->slug, $subCategory->slug, $sub_SubCategory->slug]) }}"
+                                                        class="mobile_main_sub_submenu_link">{{ $sub_SubCategory->name }}</a>
+                                                </li>
+                                            @endforeach
+
+                                        </ul>
+                                    </li>
+                                @endforeach
+
+                            </ul>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--============ Header Mobile Menu Area End ============-->
+
+    <!--============ Fixed Product Cart Area Start ============-->
+
+    <!-- template one start -->
+    @if ($site_configurations->template_id == 1)
+        @if (session()->get('reseller'))
+            <a class="fixed_product_sticky" data-bs-toggle="offcanvas" href="#fixed_product_sticky_id">
+                <div class="fixed_product_sticky_icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <div class="fixed_product_sticky_price">
+                    <p class="subTotalReseller">
+                    </p>
+                </div>
+                <div class="fixed_product_sticky_count">
+                    <p id="item_count">0 items</p>
+                </div>
+            </a>
+        @else
+            <a class="fixed_product_sticky" data-bs-toggle="offcanvas" href="#fixed_product_sticky_id">
+                <div class="fixed_product_sticky_icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                </div>
+                <div class="fixed_product_sticky_price">
+                    <p class="subTotal">
+                    </p>
+                </div>
+                <div class="fixed_product_sticky_count">
+                    <p id="item_count">0 items</p>
+                </div>
+            </a>
+        @endif
+    @endif
+    <!-- template one end -->
+
+    <!-- template two start -->
+    @if ($site_configurations->template_id == 3)
+        <a class="fixed_product_sticky" data-bs-toggle="offcanvas" href="#fixed_product_sticky_id">
+            <div class="fixed_product_sticky_icon">
+                <i class="las la-cart-arrow-down"></i>
+            </div>
+            <div class="fixed_product_sticky_price">
+                <p class="subTotal">
+                </p>
+            </div>
+            <div class="fixed_product_sticky_count">
+                <p id="item_count">0 items</p>
+            </div>
+        </a>
+    @endif
+    <!-- template two end -->
+
+
+
+
+
+    <!-- Template One fixed product cart start -->
+    @if ($site_configurations->template_id == 1)
+        <div class="fixed_product_card_content offcanvas offcanvas-end" id="fixed_product_sticky_id">
+            <div class="fixed_product_card_header">
+                <div class="fixed_product_card_header_icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart_item_total">0</span>
+                </div>
+                <div class="fixed_product_card_header_close" data-bs-dismiss="offcanvas">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            @if (session()->get('reseller'))
+                <div class="fixed_product_card_body">
+                    <div class="fixed_product_card_list">
+                        <ul id="miniCartReseller">
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="fixed_product_card_footer">
+                    <div class="fixed_product_card_footer_count">
+                        <strong>Subtotal</strong>
+                        <strong class="subTotalReseller">
+
+                        </strong>
+                    </div>
+                    <div class="fixed_product_card_footer_checkout">
+                        <a href="{{ route('checkout.index') }}"
+                            class="fixed_product_card_footer_checkout_link cart_check_out">Place Order</a>
+                    </div>
+                </div>
+            @else
+                <div class="fixed_product_card_body">
+                    <div class="fixed_product_card_list">
+                        <ul id="miniCart">
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="fixed_product_card_footer">
+                    <div class="fixed_product_card_footer_count">
+                        <strong>Subtotal</strong>
+                        <strong class="subTotal">
+
+                        </strong>
+                    </div>
+                    <div class="fixed_product_card_footer_checkout">
+                        <a href="{{ route('checkout.index') }}"
+                            class="fixed_product_card_footer_checkout_link cart_check_out">Place Order</a>
+                    </div>
+                </div>
+            @endif
+
+
+        </div>
+    @endif
+    <!-- Template One fixed product cart end -->
+
+
+    <!-- Template Two fixed product cart start -->
+    @if ($site_configurations->template_id == 2)
+        <div class="fixed_product_card_content offcanvas offcanvas-end" id="fixed_product_sticky_id">
+            <div class="fixed_product_card_header">
+                <div class="fixed_product_card_header_icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart_item_total">0</span>
+                </div>
+                <div class="fixed_product_card_header_close" data-bs-dismiss="offcanvas">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="fixed_product_card_body">
+                <div class="fixed_product_card_list">
+                    <ul id="miniCart">
+
+                    </ul>
+                </div>
+            </div>
+            <div class="fixed_product_card_footer">
+                <div class="fixed_product_card_footer_count">
+                    <strong>Subtotal</strong>
+                    <strong class="subTotal">
+
+                    </strong>
+                </div>
+                <div class="fixed_product_card_footer_checkout">
+                    <a href="{{ route('checkout.index') }}"
+                        class="fixed_product_card_footer_checkout_link cart_check_out">Place Order</a>
+                </div>
+            </div>
+        </div>
+    @endif
+    <!-- Template Two fixed product cart end -->
+
+
+    <!-- Template Three fixed product cart start -->
+    @if ($site_configurations->template_id == 3)
+        <div class="fixed_product_card_content offcanvas offcanvas-end" id="fixed_product_sticky_id">
+            <div class="fixed_product_card_header">
+                <div class="fixed_product_card_header_icon">
+                    <i class="las la-shopping-basket"></i>
+                    <span class="cart_item_total">0</span>
+                </div>
+                <div class="fixed_product_card_header_close" data-bs-dismiss="offcanvas">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="fixed_product_card_body">
+                <div class="fixed_product_card_list">
+                    <ul id="miniCart">
+
+                    </ul>
+                </div>
+            </div>
+            <div class="fixed_product_card_footer">
+                <div class="fixed_product_card_footer_count">
+                    <strong>Subtotal</strong>
+                    <strong class="subTotal">
+
+                    </strong>
+                </div>
+                <div class="fixed_product_card_footer_checkout">
+                    <a href="{{ route('checkout.index') }}"
+                        class="fixed_product_card_footer_checkout_link cart_check_out">Place Order</a>
+                </div>
+            </div>
+        </div>
+    @endif
+    <!-- Template Three fixed product cart end -->
+
+
+    <!-- Template Four fixed product cart start -->
+    @if ($site_configurations->template_id == 4)
+        <div class="fixed_product_card_content offcanvas offcanvas-end" id="fixed_product_sticky_id">
+            <div class="fixed_product_card_header">
+                <div class="fixed_product_card_header_icon">
+                    <i class="las la-shopping-basket"></i>
+                    <span class="cart_item_total">0</span>
+                </div>
+                <div class="fixed_product_card_header_close" data-bs-dismiss="offcanvas">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+            </div>
+            <div class="fixed_product_card_body">
+                <div class="fixed_product_card_list">
+                    <ul id="miniCart">
+
+                    </ul>
+                </div>
+            </div>
+            <div class="fixed_product_card_footer">
+                <div class="fixed_product_card_footer_count">
+                    <strong>Subtotal</strong>
+                    <strong class="subTotal">
+
+                    </strong>
+                </div>
+                <div class="fixed_product_card_footer_checkout">
+                    <a href="{{ route('checkout.index') }}"
+                        class="fixed_product_card_footer_checkout_link cart_check_out">Place Order</a>
+                </div>
+            </div>
+        </div>
+    @endif
+    <!-- Template Four fixed product cart end -->
+
+    <!--============ Fixed Product Cart Area End ============-->
+
+
+    <!-- Whatsapp start -->
+    <div id="whatsapp_id" class="fixed_footer_whatsapp_icon" onclick="whatsapp()">
+        <span class="whatsapp_close">
+            <i class="fa-solid fa-xmark"></i>
+        </span>
+        <a class="whatsapp_icon" href="https://wa.me/+88{{ $general_settings->whatsapp_number }}" target="_blank">
+            <i class="fa-brands fa-whatsapp"></i>
+        </a>
+    </div>
+    <!-- Whatsapp end -->
+
+    @include('frontend.partials.js')
+
+
+    @stack('popup')
+
+    <!-- All js-->
+    @yield('scripts')
+
+    <script>
+        function toggleSubMenu(subMenuId) {
+            // console.log('toggle working');
+            var subMenu = document.getElementById(subMenuId);
+            if (subMenu.style.display === 'block') {
+                subMenu.style.display = 'none';
+            } else {
+                subMenu.style.display = 'block';
+            }
+        };
+        @if (Session::has('message'))
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true
+            }
+            toastr.success("{{ session('message') }}");
+        @endif
+
+        @if (Session::has('error'))
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true
+            }
+            toastr.error("{{ session('error') }}");
+        @endif
+
+        @if (Session::has('info'))
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true
+            }
+            toastr.info("{{ session('info') }}");
+        @endif
+
+        @if (Session::has('warning'))
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true
+            }
+            toastr.warning("{{ session('warning') }}");
+        @endif
+    </script>
+    <script>
+        //================setup ajax=======================
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true
+        }
+
+        //==============increment and decrement for single page start============
+        var quantity = 1;
+        let variant = null;
+        var shipping_charge = 0;
+        var sub_total = 0;
+        var delivery_charge_id = 0;
+        var payable_amount = 0;
+        let intervalId;
+        var otp_time = 0;
+        var coupon = null;
+
+        $(".product_qty").val(quantity);
+
+        function Increment() {
+            quantity++;
+            $(".product_qty").val(quantity);
+        }
+
+
+        function decrement() {
+            if (quantity > 1) {
+                quantity--;
+                $(".product_qty").val(quantity);
+            }
+        }
+
+        //=================increment and decrement for single page start=============
+
+        //get variant
+        // function getVariant(id) {
+        //     variant = id
+        // }
+        function getVariant(id, price, productPrice) {
+            variant = id;
+            price = price ?? 0;
+            productPrice = productPrice ?? 0;
+
+            var attributPrice = "";
+
+            attributPrice += `<span>${price} TK</span>`;
+
+
+            if (price == 0) {
+                $('#variant_wise_price').empty();
+                $('#variant_wise_price').append(productPrice + ' TK');
+            } else {
+                $('#variant_wise_price').empty();
+                $('#variant_wise_price').append(attributPrice);
+
+            }
+        }
+
+
+        //======================addToWishList==========================
+        function addToWishList(id) {
+
+            let quantity = $(".product_qty").val();
+            var postData = {
+                id,
+                quantity,
+            };
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                url: '/wish-list',
+                type: 'POST',
+                dataType: 'json',
+                data: postData,
+                success: function(res) {
+                    if (res.status) {
+                        // Update the wishlist icon
+                        toastr.success(res.message);
+                        getWishList();
+                    } else {
+                        toastr.info(res.message);
+                    }
+                }
+            });
+        }
+
+        //=========================get wish-list==========================
+        function getWishList() {
+            $.ajax({
+                url: '/get/wish-list',
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    console.log(res);
+                    $('.wish_list_count').html(res.item_count)
+                }
+            });
+        }
+        getWishList();
+
+        //============================remove Wish-List==================
+        function removeWishList(rowId) {
+            $.ajax({
+                url: '/delete/wish-list',
+                type: 'POST',
+                dataType: "json",
+                data: {
+                    rowId: rowId
+                },
+                success: function(res) {
+                    if (res.status == true) {
+                        toastr.success(res.message);
+                        location.href = "/wish-list";
+                    }
+                    console.log(res);
+                }
+            });
+        }
+
+
+
+        //=========================add to cart=========================
+
+        function addToCard(event, id, have_variant) {
+            let quantity = $(".product_qty").val();
+            let variants = {};
+            let firstMissingVariant = null;
+
+            $('input[name^="variant"]').each(function() {
+                let variantName = $(this).attr('name').replace('variant', ''); // Remove "variant" prefix
+                variantName = variantName.trim();
+
+                if (!$(`input[name="variant${variantName}"]:checked`).val()) {
+                    // If no option is selected for this variant, setting it as the first missing variant
+                    if (!firstMissingVariant) {
+                        firstMissingVariant = variantName;
+                    }
+                } else {
+                    // If selected, add it to the variants 
+                    variants[variantName] = $(`input[name="variant${variantName}"]:checked`).val();
+                }
+            });
+
+            // Show missing variant (if any)
+            if (firstMissingVariant) {
+                toastr.info(`Please select ${firstMissingVariant}`);
+                event.preventDefault();
+                return;
+            }
+
+            var postData = {
+                id,
+                quantity,
+                variants
+            };
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                data: postData,
+                url: "/add/cart",
+                success: function(res) {
+                    console.log(res);
+                    miniCart();
+                    miniCartReseller();
+                    gtmEvent(id, 'add_to_cart', quantity);
+                    toastr.success('Added to Cart Successfully');
+                    $('#fixed_product_sticky_id').offcanvas('show');
+                    setTimeout(() => {
+                        $('#fixed_product_sticky_id').offcanvas('hide');
+                    }, 3000);
+                }
+            });
+
+            return true;
+        }
+
+        function addToCartFromModal(event, id, variant, variantName) {
+            // console.log('attributes', variantName, 'variant', variant);
+
+            let quantity = 1;
+            let variants = {};
+            if (variant) {
+                variants[variantName] = variant;
+            }
+            console.log(variants);
+
+            var postData = {
+                id,
+                quantity,
+                variants
+            };
+
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                data: postData,
+                url: "/add/cart",
+                success: function(res) {
+                    console.log(res);
+                    miniCart();
+                    miniCartReseller();
+                    gtmEvent(id, 'add_to_cart', quantity);
+
+                    toastr.success('Added to Cart Successfully');
+
+                    $('#fixed_product_sticky_id').offcanvas('show');
+                    setTimeout(() => {
+                        $('#fixed_product_sticky_id').offcanvas('hide');
+                    }, 3000);
+                }
+            });
+
+            return true;
+        }
+
+
+        //==========================show cart item========================
+        function miniCartReseller() {
+            $.ajax({
+                type: 'GET',
+                url: '/cart/index',
+                dataType: 'json',
+                success: function(response) {
+                    getShippingCharge();
+                    couponCalculation();
+                    sub_total = parseInt(response.cart_sub_total);
+                    var total = parseInt(sub_total + shipping_charge);
+                    $('.subTotalReseller').html(sub_total + ' TK');
+                    $('.cart_item_total').html(response.cart_item_total);
+                    $('#item_count').html(response.cart_item_total + ' items');
+                    $('.total_amount').html(response.cart_total + ' TK');
+
+                    var miniCartReseller = ""
+                    $.each(response.carts, function(key, value) {
+                        let variants = '';
+                        if (value.options.variants) {
+                            $.each(value.options.variants, function(variant, name) {
+                                variants += `<p>${variant}: ${name}</p>`;
+                            });
+                        }
+
+                        var basePrice = parseInt(value.price);
+                        var increasedPrice = parseInt(basePrice * 1.10);
+                        var calculatedResellerPrice = parseInt(value.qty * increasedPrice);
+
+                        miniCartReseller += `
+                            <li>
+                                <div class="fixed_product_card_list_table_cell">
+                                <!-- fixed product cart image start -->
+                                <div class="fixed_product_card_image">
+                                    <img src="{{ asset('storage/') }}/${value.options.image}" alt="${value.name}">
+                                </div>
+                                <!-- fixed product cart image end -->
+                        
+                                <div class="fixed_product_card_details">
+                                    <div class="fixed_product_card_name_size_delete">
+                                        <div class="fixed_product_card_name_size">
+                                            <!-- fixed product cart name start -->
+                                            <div class="fixed_product_card_name">
+                                                <p>${value.name}</p>
+                                            </div>
+                                            <!-- fixed product cart name end -->
+                        
+                                            <!-- fixed product cart size start -->
+                                            ${variants}
+                                            <!-- fixed product cart size end -->
+                                        </div>
+                        
+                                        <!-- fixed product cart delete start -->
+                                        <div class="fixed_product_card_delete_icon">
+                                            <a class="card_remove" id="${value.rowId}" onclick="miniCartRemove(this.id)" >
+                                                <i style="color:red;" class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                        <!-- fixed product cart delete end -->
+                                    </div>
+                                    <div class="fixed_product_card_qty_price">
+                                        <!-- fixed product cart quantity start -->
+                                        <div class="fixed_product_card_qty">
+                                            <div class="fixed_product_card_qty_minus" id="${value.rowId}" onclick="cartDecrement(this.id)">
+                                                
+                                                <i class="fa-solid fa-minus"></i>
+                                            </div>
+                                                <input class="product_qty${value.rowId}" type="text" value="${value.qty}">
+                                            <div class="fixed_product_card_qty_plus" id="${value.rowId}" onclick="cartIncrement(this.id)">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </div>
+                                        </div>
+                                        <!-- fixed product cart quantity end -->
+                        
+                                        <!-- fixed product cart price start -->
+                                        <div class="fixed_product_card_close_price">
+                                            <p>${(value.qty * value.price)} TK</p>
+                                        </div>
+                                        <!-- fixed product cart price end -->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    `
+
+                    });
+
+
+                    $('#miniCartReseller').html(miniCartReseller);
+
+                }
+            });
+        }
+        miniCartReseller();
+
+        function miniCart() {
+            $.ajax({
+                type: 'GET',
+                url: '/cart/index',
+                dataType: 'json',
+                success: function(response) {
+                    getShippingCharge();
+                    couponCalculation();
+                    sub_total = parseInt(response.cart_sub_total);
+                    var total = parseInt(sub_total + shipping_charge);
+                    $('.subTotal').html(sub_total + ' TK');
+                    $('.cart_item_total').html(response.cart_item_total);
+                    $('#item_count').html(response.cart_item_total + ' items');
+                    $('.total_amount').html(response.cart_total + ' TK');
+
+                    var miniCart = ""
+                    $.each(response.carts, function(key, value) {
+                        let variants = '';
+                        if (value.options.variants) {
+                            $.each(value.options.variants, function(variant, name) {
+                                variants += `<p>${variant}: ${name}</p>`;
+                            });
+                        }
+                        miniCart += `
+                            <li>
+                                <div class="fixed_product_card_list_table_cell">
+                                <!-- fixed product cart image start -->
+                                <div class="fixed_product_card_image">
+                                    <img src="{{ asset('storage/') }}/${value.options.image}" alt="${value.name}">
+                                </div>
+                                <!-- fixed product cart image end -->
+                        
+                                <div class="fixed_product_card_details">
+                                    <div class="fixed_product_card_name_size_delete">
+                                        <div class="fixed_product_card_name_size">
+                                            <!-- fixed product cart name start -->
+                                            <div class="fixed_product_card_name">
+                                                <p>${value.name}</p>
+                                            </div>
+                                            <!-- fixed product cart name end -->
+                        
+                                            <!-- fixed product cart size start -->
+                                            ${variants}
+                                            <!-- fixed product cart size end -->
+                                        </div>
+                        
+                                        <!-- fixed product cart delete start -->
+                                        <div class="fixed_product_card_delete_icon">
+                                            <a class="card_remove" id="${value.rowId}" onclick="miniCartRemove(this.id)" >
+                                                <i style="color:red;" class="fa-solid fa-trash"></i>
+                                            </a>
+                                        </div>
+                                        <!-- fixed product cart delete end -->
+                                    </div>
+                                    <div class="fixed_product_card_qty_price">
+                                        <!-- fixed product cart quantity start -->
+                                        <div class="fixed_product_card_qty">
+                                            <div class="fixed_product_card_qty_minus" id="${value.rowId}" onclick="cartDecrement(this.id)">
+                                                
+                                                <i class="fa-solid fa-minus"></i>
+                                            </div>
+                                                <input class="product_qty${value.rowId}" type="text" value="${value.qty}">
+                                            <div class="fixed_product_card_qty_plus" id="${value.rowId}" onclick="cartIncrement(this.id)">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </div>
+                                        </div>
+                                        <!-- fixed product cart quantity end -->
+                        
+                                        <!-- fixed product cart price start -->
+                                        <div class="fixed_product_card_close_price">
+                                            <p>${(value.qty * value.price)} TK</p>
+                                        </div>
+                                        <!-- fixed product cart price end -->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    `
+
+                    });
+
+                    $('#miniCart').html(miniCart);
+
+                }
+            });
+        }
+        miniCart();
+
+        //======================miniCartRemove ===========================
+        function miniCartRemove(rowId) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: '/cart/remove',
+                dataType: 'json',
+                data: {
+                    rowId: rowId
+                },
+                success: function(data) {
+                    updateShippingCharge();
+                    parseInt($('#show_cart_sub_total').text(data.cart_sub_total + ' TK'));
+                    $('#show_cart_sub_total_reseller').text(data.cart_sub_total + ' TK');
+                    var total = parseInt(data.cart_sub_total) + parseInt(shipping_charge);
+                    $('#show_payable').text(total + ' TK');
+                    $('#show_payable_reseller').text(total + ' TK');
+                    parseInt($('#cart_sub_total').val(data.cart_sub_total));
+                    parseInt($('#cart_sub_total_reseller').val(data.cart_sub_total));
+                    checkOutCarts();
+                    checkOutCartsReseller();
+                    miniCart();
+                    toastr.success('Delete Successfully');
+                    // location.href = '/checkout';
+                }
+            });
+        }
+
+
+
+        // ============ cart increment==============
+        function cartIncrement(rowId) {
+
+            var qty = $(`.product_qty${rowId}`).val();
+            var increment_value = parseInt(qty) + 1;
+
+            $.ajax({
+                type: 'POST',
+                url: "/cart/update",
+                dataType: 'json',
+                data: {
+                    rowId: rowId,
+                    qty: increment_value,
+                },
+                success: function(data) {
+                    updateShippingCharge();
+                    parseInt($('#show_cart_sub_total').text(data.cart_sub_total + ' TK'));
+                    parseInt($('#show_cart_sub_total_reseller').text(data.cart_sub_total + ' TK'));
+                    var total = parseInt(data.cart_sub_total) + parseInt(shipping_charge);
+                    $('#show_payable').text(total + ' TK');
+                    $('#show_payable_reseller').text(total + ' TK');
+                    parseInt($('#cart_sub_total').val(data.cart_sub_total));
+                    parseInt($('#cart_sub_total_reseller').val(data.cart_sub_total));
+                    miniCart();
+                    checkOutCarts();
+                    checkOutCartsReseller();
+                    cartViewCarts();
+                    couponCalculation();
+                }
+            });
+        }
+
+
+        // ============ cart deccrement==============
+        function cartDecrement(rowId) {
+            var qty = $(`.product_qty${rowId}`).val();
+            var decrement_value = parseInt(qty) == 1 ? parseInt(qty) : parseInt(qty) - 1;
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: "/cart/update",
+                dataType: 'json',
+                data: {
+                    rowId: rowId,
+                    qty: decrement_value,
+                },
+                success: function(data) {
+                    updateShippingCharge();
+                    parseInt($('#show_cart_sub_total').text(data.cart_sub_total + ' TK'));
+                    parseInt($('#show_cart_sub_total_reseller').text(data.cart_sub_total + ' TK'));
+                    var total = parseInt(data.cart_sub_total) + parseInt(shipping_charge);
+                    $('#show_payable').text(total + ' TK');
+                    $('#show_payable_reseller').text(total + ' TK');
+                    parseInt($('#cart_sub_total').val(data.cart_sub_total));
+                    parseInt($('#cart_sub_total_reseller').val(data.cart_sub_total));
+                    checkOutCarts();
+                    checkOutCartsReseller();
+                    cartViewCarts();
+                    couponCalculation();
+                    miniCart();
+                }
+            });
+        }
+
+        //=========show card items==============
+        $('.fixed_product_sticky').click(function() {
+            miniCart();
+        });
+
+        //==============check-out cart==========
+        function checkOutCartsReseller() {
+            $.ajax({
+                type: 'GET',
+                url: '/cart/index',
+                dataType: 'json',
+                success: function(response) {
+                    getShippingCharge();
+                    couponCalculation();
+                    //-----------set variables-----------
+                    sub_total = parseInt(response.cart_sub_total);
+                    payable_amount = parseInt(sub_total + shipping_charge);
+                    var total = parseInt(sub_total + shipping_charge);
+
+                    $('.subTotal').text(sub_total + ' TK');
+                    $('.total_amount').text(total + ' TK');
+                    $('.shipping_charge').text(shipping_charge + ' TK');
+                    $('.payable_amount').text(payable_amount + ' TK' + "this");
+                    // console.log(shipping_charge + "this");
+                    // console.log('from checkout',shipping_charge);
+
+                    var rows = "";
+                    var resellerPrice = 0;
+                    var resellerPrice2 = 0;
+                    var totalBasePrice = 0;
+                    var calculatedBasePrice = 0;
+                    var total_sale_price = 0;
+                    let productIds = [];
+
+                    $.each(response.carts, function(key, value) {
+                        let variants = '';
+                        if (value.options.variants) {
+                            $.each(value.options.variants, function(variant, name) {
+                                // console.log('size="' + variant + ' Name :' + name);
+                                variants += `<p>${variant}: ${name}</p>`;
+                            });
+                        }
+
+                        productIds.push(value.id);
+
+                        var basePrice = parseInt(value.price);
+                        var basePrice2 = parseInt(value.options.reselling_price);
+                        var increasedPrice = parseInt(basePrice * 1.10);
+                        let calculatedResellerPrice = parseInt(value.qty * increasedPrice);
+                        let calculatedResellerPrice2 = parseInt(value.qty * basePrice2);
+                        let calculatedBasePrice = parseInt(value.qty * basePrice);
+                        total_sale_price += parseInt(value.price);
+                        totalBasePrice += calculatedBasePrice;
+                        resellerPrice += calculatedResellerPrice;
+                        resellerPrice2 += calculatedResellerPrice2;
+
+                        // var shipping_charges = parseInt($('#show_shipping_charge_reseller').text());
+                        // var totalPrices = parseInt(resellerPrice + shipping_charges);
+                        // $('#cart_sub_total_reseller').val(calculatedResellerPrice2)
+
+                        rows += `
+                                    <tr>
+                                        <td class="checkout_product_td_left">
+                                            <div class="checkout_product_name_image">
+                                                <img src="{{ asset('storage/' . '${value . options . image}') }}" alt="${value.options.image}"> 
+                                            </div>
+                                                <div class="products_checkout_name">
+                                                    <p>${value.name.slice(0, 30) + '...'}</p>
+                                                        ${variants}    
+                                                </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_qty">
+                                                <div id="${value.rowId}" onclick="cartDecrement(this.id)" class="checkout_product_qty_minus">
+                                                    <i class="fa-solid fa-minus"></i>
+                                                </div>
+                                                <input type="text" class="product_qty" value="${value.qty}">
+                                                <div id="${value.rowId}" onclick="cartIncrement(this.id)" class="checkout_product_qty_plus">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_price">
+                                                <p>${value.price} TK</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_total_price">
+                                                <input id="${value.rowId}" product_id name="resellerPrice" class="form-control resellerPrice" style="width: 70px" value="${calculatedResellerPrice2}" min="${calculatedResellerPrice}" data-product-id="${value.id}"> TK
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_delete_icon">
+                                                <a id="${value.rowId}" onclick="miniCartRemove(this.id)" class="checkout_product_delete_icon_link">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `
+                    });
+
+                    $('#check_out_carts_reseller').html(rows);
+                    $('#product_id').val(JSON.stringify(productIds));
+
+                    $('#reseller_profit').text((resellerPrice2 - totalBasePrice) + ' TK');
+                    $('#profit').val(resellerPrice2 - totalBasePrice);
+                    $('#total_sale_price').val(total_sale_price);
+                    $('#show_cart_sub_total_reseller').text(resellerPrice2 + ' TK')
+                    $('#cart_sub_total_reseller').val(resellerPrice2)
+                    var shipping_charge = parseInt($('#show_shipping_charge_reseller').text());
+                    var totalPrice = parseInt(resellerPrice2 + shipping_charge);
+                    $('#show_payable_reseller').text(totalPrice + ' TK');
+                    $('.resellerPrice').on('change', function() {
+                        var inputPrice = parseInt($(this).val()) || 0;
+                        var minPrice = parseInt($(this).attr('min')) || 0;
+                        var productId = $(this).data('product-id');
+                        if (inputPrice < minPrice) {
+                            $(this).val(minPrice);
+                            inputPrice = minPrice;
+                            $(this).trigger('change');
+                            return false;
+                        } else {
+                            var newSubtotal = 0;
+                            $('.resellerPrice').each(function() {
+                                newSubtotal += parseInt($(this).val()) || 0;
+                            });
+
+
+                            var shipping_charge = parseInt($('#show_shipping_charge_reseller').text());
+                            var totalPrice = parseInt(newSubtotal + shipping_charge);
+
+                            $('#show_payable_reseller').text(totalPrice + ' TK');
+                            $('#show_cart_sub_total_reseller').text(newSubtotal + ' TK');
+
+                            $('.subTotalReseller').html(newSubtotal + ' TK');
+                            $('#reseller_profit').text((newSubtotal - totalBasePrice) + ' TK');
+                            $('#profit').val(newSubtotal - totalBasePrice);
+                            $('#total_sale_price').val(total_sale_price);
+                            $('#cart_sub_total_reseller').val(newSubtotal)
+
+                        }
+
+                    });
+
+                }
+            });
+        }
+        checkOutCartsReseller();
+
+        //==============check-out cart============
+
+        //==============check-out cart==========
+        function checkOutCarts() {
+            $.ajax({
+                type: 'GET',
+                url: '/cart/index',
+                dataType: 'json',
+                success: function(response) {
+                    getShippingCharge();
+                    couponCalculation();
+                    //-----------set variables-----------
+                    sub_total = parseInt(response.cart_sub_total);
+                    payable_amount = parseInt(sub_total + shipping_charge);
+                    var total = parseInt(sub_total + shipping_charge);
+                    $('.subTotal').text(sub_total + ' TK');
+                    $('.total_amount').text(total + ' TK');
+                    $('.shipping_charge').text(shipping_charge + ' TK');
+                    $('.payable_amount').text(payable_amount + ' TK' + "this");
+                    // console.log(shipping_charge + "this");
+                    // console.log('from checkout',shipping_charge);
+
+                    var rows = ""
+                    $.each(response.carts, function(key, value) {
+                        let variants = '';
+                        if (value.options.variants) {
+                            $.each(value.options.variants, function(variant, name) {
+                                // console.log('size="' + variant + ' Name :' + name);
+                                variants += `<p>${variant}: ${name}</p>`;
+                            });
+                        }
+                        rows += `
+                                    <tr>
+                                        <td class="checkout_product_td_left">
+                                            <div class="checkout_product_name_image">
+                                                <img src="{{ asset('storage/' . '${value . options . image}') }}" alt="${value.options.image}"> 
+                                            </div>
+                                                <div class="products_checkout_name">
+                                                    <p>${value.name.slice(0, 30) + '...'}</p>
+                                                        ${variants}    
+                                                </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_qty">
+                                                <div id="${value.rowId}" onclick="cartDecrement(this.id)" class="checkout_product_qty_minus">
+                                                    <i class="fa-solid fa-minus"></i>
+                                                </div>
+                                                <input type="text" class="product_qty" value="${value.qty}">
+                                                <div id="${value.rowId}" onclick="cartIncrement(this.id)" class="checkout_product_qty_plus">
+                                                    <i class="fa-solid fa-plus"></i>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_price">
+                                                <p>${value.price} TK</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_total_price">
+                                                <p>${(value.qty * value.price)} TK</p>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="checkout_product_delete_icon">
+                                                <a id="${value.rowId}" onclick="miniCartRemove(this.id)" class="checkout_product_delete_icon_link">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `
+                    });
+
+                    $('#check_out_carts').html(rows);
+
+                }
+            });
+        }
+        checkOutCarts();
+
+        //==============check-out cart============
+        function cartViewCarts() {
+            $.ajax({
+                type: 'GET',
+                url: '/cart/index',
+                dataType: 'json',
+                success: function(response) {
+                    sub_total = parseInt(response.cart_sub_total);
+                    var total = parseInt(sub_total + shipping_charge);
+                    //--------set variable---------------
+                    $('.subTotal').html(sub_total + ' TK');
+                    $('.total_amount').html(total + ' TK');
+                    // $('.shipping_charge').text('৳ ' + shipping_charge);
+                    getShippingCharge();
+                    var rows = ""
+                    $.each(response.carts, function(key, value) {
+
+                        rows += `
+                            <tr>
+                                <td class="padding_left_zero">
+                                    <div class="view_cart_image">
+                                        <a href="single_product.html">
+                                            <img src="{{ asset('storage/' . '${value . options . image}') }}" alt="${value.name}">
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="view_cart_name">
+                                        <a href="#" class="view_cart_name_link">${value.name}</a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="view_cart_price">
+                                        <span>${(value.qty * value.price)} TK</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="view_cart_qty">
+                                        <button id="${value.rowId}" onclick="cartDecrement(this.id)" class="view_cart_qty_minus">
+                                            <i class="fa-solid fa-minus"></i>
+                                        </button>
+                                        <input class="product_qty" type="text" value="${value.qty}">
+                                        <button id="${value.rowId}" onclick="cartIncrement(this.id)" class="view_cart_qty_plus">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td class="padding_right_zero" style="text-align: right;">
+                                    <div class="view_cart_delete">
+                                        <button id="${value.rowId}" onclick="miniCartRemove(this.id)" class="view_cart_delete_link">
+                                            <i class="fa-solid fa-trash">
+                                            </i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            `
+                    });
+
+                    $('#cart_view_carts').html(rows);
+
+                }
+            });
+        }
+        cartViewCarts();
+
+        //==================shippingCharge==============
+        function shippingChargeBySelectArea(id, val, free_delivery) {
+            if (val > 0 && free_delivery != 1) {
+                shipping_charge = val;
+            } else {
+                shipping_charge = 0;
+                $('input[name="shipping_charge"]').val(shipping_charge);
+
+            }
+            orderSummaryCalculation(shipping_charge);
+
+            var resellerSubtotal = 0;
+            $('.resellerPrice').each(function() {
+                resellerSubtotal += parseInt($(this).val()) || 0;
+            });
+            $('#show_cart_sub_total_reseller').text(resellerSubtotal + ' TK');
+
+            var totalPrice = resellerSubtotal + shipping_charge;
+            $('#show_payable_reseller').text(totalPrice + ' TK');
+        }
+
+        //==================shippingCharge==============
+        function shippingCharge(id, ship_Charge, free_delivery) {
+            if (ship_Charge > 0 && free_delivery != 1) {
+                shipping_charge = parseInt(ship_Charge);
+            } else {
+                shipping_charge = 0;
+                $('#setInputShippingCharge').val(shipping_charge);
+            }
+
+            orderSummaryCalculation(shipping_charge);
+
+            $.ajax({
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    city_id: id,
+                },
+                url: 'get/subcity',
+                success: function(res) {
+                    if (res.status) {
+                        if (res.subcitys == "") {
+                            $('select[name="subcity_id"]').empty();
+                            $('select[name="subcity_id"]').append(
+                                '<option value="">Sub City Not Found!</option>'
+                            );
+                        } else {
+                            $('select[name="subcity_id"]').empty();
+                            $('select[name="subcity_id"]').append(
+                                '<option value="">Select Upozila</option>'
+                            );
+                            $.each(res.subcitys, function(key, value) {
+                                $('select[name="subcity_id"]').append(
+                                    '<option value="' + value.id + '">' + value.name + '</option>'
+                                );
+                            });
+                        }
+                    }
+                },
+            });
+        }
+
+        $(document).ready(function() {
+            updateShippingCharge();
+            orderSummaryCalculation(shipping_charge);
+        });
+
+        function updateShippingCharge() {
+            let delivery_charge = $('input[name="shipping_charge"]:checked').val();
+            var free_delivery = $('#free_delivery').val();
+
+            if (free_delivery == 1) {
+                shipping_charge = 0;
+                $('input[name="shipping_charge"]').val(shipping_charge);
+            } else {
+                shipping_charge = parseInt(delivery_charge) || 0;
+            }
+            console.log('Updated shipping charge:', shipping_charge);
+        }
+
+        //===================== Order Calculation =======================
+        function orderSummaryCalculation(charge = 0) {
+            var cart_subtotal = parseInt($('#cart_sub_total').val()) || 0;
+            var cart_subtotal_reseller = parseInt($('#cart_sub_total_reseller').val()) || 0;
+            var delivery_charge = parseInt(charge) || 0;
+            console.log(cart_subtotal);
+
+            var total_amount = cart_subtotal + delivery_charge;
+            var total_amount_reseller = cart_subtotal_reseller + delivery_charge;
+
+            var discount_amount = 0;
+            var payable_amount = total_amount;
+
+            var discount_amount_reseller = 0;
+            var payable_amount_reseller = total_amount_reseller;
+
+            if (coupon != null) {
+                if (coupon.discount_type == 'percentage') {
+                    var calculate_amount = Math.ceil(
+                        (parseInt(cart_subtotal) * parseInt(coupon.discount_amount)) / 100
+                    );
+                    console.log('Discount amount:', calculate_amount);
+                    discount_amount = coupon.discount_amount + " %";
+                    $('#coupon_amount').val(calculate_amount);
+                    payable_amount = total_amount - calculate_amount;
+                } else {
+                    discount_amount = coupon.discount_amount;
+                    $('#coupon_amount').val(discount_amount);
+                    payable_amount = total_amount - coupon.discount_amount;
+                }
+            }
+
+            if (coupon != null) {
+                if (coupon.discount_type == 'percentage') {
+                    var calculate_amount_reseller = Math.ceil(
+                        (parseInt(cart_subtotal_reseller) * parseInt(coupon.discount_amount)) / 100
+                    );
+                    console.log('Discount amount:', calculate_amount_reseller);
+                    discount_amount_reseller = coupon.discount_amount + " %";
+                    $('#coupon_amount').val(calculate_amount_reseller);
+                    payable_amount_reseller = total_amount_reseller - calculate_amount;
+                } else {
+                    discount_amount_reseller = coupon.discount_amount;
+                    $('#coupon_amount').val(discount_amount_reseller);
+                    payable_amount_reseller = total_amount_reseller - coupon.discount_amount;
+                }
+            }
+
+            $('#setInputShippingCharge').val(delivery_charge);
+            $('#show_shipping_charge').text(delivery_charge + ' TK');
+            $('#show_discount').text(discount_amount + ' TK');
+            $('#show_payable').text(payable_amount + ' TK');
+
+            $('#show_shipping_charge_reseller').text(delivery_charge + ' TK');
+            $('#show_discount_reseller').text(discount_amount_reseller + ' TK');
+            $('#show_payable_reseller').text(payable_amount_reseller + ' TK');
+        }
+
+        //===================== Apply Coupon =======================
+        function applyCoupon() {
+
+            var coupon_name = $('#coupon_name').val();
+            var show_city_sub_city = document.getElementById("show_city_sub_city").value;
+            $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    name: coupon_name,
+                },
+                url: '/coupon-apply',
+                success: function(res) {
+                    if (res.status == true) {
+                        coupon = res.coupon;
+                        if (show_city_sub_city != 1) {
+                            updateShippingCharge();
+                        }
+                        orderSummaryCalculation(shipping_charge);
+                        $('#coupon_valid').prop('style').removeProperty('display');
+                        document.getElementById('coupon_invalid').style = "display:none";
+                        toastr.success(res.message);
+                    } else {
+                        coupon = null;
+                        $('#coupon_invalid').prop('style').removeProperty('display');
+                        toastr.error(res.message);
+                    }
+                },
+            });
+        }
+
+        function getShippingCharge() {
+            $.ajax({
+                url: '/get/shipping/charge',
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    shipping_charge = res.shipping_charge;
+                    delivery_charge_id = res.delivery_charge_id;
+                }
+            });
+        }
+
+        getShippingCharge();
+
+
+        //==================couponCalculation=======================
+        function couponCalculation() {
+            $.ajax({
+                url: '/coupon/calculation',
+                type: 'GET',
+                dataType: 'json',
+                success: function(res) {
+                    $order_summary = "";
+                    if (res.success) {
+                        // console.log('test ' + res.sipping_charge);
+                        var delivery_charge = res.sipping_charge;
+
+
+                        $order_summary +=
+                            `
+                            <div class="price_summary_table_cell">
+                                <strong>Sub Total :</strong>
+                                <strong >${res.sub_total} TK</strong>
+                            </div>
+                            <div class="price_summary_table_cell">
+                                <strong>Delivery Charge :</strong>
+                                <strong >${res.sipping_charge} TK</strong>
+                            </div>
+                            <div class="price_summary_table_cell">
+                                <strong>Discount Amount :</strong>
+                                <strong >${-res.discount_amount} TK</strong>
+                            </div>
+                            <div class="price_summary_table_cell">
+                                <strong >Payable Amount :</strong>
+                                <strong >${res.payable_amount} TK</strong>
+                            </div>
+                            `
+                    } else {
+                        $order_summary +=
+                            `
+                            <div class="price_summary_table_cell">
+                                <strong>Sub Total :</strong>
+                                <strong > 0.0 TK</strong>
+                            </div>
+                            <div class="price_summary_table_cell">
+                                <strong>Delivery Charge :</strong>
+                                <strong > 0.0 TK</strong>
+                            </div>
+                            <div class="price_summary_table_cell">
+                                <strong>Discount Amount :</strong>
+                                <strong > 0.0 TK</strong>
+                            </div>
+                            <div class="price_summary_table_cell">
+                                <strong >Payable Amount :</strong>
+                                <strong > 0.0 TK</strong>
+                            </div>
+                            `
+                    }
+                    $('#order_summary').html($order_summary);
+                }
+            });
+        }
+        couponCalculation();
+
+
+
+
+        //====================product-search===============================
+        function searchProduct(value) {
+            if (value.length > 3) {
+                $.ajax({
+                    url: '/product-search',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        key: value
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        if (res.status == true) {
+                            $('#search_product_show').html(res.data);
+                            $('#product_search').css({
+                                'display': 'block'
+                            });
+                        } else {
+                            $('#product_search').css({
+                                'display': 'none'
+                            });
+                        }
+                    }
+                });
+            }
+        }
+
+
+        //====================product-search-page===============================
+        function productSearchPage(event) {
+            event.preventDefault();
+            const searchTerm = document.getElementById('searchboxinput').value.trim();
+            const searchUrl = searchTerm ? `/products/search/${encodeURIComponent(searchTerm)}` : '/search';
+            console.log(searchUrl); // Use for debugging
+            window.location.href = searchUrl;
+        }
+
+        //===========================event call=======================
+        //--------------this event for single item--------------------
+        function gtmEvent(id, event, qty) {
+            $.ajax({
+                url: '/get/product/content',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    product_id: id,
+                    quantity: qty
+                },
+                success: function(res) {
+                    if (res.status) {
+                        //------set variable------------
+                        const eventData = {
+                            currency: "BDT",
+                            value: res.cart_total,
+                            items: res.items,
+                        };
+                        dataLayer.push({
+                            ecommerce: null
+                        });
+                        //----------------call event--------
+                        if (event == 'add_to_cart') {
+                            dataLayer.push({
+                                event: "add_to_cart",
+                                ecommerce: eventData
+                            });
+                            console.log('call add_to_cart');
+                        } else if (event == 'view_item') {
+                            dataLayer.push({
+                                event: "view_item",
+                                ecommerce: eventData
+                            });
+                            console.log('call view_item');
+                        } else if (event == 'no') {
+                            console.log('call no');
+                        }
+
+                    } else {
+                        console.log(res.message);
+                    }
+                }
+            });
+        }
+
+        //----------------this event for multi items--------------
+        function gtmCartItemsEvent(event, invoice_id = null) {
+            $.ajax({
+                url: '/get/cart-items',
+                type: "GET",
+                dataType: 'json',
+                success: function(res) {
+                    // console.log(res);
+                    const viewCartEventData = {
+                        currency: "BDT",
+                        value: res.cart_total,
+                        items: res.items,
+                    };
+                    const checkOutEventData = {
+                        currency: "BDT",
+                        value: res.cart_total,
+                        coupon: res.coupon,
+                        items: res.items,
+                    };
+                    const purchaseEventData = {
+                        currency: "BDT",
+                        value: res.cart_total,
+                        coupon: res.coupon,
+                        transaction_id: invoice_id,
+                        items: res.items,
+                        customer: res.customer,
+                    };
+                    if (event == 'view_cart') {
+                        dataLayer.push({
+                            event: "view_cart",
+                            ecommerce: viewCartEventData
+                        });
+                        console.log('call view_cart');
+                        return;
+                    } else if (event == 'begin_checkout') {
+                        // shippingCharge();
+                        dataLayer.push({
+                            event: "begin_checkout",
+                            ecommerce: checkOutEventData
+                        });
+                        console.log('call begin_checkout');
+                        return;
+                    } else if (event == 'purchase') {
+                        dataLayer.push({
+                            event: "purchase",
+                            ecommerce: purchaseEventData
+                        });
+                        deleteCart();
+                        console.log('calling data layer purchase');
+                        return;
+                    }
+                }
+            });
+        }
+
+        //==================clear Cart items=====================
+        function deleteCart() {
+            $.ajax({
+                type: 'GET',
+                url: '/clear/all-cart',
+                dataType: 'json',
+                success: function(res) {
+                    console.log(res);
+                }
+            });
+        }
+
+        //------------order form submit------------
+        function orderForm() {
+            $('#order_form').submit(function(event) {
+                event.preventDefault();
+
+                var formData = new FormData(this);
+                let name = formData.get('name');
+                let mobile_no = formData.get('mobile_no');
+                let shipping_charge_id = formData.get('shipping_charge');
+                let address = formData.get('address');
+                let profit = formData.get('profit');
+                let total_sale_price = formData.get('total_sale_price');
+
+
+
+                let cart_sub_total_reseller = formData.get('cart_sub_total_reseller');
+
+                var resellerPrices = [];
+                $('.resellerPrice').each(function() {
+                    resellerPrices.push({
+                        rowId: $(this).attr('id'),
+                        productId: $(this).data('product-id'),
+                        price: $(this).val()
+                    });
+                });
+                formData.append('resellerPrices', JSON.stringify(resellerPrices));
+
+                let note = formData.get('note');
+                let select_city = formData.get('city_id');
+                let subcity = formData.get('subcity_id');
+                // shipping_charge_id = formData.get('shipping_charge_id');
+                var show_city_sub_city = document.getElementById("show_city_sub_city").value;
+
+                //-----validation start----------------
+                if (!name) {
+                    toastr.info('Name is required');
+                    return;
+                }
+
+                if (!mobile_no) {
+                    toastr.info('Mobile is required');
+                    return;
+                }
+
+                if (!$.isNumeric(mobile_no)) {
+                    toastr.info('Please Type Number');
+                    return;
+                }
+
+                if (mobile_no.length != 11) {
+                    toastr.info('Your Mobile Number Must-be 11 Digit');
+                    return;
+                }
+                if (show_city_sub_city == 1) {
+                    if (!select_city) {
+                        toastr.info('Please Select your City');
+                        return;
+                    }
+                    if (!subcity) {
+                        toastr.info('Please Select your Sub-City');
+                        return;
+                    }
+                } else {
+                    if (!shipping_charge_id) {
+                        toastr.info('Please Select Area');
+                        return;
+                    }
+                }
+
+
+
+
+                if (!address) {
+                    toastr.info('Address is required');
+                    return;
+                }
+                //setup ajax
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                // console.log('test');
+
+
+
+
+                // call ajax
+                $.ajax({
+                    url: '/checkout/order',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+
+                        $('.order_form').trigger("reset");
+                        if (res.status) {
+                            toastr.success('Order Successfull Add');
+                            console.log('call purchase event');
+                            location.href = "/order-success/" + res.invoice_no;
+
+                        } else {
+                            toastr.warning(res.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        }
+
+        toastr.options = {
+
+            "positionClass": "toaster-center",
+            timeOut: 3000,
+            tapToDismiss: true,
+            debug: false,
+            fadeOut: 5,
+            closeButton: true,
+            progressBar: true,
+            showMethod: "slideDown",
+            hideMethod: "slideUp",
+            closeHtml: '<button type="button" class="close" data-dismiss="toast" aria-label="Close">&times;</button>',
+            newestOnTop: false,
+
+
+        };
+        //-------------------order Tracking---------------------
+        function OrderTracking() {
+            $('#order_tracking_form').submit(function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+
+                //setup ajax
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                //call ajax
+                $.ajax({
+                    url: "{{ route('order.tracking') }}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    success: function(res) {
+                        if (res.status == true) {
+                            $('#order_tracking_content').html(res.data);
+                            $('#courier_name').html(res.courier_name);
+                        } else {
+                            data = `<div style="text-align: center;">
+                                        <span>No Invoice</span>
+                                    </div>`;
+                            $('#order_tracking_content').html(data);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error(xhr.responseText);
+                    }
+                });
+                console.log(formData);
+            });
+        }
+
+        //-------------------Custom Product Review---------------
+        function ReviewForm() {
+            $('#review_form').submit(function(event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                var button = document.querySelector('.customer_comment_btn_link');
+                var productSlug = button.dataset.product_slug;
+                formData.append('product_slug', productSlug);
+                rating = formData.get('rating_stars');
+                name = formData.get('user_name');
+                review = formData.get('review');
+                if (rating == null) {
+                    toastr.error('Please Select Rating');
+                    return;
+                }
+                if (name == '') {
+                    toastr.error('Please write Your Name');
+                    return;
+                }
+                if (review == '') {
+                    toastr.error('Please write Review');
+                    return;
+                }
+                //setup ajax
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('product.review') }}",
+                    type: "POST",
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.status == true) {
+                            $('#review_form').trigger("reset");
+                            toastr.success(res.message);
+                            setTimeout(function() {
+                                location.href = "/product/" + productSlug;
+                            }, 1000);
+                            //success messase
+                        }
+                        console.log(res);
+                    }
+                });
+            });
+        }
+
+        //--------------------Send OTP ------------------
+        function SendOTP() {
+            $('#send_otp_form').submit(function(event) {
+                event.preventDefault();
+                var formData = $(this).serialize();
+
+                console.log('befor ajax call');
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('send.otp') }}",
+                    type: 'POST',
+                    dataType: "json",
+                    data: formData,
+                    success: function(res) {
+                        if (res.status == true) {
+                            // intervalId = setInterval(DecrementCounter, 1000);
+                            toastr.success('Successfully OTP Send');
+                            location.href = '/receive/otp';
+                        }
+                        console.log(res);
+                    }
+                });
+            });
+        }
+
+
+
+
+        function OTPVarify() {
+            let otp_mobile_no = $('#otp_mobile_no').val();
+            $('#otp_varify_form').submit(function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                formData.append('mobile_no', otp_mobile_no);
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('verify.otp') }}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.status == true) {
+                            console.log('ddd');
+                            toastr.success('Successfully OTP verified');
+                            location.href = '/user/dashboard';
+                        } else {
+                            toastr.error('OTP is incorrect');
+                        }
+                    }
+                });
+            });
+        }
+
+
+
+
+        $('#send_otp_form_submit').one('click', function() {
+            SendOTP();
+        });
+
+        $('#otp_varify_form_submit').one('click', function() {
+            OTPVarify();
+        });
+
+        $('#order_form_submit').one('click', function() {
+            orderForm();
+        });
+
+        // $('#select_area').change(function() {
+        //     shippingCharge(parseInt($(this).val()));
+        // });
+
+        //======================different event call=====================
+        $('#coupon_apply').on('click', function() {
+
+            applyCoupon();
+        });
+
+        $('#review_submit').one('click', function() {
+            ReviewForm();
+        });
+
+        $('.cart_check_out').one('click', function() {
+            couponCalculation();
+            cartViewCarts();
+        });
+
+        //------cart view event---------
+        $('.cart_view').one('click', function() {
+            cartViewCarts();
+        });
+
+        function whatsapp() {
+            document.getElementById("whatsapp_id").classList.toggle("whatsapp_toggle");
+        }
+    </script>
+
+
+    <script>
+        function setOnlinePayment(type) {
+            $('#set_payment').val(type);
+        }
+    </script>
+    <script>
+        const paymentMethods = document.querySelectorAll('.payment_methods_img ul li');
+
+        paymentMethods.forEach((item) => {
+            item.addEventListener('click', () => {
+                paymentMethods.forEach((method) => method.classList.remove('active_payment'));
+                item.classList.add('active_payment');
+            });
+        });
+    </script>
+
+
+
+
+</body>
+
+</html>

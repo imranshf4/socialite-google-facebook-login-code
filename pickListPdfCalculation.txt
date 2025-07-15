@@ -1,0 +1,43 @@
+@php
+                            $groupedOrders = [];
+
+                            foreach ($orders as $item) {
+                                $code = $item->product_code;
+
+                                if (!isset($groupedOrders[$code])) {
+                                    $groupedOrders[$code] = [
+                                        'product_code' => $item->product_code,
+                                        'thumbnail_img' => $item->thumbnail_img,
+                                        'name' => $item->name,
+                                        'variant_quantities' => [],
+                                    ];
+                                }
+
+                                // Merge same variant names by summing quantities
+                                $variantName = $item->variant_name;
+                                if (!isset($groupedOrders[$code]['variant_quantities'][$variantName])) {
+                                    $groupedOrders[$code]['variant_quantities'][$variantName] = 0;
+                                }
+                                $groupedOrders[$code]['variant_quantities'][$variantName] += $item->total_qty;
+                            }
+                        @endphp
+
+                        @foreach ($groupedOrders as $k => $item)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    <p>{{ $item['product_code'] }}</p>
+                                </td>
+                                <td>
+                                    <img width="60px" height="60px"
+                                        src="{{ asset('storage/' . $item['thumbnail_img']) }}" />
+                                    {{ $item['name'] }}
+                                </td>
+                                <td>
+                                    {{ implode(', ', array_keys($item['variant_quantities'])) }}
+                                </td>
+                                <td>
+                                    {{ implode(', ', array_values($item['variant_quantities'])) }}
+                                </td>
+                            </tr>
+                        @endforeach

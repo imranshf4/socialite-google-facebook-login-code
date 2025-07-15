@@ -2,9 +2,22 @@ completed task:
 https://dutyfreebd.com/
 1. affiliate registration page setup and image upload code change
 2. affiliate registration dynamic
-
+3.low stock report error solved
 
 12-7-25
 https://aponcommunity.com/
 1. multi admin login system
 2. team member login/registration system and dashboard setup
+
+https://dutyfreebd.com/
+1.low stock report error solved
+
+14-07-25
+completed task:
+https://dropshipping.com.bd/
+1.exchange text show
+2.reseller order note
+3.ready to campaign
+4.image download issue
+5.exchange size show
+6.cpanel update this code
