@@ -1557,7 +1557,6 @@
                 $('input[name="shipping_charge"]').val(shipping_charge);
 
             }
-            orderSummaryCalculation(shipping_charge);
 
             var resellerSubtotal = 0;
             $('.resellerPrice').each(function() {
@@ -1567,6 +1566,8 @@
 
             var totalPrice = resellerSubtotal + shipping_charge;
             $('#show_payable_reseller').text(totalPrice + ' TK');
+
+            orderSummaryCalculation(shipping_charge);
         }
 
         //==================shippingCharge==============
@@ -1658,9 +1659,7 @@
                     $('#coupon_amount').val(discount_amount);
                     payable_amount = total_amount - coupon.discount_amount;
                 }
-            }
 
-            if (coupon != null) {
                 if (coupon.discount_type == 'percentage') {
                     var calculate_amount_reseller = Math.ceil(
                         (parseInt(cart_subtotal_reseller) * parseInt(coupon.discount_amount)) / 100
@@ -1668,13 +1667,29 @@
                     console.log('Discount amount:', calculate_amount_reseller);
                     discount_amount_reseller = coupon.discount_amount + " %";
                     $('#coupon_amount').val(calculate_amount_reseller);
-                    payable_amount_reseller = total_amount_reseller - calculate_amount;
+                    payable_amount_reseller = total_amount_reseller - calculate_amount_reseller;
                 } else {
                     discount_amount_reseller = coupon.discount_amount;
                     $('#coupon_amount').val(discount_amount_reseller);
                     payable_amount_reseller = total_amount_reseller - coupon.discount_amount;
                 }
             }
+
+            // if (coupon != null) {
+            //     if (coupon.discount_type == 'percentage') {
+            //         var calculate_amount_reseller = Math.ceil(
+            //             (parseInt(cart_subtotal_reseller) * parseInt(coupon.discount_amount)) / 100
+            //         );
+            //         console.log('Discount amount:', calculate_amount_reseller);
+            //         discount_amount_reseller = coupon.discount_amount + " %";
+            //         $('#coupon_amount').val(calculate_amount_reseller);
+            //         payable_amount_reseller = total_amount_reseller - calculate_amount;
+            //     } else {
+            //         discount_amount_reseller = coupon.discount_amount;
+            //         $('#coupon_amount').val(discount_amount_reseller);
+            //         payable_amount_reseller = total_amount_reseller - coupon.discount_amount;
+            //     }
+            // }
 
             $('#setInputShippingCharge').val(delivery_charge);
             $('#show_shipping_charge').text(delivery_charge + ' TK');
@@ -1757,7 +1772,7 @@
                             </div>
                             <div class="price_summary_table_cell">
                                 <strong>Discount Amount :</strong>
-                                <strong >${-res.discount_amount} TK</strong>
+                                <strong >${res.discount_amount} TK</strong>
                             </div>
                             <div class="price_summary_table_cell">
                                 <strong >Payable Amount :</strong>

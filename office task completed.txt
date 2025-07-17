@@ -21,3 +21,16 @@ https://dropshipping.com.bd/
 4.image download issue
 5.exchange size show
 6.cpanel update this code
+
+15-07-25
+completed task:
+https://dropshipping.com.bd/
+1.reseller order note error solved
+2.campaign product quantity 200
+3.cpanel update this code
+4.picklist error solved
+
+https://mohasagor.com.bd/
+1.productList filter by last/previous update
+2.campaign product quantity 200
+3.cpanel update this code

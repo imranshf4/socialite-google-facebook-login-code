@@ -1,0 +1,32 @@
+public function resellerProductAnalysis(Request $request)
+    {
+        $start_date = $request->start_date ? $request->start_date . ' 00:00:00' : null;
+        $end_date = $request->end_date ? $request->end_date . ' 23:59:59' : null;
+        $per_page = $request->item ?? 20;
+        $sort_direction = strtolower($request->sort) === 'asc' ? 'asc' : 'desc';
+
+        $query = DB::table('orders')
+            ->join('resellers', 'orders.reseller_id', '=', 'resellers.id')
+            ->where('orders.status', 9);
+
+        if ($start_date && $end_date) {
+            $query->whereBetween('orders.created_at', [$start_date, $end_date]);
+        }
+
+        $result = $query
+            ->select(
+                'orders.reseller_id',
+                'resellers.name as reseller_name',
+                'resellers.phone as reseller_phone',
+                'resellers.company_name as reseller_company',
+                DB::raw("COUNT(orders.id) as total_returns")
+            )
+            ->groupBy('orders.reseller_id', 'resellers.name', 'resellers.phone', 'resellers.company_name')
+            ->orderBy('total_returns', $sort_direction)
+            ->paginate($per_page);
+
+        return response()->json([
+            'status' => true,
+            'reseller_product_returns' => $result
+        ]);
+    }
