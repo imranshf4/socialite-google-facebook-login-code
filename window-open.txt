@@ -1,0 +1,4 @@
+goToInvoice(id) {
+      // window.location.href = `/bill/invoice/${id}`;
+      window.open(`/bill/invoice/${id}`, '_blank');
+    },

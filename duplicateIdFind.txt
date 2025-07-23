@@ -1,0 +1,7 @@
+const newCategories = resp.data.categories.data;
+
+// Filter out duplicates by category ID
+const existingIds = this.category_and_products.map(cat => cat.id);
+const filteredCategories = newCategories.filter(cat => !existingIds.includes(cat.id));
+
+this.category_and_products.push(...filteredCategories);

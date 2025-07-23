@@ -1,0 +1,21 @@
+formatDateTime(datetime) {
+      if (!datetime) return '';
+      const date = new Date(datetime);
+
+      const day = date.getDate().toString().padStart(2, '0');
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+                          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[date.getMonth()];
+      const year = date.getFullYear();
+
+      let hours = date.getHours();
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+
+      return ${day} ${month} ${year}, ${hours}:${minutes} ${ampm};
+    },
+
+
+{{ \Carbon\Carbon::parse($subscription->end_date)->diffInDays(\Carbon\Carbon::parse($subscription->start_date)) }} days
+{{ \Carbon\Carbon::parse($bill->due_date)->format('d M Y, h:i A') }}

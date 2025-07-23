@@ -30,3 +30,93 @@ public function resellerProductAnalysis(Request $request)
             'reseller_product_returns' => $result
         ]);
     }
+
+public function resellerOrderReport(Request $request)
+    {
+        $start_date = $request->start_date ? $request->start_date . ' 00:00:00' : null;
+        $end_date = $request->end_date ? $request->end_date . ' 23:59:59' : null;
+        $per_page = $request->item ?? 20;
+        $filter = $request->status ?? null;
+        $sort_direction = strtolower($request->sort) === 'asc' ? 'asc' : 'desc';
+
+        $query = Order::query();
+
+        if ($start_date && $end_date) {
+            $query->whereBetween('orders.created_at', [$start_date, $end_date]);
+        }
+
+        $baseFilteredQuery = clone $query;
+
+        if ($filter === 'Return') {
+            $returnStats = (clone $baseFilteredQuery)
+                ->selectRaw('
+                    COUNT(*) as total_orders,
+                    SUM(CASE WHEN status = 9 THEN 1 ELSE 0 END) as total_returns,
+                    ROUND((SUM(CASE WHEN status = 9 THEN 1 ELSE 0 END) / COUNT(*)) * 100, 2) as return_percentage
+                ')
+                ->first();
+
+            $resellerReturns = (clone $baseFilteredQuery)
+                ->join('resellers', 'orders.reseller_id', '=', 'resellers.id')
+                ->where('orders.status', 9)
+                ->groupBy('orders.reseller_id', 'resellers.name', 'resellers.phone', 'resellers.company_name')
+                ->select(
+                    'orders.reseller_id',
+                    'resellers.name as reseller_name',
+                    'resellers.phone as reseller_phone',
+                    'resellers.company_name as reseller_company',
+                    DB::raw('COUNT(orders.id) as total_returns'),
+                    DB::raw("
+                        ROUND(
+                            COUNT(orders.id) * 100.0 /
+                            (SELECT COUNT(*) FROM orders o WHERE o.reseller_id = orders.reseller_id
+                                " . ($start_date && $end_date ? "AND o.created_at BETWEEN '$start_date' AND '$end_date'" : "") . "
+                            ), 2
+                        ) as return_percentage
+                    ")
+                )
+                ->havingRaw('total_returns > 0')
+                ->orderBy('total_returns', $sort_direction)
+                ->paginate($per_page);
+
+            return response()->json([
+                'status' => true,
+                'total_returns' => $returnStats->total_returns ?? 0,
+                'return_percentage' => $returnStats->return_percentage ?? 0,
+                'reseller_returns' => $resellerReturns
+            ]);
+        }
+
+        // Delivery Report
+        $orderStats = (clone $baseFilteredQuery)
+            ->selectRaw('
+                COUNT(*) as total_orders,
+                SUM(CASE WHEN status = 5 THEN 1 ELSE 0 END) as total_delivered,
+                ROUND((SUM(CASE WHEN status = 5 THEN 1 ELSE 0 END) / COUNT(*)) * 100, 2) as delivery_percentage
+            ')
+            ->first();
+
+        $resellerOrders = (clone $baseFilteredQuery)
+            ->join('resellers', 'orders.reseller_id', '=', 'resellers.id')
+            ->groupBy('orders.reseller_id', 'resellers.name', 'resellers.phone', 'resellers.company_name')
+            ->select(
+                'orders.reseller_id',
+                'resellers.name as reseller_name',
+                'resellers.phone as reseller_phone',
+                'resellers.company_name as reseller_company',
+                // DB::raw('COUNT(*) as total_orders'),
+                DB::raw('SUM(CASE WHEN orders.status != 9 THEN 1 ELSE 0 END) as total_orders'),
+                DB::raw('SUM(CASE WHEN orders.status = 5 THEN 1 ELSE 0 END) as total_delivered'),
+                DB::raw('ROUND(SUM(CASE WHEN orders.status = 5 THEN 1 ELSE 0 END) * 100.0 / NULLIF(SUM(CASE WHEN orders.status != 9 THEN 1 ELSE 0 END), 0), 2) as delivery_percentage')
+
+            )
+            ->orderBy('total_orders', $sort_direction)
+            ->paginate($per_page);
+
+        return response()->json([
+            'status' => true,
+            'total_orders' => $orderStats->total_orders ?? 0,
+            'delivery_percentage' => $orderStats->delivery_percentage ?? 0,
+            'reseller_orders' => $resellerOrders
+        ]);
+    }

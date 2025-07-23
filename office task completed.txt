@@ -1,3 +1,5 @@
+01516164043
+4d1D7xzcR#
 completed task:
 https://dutyfreebd.com/
 1. affiliate registration page setup and image upload code change
@@ -34,3 +36,48 @@ https://mohasagor.com.bd/
 1.productList filter by last/previous update
 2.campaign product quantity 200
 3.cpanel update this code
+
+16.07.25
+Humamland
+1.error solved
+
+Laravel advanced app 
+1.product size ascending order
+2.campaign discount calculation size wise
+
+17-07-25
+completed task:
+dropshipping.com.bd
+1.reseller coupon error solved
+2.reseller order-success page error solved
+3.cpanel update this code
+Laravel advancd app
+1.campaign discount error solved
+2.cpanel update this code
+
+19-07-25
+completed task:
+Humambd.com
+1.project quantity dynamic 
+2.all project dynamic and project single page show
+3.admin page section show about section
+4.header issue fix
+5.cpanel update this code
+
+Mohasagor.com.bd
+1.reseller date wise order issue solved
+2.update this code cpanel
+
+20-07-25
+completed task:
+Humambd.com
+1.project details page error solved
+2.cpanel update this code
+
+Mohasagor.com.bd
+1.product list page error solved
+2.header active category show
+
+dropshipping.com.bd
+1.addExchangeOrder error solved
+2.cpanel update this code

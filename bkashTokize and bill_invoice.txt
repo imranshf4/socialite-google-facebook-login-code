@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <style>
+        /*  font-family: 'Raleway', sans-serif; */
+        @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+        :root {
+            --white: #ffffff;
+            --border: 1px solid #e5e5e5;
+            --themeColor: #efefef;
+            --Shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f2f4f5;
+            font-family: "Open Sans", serif !important;
+        }
+
+        p {
+            /* font-family: "Montserrat", sans-serif; */
+        }
+
+        .payment_way {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            gap: 10px;
+            background-color: #203141;
+            padding: 20px 15px;
+            border-radius: 3px;
+            margin: 20px 0px;
+        }
+
+        .payment_way p {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .payment_way h5 {
+            background-color: #fff;
+            color: #555;
+            padding: 7px 15px;
+            border-radius: 3px;
+            font-size: 16px;
+            font-weight: 500;
+            min-width: 250px;
+        }
+
+        .payment_way button {
+            all: unset;
+            padding: 7px 15px;
+            background-color: #259dab;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .payment_way a {
+            all: unset;
+            padding: 7px 15px;
+            background-color: #259dab;
+            border-radius: 3px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .payment_way .button {
+            background-color: #2574ab;
+            text-decoration: none !important;
+        }
+
+        .invoice_header_content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 26px;
+            margin-bottom: 18px;
+        }
+
+        .invoice_page {
+            background-color: var(--white);
+            margin: 10px auto;
+            width: 1028px;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            border: 1px solid #ddd;
+            /* height: 100vh; */
+            padding: 8px 30px;
+        }
+
+        .invoice_status p {
+            font-size: 26px;
+            font-weight: 600;
+            color: #40bc3d;
+            text-transform: capitalize;
+        }
+
+        .invoice_status p.unpaid {
+            color: red;
+        }
+
+        p.invoice_details {
+            margin-top: 8px;
+        }
+
+        .invoice_details .invoice_type {
+            font-size: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #414141;
+        }
+
+        .invoice_details .invoice_number {
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #565555;
+        }
+
+        .invoice_details_area {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .invoice_to {
+            width: 42%;
+        }
+
+        .invoice_to h3,
+        .pay_to h3 {
+            margin-bottom: 10px;
+            color: #484848;
+            font-size: 20px;
+        }
+
+        .invoice_to p,
+        .pay_to p {
+            margin-bottom: 8px;
+            /* color: #484848; */
+            font-size: 15px;
+        }
+
+        .pay_to h3,
+        .pay_to p {
+            text-align: right;
+        }
+
+        .invoice_items_area h3 {
+            color: #484848;
+            font-size: 20px;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 16px;
+        }
+
+        .invoice_items_area {
+            margin-top: 80px;
+        }
+
+        .invoice_items_tables {
+            width: 100%;
+        }
+
+        .invoice_items_tables thead {
+            width: 100%;
+        }
+
+        .invoice_items_table_des {
+            text-align: left;
+        }
+
+        .invoice_items_table_amount {
+            text-align: right;
+        }
+
+        table.invoice_items_tables thead tr th {
+            padding: 13px 0px;
+            border-bottom: 1px solid #e5e5e5;
+            color: #6a7a8c;
+            font-size: 16px;
+            font-weight: 400;
+            font-weight: bold;
+        }
+
+        table.invoice_items_tables tbody tr td {
+            padding: 13px 0px;
+            border-bottom: 1px solid #e5e5e5;
+            color: #6a7a8c;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .sub_total_amount {
+            text-align: right;
+        }
+
+        .sub_total_amount {
+            text-align: right;
+            margin-top: 15px;
+        }
+
+        .sub_total_amount p {
+            font-weight: 500;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .sub_total_amount_text {
+            color: #3a3a3b;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .sub_total_amount_number {
+            margin-left: 9px;
+            color: #6a7a8c;
+            font-size: 14px;
+        }
+
+        p.total_number_invoice {
+            border-top: 1px solid #e5e5e5;
+            margin-top: 18px;
+            padding-top: 16px;
+            padding-bottom: 80px;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 10px;
+            text-align: left;
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+
+
+        .transaction-table th {
+            font-weight: bold;
+        }
+
+        .transaction-table thead {
+            border-bottom: 1px solid #e5e5e5;
+            border-top: 1px solid #e5e5e5;
+        }
+
+        .transaction-table tbody tr {
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        table tbody tr:hover {
+            color: #6a7a8c;
+            background-color: #f6f8f9;
+        }
+
+        .transaction-table th {
+            font-weight: bold;
+            padding: 14px 0px;
+        }
+
+        .due_amount_section {
+            text-align: right;
+            font-size: 16px;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .due_amount_section strong {
+            font-weight: 600;
+            color: #000;
+        }
+
+        .due_amount_value {
+            color: #6c757d;
+        }
+
+        .button-section {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .button {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            padding: 10px;
+            border: none;
+            background-color: transparent;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            text-decoration: underline;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            fill: #333;
+        }
+
+        .dashboard_back_button a {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            color: #336fff;
+        }
+
+        .dashboard_back_button {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .dashboard_back_button a span {
+            font-size: 16px;
+            font-weight: bolder;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                background-color: #fff;
+            }
+
+            .invoice_page {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                border: none;
+            }
+
+            .payment_way button {
+                display: none
+            }
+
+            /* Hide the print button and other unnecessary elements */
+            .print_button,
+            .dashboard_back_button {
+                display: none;
+            }
+
+            .invoice_header_content {
+                border-bottom: 1px solid #000;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
+
+            .invoice_details_area,
+            .invoice_items_area,
+            .transaction-table {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
+            table.invoice_items_tables,
+            .transaction-table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+
+            table.invoice_items_tables th,
+            table.invoice_items_tables td,
+            .transaction-table th,
+            .transaction-table td {
+                padding: 8px;
+                text-align: left;
+                /* border: 1px solid #ddd; */
+            }
+
+            .sub_total_amount,
+            .due_amount_section {
+                font-size: 14px;
+            }
+
+            .due_amount_section strong {
+                font-weight: bold;
+            }
+
+            table.invoice_items_tables tbody tr td {
+                padding: 13px 10px;
+            }
+
+            table.invoice_items_tables thead tr th {
+                padding: 13px 10px;
+            }
+        }
+
+        #packageSection {
+            display: none;
+            margin-top: 10px;
+            border-bottom: 1px solid #e5e5e5;
+            padding-bottom: 19px;
+        }
+
+        #packageSection h3 {
+            border-bottom: none;
+            padding-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            overflow: hidden;
+            width: max-content;
+            font-family: Arial, sans-serif;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-left: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .radio-option:first-child {
+            border-left: none;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 8px;
+            accent-color: #007bff;
+            /* blue color */
+        }
+
+        .radio-option input[type="radio"]:focus {
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="invoice_page container-fluid">
+        <div class="payment_way">
+            <p>Payment Method :</p>
+            <h5>bkash</h5>
+            <!-- <button onclick="payWithBkash()">pay with bkash</button> -->
+            <form id="payment_form"
+                action="{{ route('reseller-new-subscription-payment', $subscription->subscriptionBills->id) }}"
+                method="post">
+                @csrf
+                <input type="hidden" name="package_id" id="package_id_input">
+                <input type="hidden" name="end_date_form" id="end_date_form">
+                <button type="submit">Pay with bKash</button>
+            </form>
+            <button class="button" onclick="togglePackage()">Update package</button>
+        </div>
+        <header class="invoice_header_content">
+            <div class="invoice_header_logo">
+                <div class="invoice_logo_img">
+                    {{-- <img src="{{ 'https://mohasagor.com.bd/public/storage/'.$generalSetting->logo }}" alt="Logo"> --}}
+                    <img src="{{ '/../storage/' . $generalSetting->logo }}" alt="Logo">
+                </div>
+                <p class="invoice_details">
+                    <span class="invoice_type">Invoice:</span>
+                    <span class="invoice_number">{{ $subscription->subscriptionBills->invoice }}</span>
+                </p>
+            </div>
+            <div class="invoice_status">
+
+                @if ($subscription->subscriptionBills->status === 0)
+                    <p class="paid_status unpaid">
+                        Unpaid
+                    </p>
+                @else
+                    <p class="paid_status">
+                        Paid
+                    </p>
+                @endif
+
+
+            </div>
+        </header>
+
+
+
+        <section class="invoice_details_area">
+            <div class="invoice_to">
+                <h3>Invoice To</h3>
+                <p>{{ $subscription->getReseller->name }}</p>
+                <p>{{ $subscription->getReseller->phone }}</p>
+                <p style="width: 300px"></p>
+            </div>
+            <div class="pay_to">
+                <h3>Pay To</h3>
+                <p>Mohasagor IT Solutions</p>
+                <p>
+                    {{ $subscription->getReseller->address }}
+                </p>
+
+                <p>Invoice Date:
+                    {{ \Carbon\Carbon::parse($subscription->subscriptionBills->created_at)->format('d M Y') }}</p>
+
+
+            </div>
+        </section>
+
+        <section class="invoice_items_area">
+            <h3>Invoice Items</h3>
+            <table class="invoice_items_tables">
+                <thead>
+                    <tr>
+                        <th class="invoice_items_table_des">Description</th>
+                        <th class="invoice_items_table_amount">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="invoice_items_table_des" id="invoiceDescription">
+                            Domain Registration - {{ $subscription->getReseller->website_url }} - /
+                            {{ $subscription->getPackage->name }}
+                            ({{ \Carbon\Carbon::parse($subscription->start_date)->format('d M Y') }} -
+                            <span
+                                id="invoiceEndDate">{{ \Carbon\Carbon::parse($subscription->end_date)->format('d M Y') }}</span>)
+                        </td>
+                        <td class="invoice_items_table_amount">
+                            TK <span id="invoiceAmount">{{ $subscription->getPackage->price }}</span> BDT
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+
+            <div id="packageSection">
+                <h3>Update Package: 1</h3>
+
+                @php
+                    $endDate = \Carbon\Carbon::parse($subscription->end_date)->format('Y-m-d');
+                @endphp
+
+                <div class="radio-group">
+                    @foreach ($packages as $package)
+                        <label class="radio-option">
+                            <input type="radio" name="package_id" value="{{ $package->id }}"
+                                data-name="{{ $package->name }}" data-price="{{ $package->price }}"
+                                data-duration="{{ $package->duration }}" data-end_date = '{{ $endDate }}'
+                                {{ $subscription->package_id === $package->id ? 'checked' : '' }}>
+                            <span>{{ $package->name }}</span>
+                        </label>
+                    @endforeach
+
+                </div>
+
+
+            </div>
+
+            <div class="sub_total_amount">
+                <p class="">
+                    <strong class="sub_total_amount_text">Sub-Total Amount:</strong>
+                    <span class="sub_total_amount_number" id="sub_total_amount_number">
+                        TK {{ $subscription->subscriptionBills->amount }} BDT
+                    </span>
+                </p>
+
+                <p class="total_number_invoice">
+                    <strong class="sub_total_amount_text">Total: </strong>
+                    <span class="sub_total_amount_number" id="total_amount_number">
+                        TK {{ $subscription->subscriptionBills->amount }} BDT
+                    </span>
+                </p>
+            </div>
+
+        </section>
+
+        <section class="dashboard_back_area">
+            <div class="dashboard_back_button">
+                <a href="{{ url('/dropshipper/dashboard') }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M2 12A10 10 0 0 1 12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12m16-1h-8l3.5-3.5l-1.42-1.42L6.16 12l5.92 5.92l1.42-1.42L10 13h8z" />
+                    </svg>
+                    <span>Back to Dashboard</span>
+                </a>
+
+                {{-- <a href="#" onclick="window.print(); return false;"> --}}
+                <a href="#" onclick="window.print();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M11 6v8l-3.5-3.5l-1.42 1.42L12 17.84l5.92-5.92l-1.42-1.42L13 14V6zm1 16A10 10 0 0 1 2 12A10 10 0 0 1 12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10" />
+                    </svg>
+                    <span> Download PDF</span>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function togglePackage() {
+            const section = document.getElementById('packageSection');
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Update hidden input before form submission
+        document.querySelector('#payment_form').addEventListener('submit', function() {
+            const selected = document.querySelector('input[name="package_id"]:checked');
+            if (selected) {
+                document.getElementById('package_id_input').value = selected.value;
+            } else {
+                alert("Please select a package");
+                event.preventDefault();
+            }
+        });
+
+        document.querySelectorAll('input[name="package_id"]').forEach(function(input) {
+            input.addEventListener('change', function() {
+                const name = this.dataset.name;
+                const price = this.dataset.price;
+                const duration = parseInt(this.dataset.duration);
+                const end_date = new Date(this.dataset.end_date);
+                const current_date = new Date();
+
+                let endDate;
+                if (end_date > current_date) {
+                    endDate = new Date(end_date.setMonth(end_date.getMonth() + duration));
+                } else {
+                    endDate = new Date(current_date.setMonth(current_date.getMonth() + duration));
+                }
+
+                const formattedEndDate = endDate.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+
+                const end_date_form = new Date(endDate);
+                const formatted_end_date = end_date_form.toISOString().split('T')[0];
+                document.getElementById('end_date_form').value = formatted_end_date;
+
+                // Update the text
+                document.getElementById('invoiceDescription').innerHTML =
+                    `Domain Registration - {{ $subscription->getReseller->website_url }} - / ${name} ({{ \Carbon\Carbon::parse($subscription->start_date)->format('d M Y') }} - <span id="invoiceEndDate">${formattedEndDate}</span>)`;
+
+                document.getElementById('invoiceAmount').innerText = price;
+                document.getElementById('sub_total_amount_number').innerText = `TK ${price} BDT`;
+                document.getElementById('total_amount_number').innerText = `TK ${price} BDT`;
+            });
+        });
+    </script>
+</body>
+
+</html>
+    public function newSubscriptionPayment(Request $request, $bill_id)
+    {
+
+        $subscription_bill = SubscriptionBill::with('getSubscription')->findOrFail($bill_id);
+        $package = Package::findOrFail($request->package_id);
+
+        $header = $this->authHeaders();
+        $website_url = URL::to("/");
+        // return $subscription_bill;
+
+        $amount = 0;
+        if ($package->id === $subscription_bill->getSubscription->package_id && $subscription_bill->amount > 0) {
+            $amount = $subscription_bill->amount;
+        } else {
+            $amount = $package->price;
+        }
+
+        $body_data = array(
+            'mode' => '0011',
+            'payerReference' => $request->payerReference ? $request->payerReference : '1', // pass oderId or anything 
+            'callbackURL' => $website_url . '/new-subscription/bkash-callback?package_id=' . $package->id . '&end_date_form=' . $request->end_date_form,
+            // 'amount' => $subscription_bill->amount,
+            'amount' => $amount,
+            'currency' => 'BDT',
+            'intent' => 'sale',
+            'merchantInvoiceNumber' => $request->merchantInvoiceNumber ? $request->merchantInvoiceNumber : "Inv_" . Str::random(6)
+        );
+
+        $response = $this->curlWithBody('/tokenized/checkout/create', $header, 'POST', json_encode($body_data));
+
+        $data = json_decode($response);
+
+
+        if ($data->bkashURL) {
+            $subscription_bill->update([
+                'payment_id' => $data->paymentID,
+                'payment_method' => 'bkash',
+                'payment_created_at' => Carbon::now(),
+            ]);
+            return redirect($data->bkashURL);
+
+            // return response()->json([
+            //     'status' => true,
+            //     'package_id' => $request->package_id,
+            //     'bkashURL' => $data->bkashURL,
+            // ]);
+        }
+    }
+
+
+
+
+
+    public function newSubscriptionCallBack(Request $request)
+    {
+        // return $request->all();
+        $subscription_bill = SubscriptionBill::where('payment_id', $request->paymentID)->firstOrFail();
+        $allRequest = $request->all();
+
+        $package_id = $request->query('package_id');
+        $end_date_form = $request->query('end_date_form');
+        // return $allRequest;
+
+        $package = Package::findOrFail($package_id);
+        $subscription = Subscription::findOrFail($subscription_bill->subscription_id);
+
+        $end_date = '';
+        if (Carbon::parse($subscription->end_date)->format('Y-m-d') < Carbon::now()->format('Y-m-d')) {
+            $end_date = Carbon::now()->addMonth($package->duration)->format('Y-m-d');
+        } else {
+            $end_date = Carbon::parse($subscription->end_date)->addMonth($package->duration)->format('Y-m-d');
+        }
+
+        if (isset($allRequest['status']) && $allRequest['status'] == 'success') {
+            $response = $this->executePayment($allRequest['paymentID']);
+            if (is_null($response)) {
+                sleep(1);
+                $response = $this->queryPayment($allRequest['paymentID']);
+            }
+
+            $res_array = json_decode($response, true);
+
+            // return $res_array;
+
+
+            if (array_key_exists("statusCode", $res_array) && $res_array['statusCode'] == '0000' && array_key_exists("transactionStatus", $res_array) && $res_array['transactionStatus'] == 'Completed') {
+                /**** reseller payment status update****/
+                $reseller = Reseller::findOrFail($subscription->reseller_id);
+
+                $reseller->update([
+                    'payment_status' => 1,
+                    'status' => 1,
+                ]);
+
+                $credit = new Credit();
+                $credit->date = Carbon::now();
+                $credit->order_id = null;
+                $credit->purpose = 'Renew Subscription Payment In Bkash';
+                $credit->credit_in = 'Bkash(merchant)';
+                $credit->amount = $res_array['amount'];
+                $credit->comment = 'Renew Subscription Payment In Bkash Reseller Phone ' . $reseller->phone;
+                $credit->insert_admin_id = null;
+                $credit->save();
+
+                $subscription_bill->update([
+                    'tnx_id' => $res_array['trxID'],
+                    'status' => 1,
+                    'amount' => $res_array['amount'],
+                ]);
+
+
+                $subscription->update([
+                    'end_date' => $end_date_form ?? $end_date,
+                    'renew_date' => Carbon::now()->format('Y-m-d'),
+                    'package_id' => $package->id,
+                    'status' => 1,
+                ]);
+
+
+
+
+                Session::put('success-message', 'অভিনন্দন আপনার পেমেন্ট সম্পূর্ণ হয়েছে, আপনার সাথে দ্রুত যোগাযোগ করা হবে।');
+                return redirect('/dropshipper/my/invoice');
+            }
+            Session::put('error-message', 'দুঃখিত আপনার পেমেন্ট সম্পূর্ণ হয়নি, আমাদের অফিস থেকে দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
+            return redirect('/dropshipper/my/invoice');
+        } else {
+            Session::put('error-message', 'দুঃখিত আপনার পেমেন্ট সম্পূর্ণ হয়নি, আমাদের অফিস থেকে দ্রুত আপনার সাথে যোগাযোগ করা হবে।');
+            return redirect('/dropshipper/my/invoice');
+        }
+    }
+
+web.php
+Route::post('/new-subscription/payment/{bill_id}', 'BkashTokenizePaymentController@newSubscriptionPayment')->name('reseller-new-subscription-payment');
+Route::get('/new-subscription/bkash-callback', 'BkashTokenizePaymentController@newSubscriptionCallBack');
