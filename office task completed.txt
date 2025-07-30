@@ -81,3 +81,47 @@ Mohasagor.com.bd
 dropshipping.com.bd
 1.addExchangeOrder error solved
 2.cpanel update this code
+
+26-29/07/25
+completed task:
+rahilfashion.com
+1.order invoice barcode add
+2.incomplete order system
+3.complain order system
+4.pending order sms system
+5.stock out product admin create invoice
+6.double order invoice show
+7.invoice download system
+8.checkout order issue solved
+9.update this code cpanel
+
+https://humamland.com/
+1.member login system
+2.member designation show
+3.account expense show all project,image add/update
+4.member dashboard show project cost
+5.project director email required issue solved
+6.member passwor issue solved
+7.admin or member/login image issue solved
+8.update this code cpanel
+
+https://forward.com.bd/
+1.minicart issue solved
+2.fraud checker add and design,modal design and dynamic
+3.order send courier and filter product by courier
+4.courier api issue solved
+5.bkash tokenize system issue solved
+6.
+
+https://superstore.com.bd/
+1.forward same code update this cpanel
+
+30/07/25
+https://forward.com.bd/
+1.image alignment issue solved
+2.pathao courier issue solved
+3.checkout page text change
+4.update cpanel
+
+https://superstore.com.bd/
+1.forward same code update this cpanel

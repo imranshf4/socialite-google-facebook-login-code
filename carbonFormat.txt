@@ -1,0 +1,7 @@
+$start = Carbon::now()->format('Y-m-d') . ' 00:00:00';
+        $end = Carbon::now()->format('Y-m-d') . ' 23:59:59';
+        $doubleOrderPhones = Order::where('customer_phone', $number)
+            ->whereBetween('created_at', [$start, $end])
+            ->get();
+
+{{todayOrder.map(o => o.invoice_no).join(', ')}}

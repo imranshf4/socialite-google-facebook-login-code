@@ -1,0 +1,71 @@
+<div class="payment_methods_img">
+                                    <div
+                                        class="payment_images"
+                                        :class="{ active: form.payment_method === 1 }"
+                                        @click="setOnlinePayment(1)"
+                                    >
+                                        <img
+                                            :src="base_url + 'images/static/cash_on_delivery.png'"
+                                            alt="Cash on Delivery"
+                                        />
+                                    </div>
+                                    <div
+                                        class="payment_images"
+                                        :class="{ active: form.payment_method === 2 }"
+                                        @click="setOnlinePayment(2)"
+                                    >
+                                        <img
+                                            :src="base_url + 'images/static/bkash.png'"
+                                            alt="Card Payment"
+                                        />
+                                    </div>
+                                </div>
+
+
+
+data() {
+        return {
+            form: new Form({
+                payment_method: 1,
+            }),
+
+        };
+    },
+
+
+ setOnlinePayment(index) {
+            this.form.payment_method = index;
+            if (this.form.payment_method == 2) {
+                this.applyBkashDiscount();
+            } else {
+                this.form.bkash_discount = 0;
+            }
+        },
+
+.payment_methods_img {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.payment_images {
+    width: 150px;
+    height: 70px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.payment_images img {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+}
+
+.payment_images.active {
+    border: 2px solid #0b3c54;
+    border-radius: 4px;
+}

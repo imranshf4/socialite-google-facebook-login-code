@@ -1,0 +1,3 @@
+<div class="_custom_car__footer_checkout" @click.prevent="$router.push({ name: 'checkout' })">
+                        <button class="_custom_car__footer_checkout_link">Order Now</button>
+                    </div>

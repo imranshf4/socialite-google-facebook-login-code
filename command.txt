@@ -11,6 +11,7 @@ router.js (const allowedDomains = ['ghasful.com.bd'];)
 Login.vue (mainDomain: 'ghasful.com.bd',)
 
 seo_friendly_ecommerce_2.0
+cd seo_friendly_ecommerce_2.0
 node -------12,16
 php------8.1
 
@@ -32,7 +33,5 @@ my contribution
 https://dhakacitygroup.com/
 https://dutyfreebd.com/
 https://ghasful.com.bd/
-
-
 
 
