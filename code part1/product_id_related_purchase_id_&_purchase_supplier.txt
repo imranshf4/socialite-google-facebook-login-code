@@ -1,0 +1,75 @@
+Schema::create('purchases', function (Blueprint $table) {
+            $table->id();
+            $table->string('invoice_no');
+            $table->unsignedBigInteger('supplier_id');
+            $table->decimal('total', 10, 2)->default(0);
+            $table->decimal('paid', 10, 2)->default(0);
+            $table->date('purchase_date');
+            $table->tinyInteger('status')->default(1); // 1 = active
+            $table->string('file')->nullable();
+            $table->text('comment')->nullable();
+            $table->timestamps();
+
+            // Foreign key (optional if you have suppliers table)
+            // $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
+        });
+
+Schema::create('purchase_items', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('purchase_id');
+            $table->unsignedBigInteger('product_id');
+            $table->integer('price');
+            $table->integer('insert_quantity');
+            $table->integer('stock');
+            $table->timestamps();
+
+            // Foreign keys (optional but recommended)
+            $table->foreign('purchase_id')->references('id')->on('purchases')->onDelete('cascade');
+            // $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+        });
+
+class Purchase extends Model
+{
+    public function supplier(){
+        return $this->belongsTo('App\Models\Supplier','supplier_id');
+    }
+
+    public function purchaseItems(){
+        return $this->hasMany('App\Models\Purchaseitem','purchase_id');
+    }
+    
+      public function getCreatedAtAttribute($attr) {        
+        return Carbon::parse($attr)->format('d-m-Y - h:ia'); 
+    }
+}
+
+class Purchaseitem extends Model
+{
+    public function merchant()
+    {
+        return $this->belongsTo('App\Models\Merchant', 'merchant_id');
+    }
+    public function product()
+    {
+        return $this->belongsTo('App\Models\Product', 'product_id');
+    }
+
+    public function purchase()
+    {
+        return $this->belongsTo('App\Models\Purchase', 'purchase_id');
+    }
+}
+
+
+ public function supplierProductList($id, Request $request)
+    {
+        $product_id = $id;
+        $suppliers = Purchaseitem::where('product_id', $product_id)
+            ->with('purchase.supplier')
+            ->get()
+            // ->pluck('purchase.supplier')
+            ->unique('purchase.supplier')
+            ->unique('id')
+            ->values();
+        return $suppliers;
+    }

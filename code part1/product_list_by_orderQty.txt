@@ -1,0 +1,41 @@
+$totalOrdersSubQuery = DB::table('order_items')
+                ->select('product_id', DB::raw('SUM(quantity) as total_orders'))
+                ->groupBy('product_id');
+
+            // Base query with left join
+            $productQuery = Product::leftJoinSub($totalOrdersSubQuery, 'oi', function ($join) {
+                $join->on('products.id', '=', 'oi.product_id');
+            })
+                ->with(['purchaseItem'])
+                ->select('products.*', DB::raw('IFNULL(oi.total_orders, 0) as total_orders'))
+                ->orderBy('oi.total_orders', $sort_product_by_order);
+
+            if ($sort_order==='') {
+                if ($request->status == "all") {
+                    $products = $productQuery->paginate($item);
+                } elseif ($request->status == 0) {
+                    $products = $productQuery->where('stock', '<=', 0)->paginate($item);
+                } elseif ($request->status == 5) {
+                    $products = $productQuery->orderBy('stock', $sort_product_by_order)->paginate($item);
+                } elseif ($request->status == 6) {
+                    $products = $productQuery->orderBy('stock',  'asc')->paginate($item);
+                } elseif ($request->status == 7) {
+                    $products = $productQuery->where('stock', '>', 0)->orderBy('stock', 'desc')->paginate($item);
+                } else {
+                    $products = $productQuery->where('status', $request->status)->paginate($item);
+                }
+            } else {
+                if ($request->status == "all") {
+                    $products = Product::orderBy('updated_at', $sort_order)->with(['purchaseItem'])->paginate($item);
+                } elseif ($request->status == 0) {
+                    $products = Product::orderBy('updated_at', $sort_order)->where('stock', '<=', 0)->with(['purchaseItem'])->paginate($item);
+                } elseif ($request->status == 5) {
+                    $products = Product::orderBy('stock', $sort_order)->with(['purchaseItem'])->paginate($item);
+                } elseif ($request->status == 6) {
+                    $products = Product::orderBy('stock',  'asc')->with(['purchaseItem'])->paginate($item);
+                } elseif ($request->status == 7) {
+                    $products = Product::where('stock', '>', 0)->orderBy('stock', $sort_order)->with(['purchaseItem'])->paginate($item);
+                } else {
+                    $products = Product::orderBy('updated_at', $sort_order)->with(['purchaseItem'])->where('status', $request->status)->paginate($item);
+                }
+            }

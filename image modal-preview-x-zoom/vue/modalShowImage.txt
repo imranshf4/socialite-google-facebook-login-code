@@ -8,18 +8,25 @@ data() {
   },
 
 
-<div v-if="ticket_replies.images">
-                    <p>Attachments:</p>
-                    <img v-if="ticket_replies.images" :src="basePath + ticket_replies.images"
-                      class="img-circle small-image" alt="Ticket issue Image" title="Click to view the full attachments"
-                      @click="openImageModal(basePath + ticket_replies.images)" />
-                    <transition name="modal">
-                      <div v-if="isImageModalOpen" class="modal" @click.self="closeImageModal">
-                        <span class="close" @click="closeImageModal">&times;</span>
-                        <img class="modal-content" :src="fullImageSrc" />
-                      </div>
-                    </transition>
-                  </div>
+<transition name="modal">
+                                    <div v-if="isModalOpen" class="modal" @click.self="closeModal">
+                                        
+                                        <div class="modal-content">
+                                            <div v-if="supplierList" v-for="(supplier, index) in supplierList.data" :key="index">
+                                                <h3 class="supplier_name">{{ supplier.purchase.supplier.name }}</h3>
+                                                <p class="supplier_phone"><i class="fa fa-phone"></i>{{ supplier.purchase.supplier.phone }}</p>
+                                                <p class="supplier_address"><i class="fa fa-map-marker"></i>{{ supplier.purchase.supplier.address }}</p>
+                                                <span class="supplier-close" @click="closeModal">&times;</span>
+                                            </div>
+                                            <div v-if="supplierList.data.length == 0">
+                                                <h3 class="supplier_name">Supplier Name</h3>
+                                                <p class="supplier_phone"><i class="fa fa-phone"></i>Supplier Phone</p>
+                                                <p class="supplier_address"><i class="fa fa-map-marker"></i>Supplier Address</p>
+                                                <span class="supplier-close" @click="closeModal">&times;</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </transition>
 
 
 openImageModal(imageSrc) {
@@ -51,13 +58,15 @@ openImageModal(imageSrc) {
   max-height: 90%;
 }
 
-.close {
-  position: fixed;
-  top: 20px;
-  right: 30px;
-  color: white;
-  font-size: 40px;
-  cursor: pointer;
+.supplier-close {
+    all: unset;
+    position: fixed;
+    color: red;
+    font-size: 40px;
+    cursor: pointer;
+    opacity: inherit;
+    bottom: calc(100% - 20px);
+    left: 100%;
 }
 
 .small-image {
@@ -67,4 +76,23 @@ openImageModal(imageSrc) {
 
 .small-image:hover {
   transform: scale(1.25);
+}
+h3.supplier_name {
+    text-transform: uppercase;
+    font-weight: 600;
+}
+p.supplier_phone {
+    font-size: 17px;
+    align-items: center;
+    margin: 0px 0 0px
+}
+p.supplier_phone i {
+    padding-right: 8px;
+}
+p.supplier_address {
+    font-size: 17px;
+    gap: 8px;
+}
+p.supplier_address i {
+    padding-right: 10px;
 }
