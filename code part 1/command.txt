@@ -19,6 +19,10 @@ bondhon society
 node -------16
 php------7.4
 
+malabis_web_app
+node -------12
+php------7.4
+
 mohasagor_reselling
 node -------16,12
 php------7.4

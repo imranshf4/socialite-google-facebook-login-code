@@ -1,0 +1,15 @@
+public function getBrandProduct($name, $id)
+    {
+        $brand = Brand::findOrFail($id);
+        $productIds = Product::where('brand_id', $brand->id)->pluck('id');
+        $products = ProductChild::whereIn('product_id', $productIds)->get();
+
+        $data = [
+            'brand' => $brand,
+            'products' => $products,
+        ];
+
+        // dd($products);
+
+        return view('frontend.pages.product.brand_product', $data);
+    }

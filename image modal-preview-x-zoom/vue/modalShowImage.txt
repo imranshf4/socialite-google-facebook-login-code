@@ -1,0 +1,70 @@
+data() {
+    return {
+      isImageModalOpen: false,
+      fullImageSrc: "",
+      showAttachments: false,
+      imagePreview: null,
+    };
+  },
+
+
+<div v-if="ticket_replies.images">
+                    <p>Attachments:</p>
+                    <img v-if="ticket_replies.images" :src="basePath + ticket_replies.images"
+                      class="img-circle small-image" alt="Ticket issue Image" title="Click to view the full attachments"
+                      @click="openImageModal(basePath + ticket_replies.images)" />
+                    <transition name="modal">
+                      <div v-if="isImageModalOpen" class="modal" @click.self="closeImageModal">
+                        <span class="close" @click="closeImageModal">&times;</span>
+                        <img class="modal-content" :src="fullImageSrc" />
+                      </div>
+                    </transition>
+                  </div>
+
+
+openImageModal(imageSrc) {
+      this.fullImageSrc = imageSrc;
+      this.isImageModalOpen = true;
+    },
+    closeImageModal() {
+      this.isImageModalOpen = false;
+      this.fullImageSrc = "";
+    },
+
+.modal {
+  display: block !important;
+  position: fixed;
+  z-index: 9999999999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90%;
+  max-height: 90%;
+}
+
+.close {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.small-image {
+  cursor: zoom-in;
+  transition: transform 0.3s;
+}
+
+.small-image:hover {
+  transform: scale(1.25);
+}

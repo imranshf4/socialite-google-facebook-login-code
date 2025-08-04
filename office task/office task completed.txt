@@ -111,7 +111,7 @@ https://forward.com.bd/
 3.order send courier and filter product by courier
 4.courier api issue solved
 5.bkash tokenize system issue solved
-6.
+6.update this code cpanel
 
 https://superstore.com.bd/
 1.forward same code update this cpanel
@@ -125,3 +125,41 @@ https://forward.com.bd/
 
 https://superstore.com.bd/
 1.forward same code update this cpanel
+
+https://amazantextile.com/
+1.logo issue solved
+2.slider height issue
+3.about page add admin
+
+
+31-07-25
+rahilfashion.com
+1.product barcode,complained order,incomplete order error solved
+
+31,2-07-25
+https://catsanddogsbd.com/
+1.all brand show and brand wise product show
+2.update this code live server
+
+https://tuktukibd.com/
+1.campaign varient price and main variant price show
+2.admin add new order variant wise campaign price show
+3.footer facebook page error solved
+4.sub category wise sale report
+5.all report error solved
+6.shop page category filter
+7.office sale product variant wise price show
+8.update this code live server
+
+mohasagor.com.bd
+1.addExchanger order product code error solved
+2.update cpanel
+
+04-08-28
+https://amazantextile.com/
+1.about page slug wise dynamics
+2.sample product all task
+3.sale date change
+4.slider error solved
+5.product code letter add and product search this code add order/sale/sample error solved
+6.update this code cpanel
