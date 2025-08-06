@@ -163,3 +163,29 @@ https://amazantextile.com/
 4.slider error solved
 5.product code letter add and product search this code add order/sale/sample error solved
 6.update this code cpanel
+
+05-08-25
+https://amazantextile.com/
+1.admin order date add
+2.purchase return sidebar add
+3.supplier issue solved
+
+https://mohasagor.com.bd/
+1.productList show top-sale to zero order product
+2.productlist modal design for supplier and show product wise all unique supplier
+3.update this code cpanel
+4.admin login bg-image error solved
+
+
+06-08-25
+https://amazantextile.com/
+1.stock issue solved
+2.purchase return issue solved
+3.header design change
+4.manage office sale issue solved
+5.order view issue solved
+6.admin order-new order order date add
+7.update code cpanel
+
+https://divisoriaksa.com/
+1.socialite google login issue solved

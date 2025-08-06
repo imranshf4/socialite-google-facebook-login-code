@@ -1,0 +1,36 @@
+
+  public function orderProfit(Request $request)
+  {
+
+    if (!empty($request->start_date) && !empty($request->end_date)) {
+      $orders = Order::where('order_type', $request->order_type)
+        ->where('is_exchanged', 0)
+        ->where('status', 5)
+        ->whereDate('delivery_date', '>=', $request->start_date)
+        ->whereDate('delivery_date', '<=', $request->end_date)
+        ->select('id', 'total', 'discount', 'invoice_no', 'created_at', 'delivery_date')
+        ->with('orderItems:id,order_id,qty,product_child_id')->get()->each(function ($order) {
+
+          // $order->{'qty'} = count($order->orderItems) ;
+          $order->{'qty'} = $order->orderItems->sum('qty');
+          $purchase_total = 0;
+          foreach ($order->orderItems as $item) {
+            $product_child = ProductChild::findOrFail($item->product_child_id);
+            $purchase_total +=  $product_child->purchase_price * $item->qty;
+          }
+          $order->{'production_cost'} = $purchase_total;
+          $order->{'profit'} = ($order->total - $order->discount) -  $purchase_total;
+        });
+
+
+      return response()->json([
+        'status' => true,
+        'orders' => $orders,
+        'total_qty' => $orders->sum('qty'),
+        'total_amount' => $orders->sum('total'),
+        'total_discount' => $orders->sum('discount'),
+        'total_profit' => $orders->sum('profit'),
+        'total_production_cost' => $orders->sum('production_cost'),
+      ]);
+    }
+  }

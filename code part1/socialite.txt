@@ -33,3 +33,34 @@ public function login()
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
+
+
+DynamicConfigServiceProvider
+public function register()
+    {
+        $socialLogin = DB::table('general_settings')->first();
+
+        if ($socialLogin) {
+            config([
+                'services.google.client_id' => $socialLogin->google_client_id,
+                'services.google.client_secret' => $socialLogin->google_client_secret,
+                'services.google.redirect' => $socialLogin->google_redirect,
+
+                'services.facebook.client_id' => $socialLogin->facebook_app_id,
+                'services.facebook.client_secret' => $socialLogin->facebook_app_secret,
+                'services.facebook.redirect' => $socialLogin->facebook_redirect,
+            ]);
+        }
+    }
+
+'google' => [
+        'client_id' => config('services.google.client_id'),
+        'client_secret' => config('services.google.client_secret'),
+        'redirect' => config('services.google.redirect'),
+    ],
+    
+    'facebook' => [
+        'client_id' => config('services.facebook.client_id'),
+        'client_secret' => config('services.facebook.client_secret'),
+        'redirect' => config('services.facebook.redirect'),
+    ],
