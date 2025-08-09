@@ -1,0 +1,314 @@
+Route::post('api/checkout/incomplete/order', 'OrderController@checkoutIncompleteOrder');
+
+public function checkoutIncompleteOrder(Request $request)
+    {
+        $request->validate([
+            'mobile_no' => 'required|digits:11',
+            'name' => 'required ',
+            'address' => 'required',
+            // 'city' => 'required',
+            // 'sub_city' => 'required',
+            'reseller_username' => 'required',
+            'select_area' => 'required',
+        ]);
+        if (Cart::count() <= 0) {
+            return response()->json([
+                'status' => 'your cart is empty',
+            ]);
+        }
+        
+        DB::beginTransaction();
+        try {
+            if(!empty($request->reseller_username)){
+                $reseller = Reseller::where('username', $request->reseller_username)->first();
+             }
+
+            $user = User::where('mobile_no', $request->mobile_no)->first();
+            $order = new Order();
+            if ($user) {
+                //update user city and address
+                $user->city_id = $request->city;
+                $user->sub_city_id = $request->sub_city;
+                $user->email = $request->email;
+                $user->address = $request->address;
+                $user->name = $request->name;
+                $user->save();
+            } else {
+                //update user city and address
+                $user = new User();
+                $user->name = $request->name;
+                $user->mobile_no = $request->mobile_no;
+                $user->password = Hash::make($request->mobile_no);
+                $user->city_id = $request->city;
+                $user->sub_city_id = $request->sub_city;
+                $user->address = $request->address;
+                $user->email = $request->email;
+                $user->status = 1;
+                $user->save();
+            }
+            //if customer not exit then user storing to customer table
+            $customer = Customer::where('phone', $user->mobile_no)->first();
+            if (!$customer) {
+                $customer = new Customer();
+                $customer->user_id = $user->id;
+                $customer->name = $request->name;
+                $customer->phone = $request->mobile_no;
+                $customer->address = $request->address;
+                $customer->city_id = $request->city;
+                $customer->sub_city_id = $request->sub_city;
+                $customer->email = $request->email;
+                $customer->customer_type = 1;
+                $customer->reseller_id = $reseller->id;
+                $customer->save();
+            }
+            $total = Cart::total();
+            $discount = 0;
+            if ($request->coupon_discount > 0 ) {
+                $discount += intval($request->coupon_discount);
+            }
+            //save the order
+            $order->customer_id = $customer->id;
+            $order->customer_phone = $request->mobile_no;
+            $order->invoice_no = 123;
+            $order->order_type = 1;
+            $order->city_id = $request->city;
+            $order->sub_city_id = $request->sub_city;
+            $order->shipping_cost = $request->shipping_cost;
+            $order->regular_shipping_cost = $request->shipping_cost;
+            $order->discount = $discount;
+            $order->paid = $request->paid ?? 0;
+            $order->total = $total;
+            $order->status = 10;
+            $order->reseller_order_status = 'release';
+            $order->note = $request->note ?? null;
+            $order->reseller_id = $reseller->id ? $reseller->id : '';
+            $order->coupon_id = $request->coupon_id;
+            $order->coupon_disocunt = $request->coupon_discount;
+            
+
+            $order->save();
+            $profit = 0;
+            $total_sale_price = 0;
+            $ten_percent_profit = 0;
+            foreach (Cart::content() as $product) {
+                //inserting order items
+                $details = new OrderItem();
+                $details->order_id = $order->id;
+                $details->product_id = $product->id;
+                $details->price = $product->price;
+                $details->admin_sale_price = $product->options->original_price;
+                $details->purchase_price = $product->options->purchase_price ?? 0;
+                $details->quantity = $product->qty;
+                $details->attribute_id = $product->options->attribute_id ?? null;
+                $details->variant_id = $product->options->variant_id ?? null;
+                $details->total = $product->qty * $product->price;
+                $details->save();
+
+                //checking ten percent profit
+                $ten_percent_profit += $details->price / 10;
+
+                //calculate order profit
+                $profit += ($product->price * $product->qty) - ($product->options->original_price * $product->qty);
+                $total_sale_price += $product->options->original_price * $product->qty;
+            }
+
+
+            //checking coupon discount
+            $coupon = ResellerCoupon::find($request->coupon_id);
+            //discount amount
+            $discount = 0;
+            if($coupon){
+                if ($coupon->discount_type == "flat") {
+                    $discount = $coupon->discount_amount;
+                }else{
+                    $discount = ((Cart::total() * $coupon->discount_amount) / 100);
+                }
+                if($profit < ($discount + $ten_percent_profit)){
+                    // return response()->json('Sorry, this coupon is not applicable');
+                    $order->coupon_id = null;
+                    $order->coupon_disocunt = 0;
+                    $order->discount = 0;
+                }
+            }
+
+
+            $order->profit = $profit;
+            $order->total_sale_price = $total_sale_price;
+            $order->invoice_no = 2222 + $order->id;
+            $order->order_type = 4;
+            $order->save();
+            
+           
+            $reseller_phone = $reseller->company_phone ? $reseller->company_phone : $reseller->phone;
+            if($reseller->sms_status == 1){
+                $reseller->total_sms = $reseller->total_sms + 1;
+                $reseller->save();
+                (new SmsService())->SendMessageResellerCustomer($order->customer_phone,$customer->name,$order->invoice_no,$reseller_phone,$reseller->company_name);
+            }
+            Auth::loginUsingId($user->id);
+            DB::commit();
+            // Cart::destroy();
+            return \response()->json([
+                'success' => true,
+                'message' => 'Incomplete Order placed successfully',
+                'token' => Hash::make($request->name),
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+checkout.vue code##################
+###################################
+ <div class="form-group">
+                                    <label class="control-label" for="mobile_no"
+                                        >Mobile Number</label
+                                    >
+                                    <input
+                                        type="text"
+                                        name="mobile_no"
+                                        @keyup="setNumber(form.mobile_no)"
+                                        required
+                                        placeholder="01xxxxxxxxx"
+                                        class="form-control"
+                                        maxlength="11"
+                                        :class="{
+                                            'is-invalid': form.errors.has('mobile_no'),
+                                        }"
+                                        v-model="form.mobile_no"
+                                    />
+                                    <has-error :form="form" field="mobile_no"></has-error>
+                                </div>
+
+
+data() {
+        return {
+            form: new Form({
+                mobile_no: '',
+                name: '',
+                address: '',
+                total: '',
+                cart: '',
+                shipping_cost: 0,
+                coupon_discount: 0,
+                coupon_type: '',
+                coupon_id: '',
+                payment_method: 1,
+                reseller_username: this.$route.params.username ? this.$route.params.username : '',
+                profit: '',
+                city: '',
+                sub_city: '',
+                select_area: '',
+                status: '',
+            }),
+            cities: '',
+            sub_cities: '',
+            cart_content: {},
+            cart: {
+                total: 0,
+            },
+            disabled: true,
+            coupon_code: '',
+            coupon: false,
+            base_url: this.$store.state.image_base_link,
+            product_thumbnail_link: this.$store.state.thumbnail_img_base_link,
+
+            deliveryCharge: '',
+            show_checkout_section: true,
+            is_free_delivery: 0,
+            reseller_username: this.$route.params.username ? this.$route.params.username : '',
+            reseller_info: '',
+
+            isFormSubmitted: false,
+            eventListenersAdded: false,
+            saveOrderTimeout: null,
+            phone_number: '',
+        };
+    },
+
+setNumber(val) {
+            if (val.length > 11) {
+                this.form.mobile_no = val.slice(0, 11);
+            }
+            this.phone_number = this.form.mobile_no;
+            this.storeIncompleteOrder();
+        },
+
+        storeIncompleteOrder() {
+            if (!this.eventListenersAdded) {
+                this.eventListenersAdded = true;
+                window.addEventListener('beforeunload', this.handleBeforeUnload);
+                document.addEventListener('visibilitychange', this.handleVisibilityChange);
+                window.addEventListener('popstate', this.handlePopState);
+            }
+        },
+
+        handleBeforeUnload(event) {
+            if (!this.isFormSubmitted && this.phone_number && this.phone_number.length >= 10) {
+                event.preventDefault();
+                event.returnValue = '';
+                this.saveIncompleteOrder();
+            }
+        },
+
+        handleVisibilityChange() {
+            if (
+                document.hidden &&
+                !this.isFormSubmitted &&
+                this.phone_number &&
+                this.phone_number.length >= 10
+            ) {
+                this.saveOrderTimeout = setTimeout(() => {
+                    this.saveIncompleteOrder();
+                }, 20000); // 20 seconds delay
+            } else {
+                clearTimeout(this.saveOrderTimeout);
+            }
+        },
+
+        handlePopState() {
+            if (!this.isFormSubmitted && this.phone_number && this.phone_number.length >= 10) {
+                this.saveIncompleteOrder();
+            }
+        },
+
+        async saveIncompleteOrder() {
+            if (!this.phone_number || this.phone_number.length < 10) return;
+            const cartItems = this.checkoutCart;
+            // if (!Array.isArray(cartItems) || cartItems.length === 0) return;
+            
+            try {
+                // Clone the form data to avoid affecting the main form
+                const incompleteForm = new Form({
+                    ...this.form.data(),
+                    // cart: cartItems,
+                    status: 12,
+                    mobile_no: this.phone_number,
+                    incomplete_order_system: 1,
+                });
+
+                console.log('incompleteForm', incompleteForm);
+
+                await incompleteForm.post('/shop/api/checkout/incomplete/order').then(resp => {
+                    console.log('incomplete_order_system', resp);
+                    if (resp.data.success) {
+                        console.log('Incomplete order saved successfully');
+                        this.isFormSubmitted = true;
+                        this.removeEventListeners();
+                    }
+                });
+            } catch (error) {
+                console.error('Failed to save incomplete order:', error);
+            }
+        },
+
+        removeEventListeners() {
+            window.removeEventListener('beforeunload', this.handleBeforeUnload);
+            document.removeEventListener('visibilitychange', this.handleVisibilityChange);
+            window.removeEventListener('popstate', this.handlePopState);
+            // this.eventListenersAdded = false;
+        },

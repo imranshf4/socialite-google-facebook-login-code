@@ -4,6 +4,7 @@ php artisan storage:link
 php artisan migrate --path=/database/migrations/2025_06_22_123346_create_damage_items_table.php
 php artisan migration 2025_06_22_123412_create_damages_table.php
 php artisan make:model Damage -m
+php artisan serve --host=localhost --port=8080
 
 for live server upload 
 HelperService.php($product_position = 'ghasful.com.bd';)

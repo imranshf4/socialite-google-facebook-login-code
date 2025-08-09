@@ -1,0 +1,24 @@
+ // Get the last invoice number
+            // $startFrom = 10001;
+            // $lastInvoice = Order::where('invoice_no', '>=', $startFrom)->max('invoice_no');
+            // $order->invoice_no = $lastInvoice ? $lastInvoice + 1 : $startFrom;
+            $startFrom = 10001;
+            $invoiceNo = $startFrom;
+
+            while (Order::where('invoice_no', $invoiceNo)->exists()) {
+                $invoiceNo++;
+            }
+            /**** making 6 digit unique invoice no ****/
+            if (strlen($order->id) > 3) {
+                // $order->invoice_no = rand(1, 9) . $order->id . rand(1, 9);
+                $order->invoice_no = $invoiceNo;
+            } else if (strlen($order->id) > 2) {
+                // $order->invoice_no = rand(11, 99) . $order->id . rand(1, 9);
+                $order->invoice_no = $invoiceNo;
+            } else if (strlen($order->id) > 1) {
+                // $order->invoice_no = rand(11, 99) . $order->id . rand(11, 99);
+                $order->invoice_no = $invoiceNo;
+            } else {
+                // $order->invoice_no = rand(111, 999) . $order->id . rand(11, 99);
+                $order->invoice_no = $invoiceNo;
+            }
