@@ -1,0 +1,47 @@
+.barcode div div[style*="width:2px"] {
+    width: 0.5px !important;
+}
+
+/* Target bars that are 6px wide and reduce to 2px */
+.barcode div div[style*="width:6px"] {
+    width: 2px !important;
+}
+
+composer require milon/barcode
+https://github.com/milon/barcode
+{!! DNS1D::getBarcodeHTML($order->customer_phone, 'C128', 2, 50) !!}
+
+1D Barcode Types (Linear)
+C39 – Code 39
+C39+ – Code 39 with checksum
+C39E – Code 39 Extended
+C39E+ – Code 39 Extended with checksum
+C93 – Code 93
+S25 – Standard 2 of 5
+S25+ – Standard 2 of 5 with checksum
+I25 – Interleaved 2 of 5
+I25+ – Interleaved 2 of 5 with checksum
+C128 – Code 128
+C128A – Code 128 A
+C128B – Code 128 B
+C128C – Code 128 C
+EAN2 – 2-digit EAN supplement
+EAN5 – 5-digit EAN supplement
+EAN8 – EAN-8
+EAN13 – EAN-13
+UPCA – UPC-A
+UPCE – UPC-E
+MSI – MSI
+MSI+ – MSI with checksum
+POSTNET – USPS POSTNET
+PLANET – USPS PLANET
+RMS4CC – RMS4CC
+KIX – KIX (Dutch Post)
+IMB – USPS Intelligent Mail Barcode
+CODABAR – Codabar
+
+########################
+2D Barcode Types
+QRCODE – QR Code
+PDF417 – PDF417
+DATAMATRIX – DataMatrix

@@ -19,3 +19,4 @@ formatDateTime(datetime) {
 
 {{ \Carbon\Carbon::parse($subscription->end_date)->diffInDays(\Carbon\Carbon::parse($subscription->start_date)) }} days
 {{ \Carbon\Carbon::parse($bill->due_date)->format('d M Y, h:i A') }}
+->format('F j,Y') --january 1 year

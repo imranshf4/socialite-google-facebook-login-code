@@ -1,0 +1,39 @@
+async downloadFile(order) {
+    try {
+      const response = await fetch(this.base_url + order.customer_file);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = order.invoice_no + "_file"; // custom filename
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  }
+
+<button @click="downloadFile(order)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                                            viewBox="0 0 24 24">
+                                            <path fill="currentColor"
+                                                d="m12 17l-5-5h3V8h4v4h3zm0-15a10 10 0 0 1 10 10a10 10 0 0 1-10 10A10 10 0 0 1 2 12A10 10 0 0 1 12 2m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8" />
+                                        </svg>
+                                    </button>
+
+<div class="custom_order_image">
+                                        <img v-if="isImage(order.customer_file)" :src="base_url +
+                                            order.customer_file
+                                            " />
+                                        <img v-else src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/No-Image-Placeholder.svg/1665px-No-Image-Placeholder.svg.png" />
+                                    </div>
+
+isImage(filePath) {
+            if (!filePath) return false;
+            const ext = filePath.split('.').pop().toLowerCase();
+            return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'].includes(ext);
+        },

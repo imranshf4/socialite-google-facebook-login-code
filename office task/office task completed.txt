@@ -176,7 +176,6 @@ https://mohasagor.com.bd/
 3.update this code cpanel
 4.admin login bg-image error solved
 
-
 06-08-25
 https://amazantextile.com/
 1.stock issue solved
@@ -189,3 +188,85 @@ https://amazantextile.com/
 
 https://divisoriaksa.com/
 1.socialite google login issue solved
+
+
+07,09-08-25
+http://avzonebd.com
+1.theme option error solved
+
+https://divisoriaksa.com/
+1.socialite google login error solved
+
+https://mohasagor.com.bd/
+1.productList order wise filter by publish/unpublish
+2.reseller incomplete order system add vue
+
+taqwa_web_app
+1.add incomplete order system
+
+https://billionpoint.com/
+1.admin order qty add product wise
+2.admin order qty add product wise delivery charge show
+3.admin order note text show 1 or more line
+4.delivery auto setup by cron jobs
+5.invoice serial wise admin or user order
+6.admin order qty add product image zoom when hover
+
+humamland.com
+1.storage image issue solved
+
+10-08-25
+https://billionpoint.com/
+1.order table header sticky mode
+2.total qty show
+3.update cpanel
+
+11-08-25
+mohasagor.com.bd
+1.admin->reseller incomplete order show
+2.incomplete order - approved issue solved
+3.update this cpanel
+
+seo_friendly_ecommerce_2.0(main)
+1.admin order-> ip block/unblock button
+2.customers -> ip block/unblock wise filter
+3.stock issue check
+
+12-08-25
+http://mohasagor.com.bd
+1.not buy subscription reseller dashboard show only MyInvoice
+2.package list show invoice list page only for which reseller not get subscription before
+3.package list page design and dynamics
+4.bkash payment test this reseller
+5.ResellerSubscriptionDate check when subscription date expire error solved
+
+13-08-25
+https://tuktukibd.com/
+1.load more product for shop/category page error solved
+2.addExchangeOrder variant wise price/campaign_price change
+3.storage image issue for regular order button,showroom image
+4.product show desc mode
+5.update this code cpanel
+
+http://mohasagor.com.bd
+1.@if (optional(optional($subscriptions)->subscriptionBills)->status === 1 ||
+                    (empty($subscriptions) && $reseller && $reseller->status === 1)) issue solved
+2.this related cron jobs issue solved
+
+https://dutyfreebd.com/
+1.if any product srock is zero or order qty is greater than stock, this isn't submit for shipment
+
+
+
+19-08-25
+https://baraqahtraders.com/
+1.frontend category & category related product show
+2.single product page dynamics
+3.frontend show all brand
+4.client reviews dynamic for frontend & backend
+5.admin Manage custom order show for custom product
+6.company introduction dynamic
+7.gallery image dynamic for frontend &  backend, at first show four image when click any image show all image
+8.live this website
+9.youtube url dynamic
+

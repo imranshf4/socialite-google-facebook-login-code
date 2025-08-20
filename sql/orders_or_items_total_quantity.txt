@@ -1,0 +1,29 @@
+$totalOrdersSubQuery = DB::table('order_items')
+                ->join('orders', 'orders.id', '=', 'order_items.order_id')
+                ->where('orders.status', '!=', 9)
+                ->select(
+                    'order_items.product_id',
+                    // DB::raw('COUNT(DISTINCT order_items.order_id) as total_orders')
+                    DB::raw('COUNT(order_items.order_id) as total_orders')
+                )
+                ->groupBy('order_items.product_id');
+
+
+            $productQuery = Product::leftJoinSub($totalOrdersSubQuery, 'oi', function ($join) {
+                $join->on('products.id', '=', 'oi.product_id');
+            })
+                ->with(['purchaseItem'])
+                ->select('products.*', DB::raw('IFNULL(oi.total_orders, 0) as total_orders'))
+                ->orderByRaw('oi.total_orders = 0 DESC')
+                ->orderBy('oi.total_orders', $sort_product_by_order)
+                ->orderBy('products.created_at', 'asc');
+
+
+SELECT 
+    product_id, 
+    COUNT(*) as row_count,
+    SUM(quantity) as total_quantity,
+    COUNT(DISTINCT order_id) as unique_orders
+FROM order_items
+WHERE product_id = 449
+GROUP BY product_id;

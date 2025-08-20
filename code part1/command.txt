@@ -1,7 +1,7 @@
 npm install
 composer install
 php artisan storage:link
-php artisan migrate --path=/database/migrations/2025_06_22_123346_create_damage_items_table.php
+php artisan migrate --path=/database/migrations/2025_08_17_153706_create_gallery_images_table.php
 php artisan migration 2025_06_22_123412_create_damages_table.php
 php artisan make:model Damage -m
 php artisan serve --host=localhost --port=8080
@@ -31,7 +31,7 @@ php------7.4
 http://127.0.0.1:8000/admin/site/configuration
 
 
-
+reseller_id 14245 Imran Hossain
 
 
 my contribution
@@ -39,4 +39,9 @@ https://dhakacitygroup.com/
 https://dutyfreebd.com/
 https://ghasful.com.bd/
 
+
+gallery_images table add
+youtube_url field add general
+product_review
+country_region
 

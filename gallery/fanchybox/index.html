@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FanchyBox</title>
+    <link rel="stylesheet" href="css/fancybox.css" />
+    <style>
+      .fanchybox_gallery ul{
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .fanchybox_gallery ul li {
+        list-style-type: none;
+      }
+      .fanchybox_gallery ul li img{
+        width: 100%;
+        aspect-ratio: 1/1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fanchybox_gallery">
+      <ul>
+        <li>
+          <a data-fancybox="gallery" href="https://unsplash.it/902">
+            <img src="https://unsplash.it/902" alt="fanchy-box" />
+          </a>
+        </li>
+        <li>
+          <a data-fancybox="gallery" href="https://unsplash.it/903">
+            <img src="https://unsplash.it/903" alt="fanchy-box" />
+          </a>
+        </li>
+        <li>
+          <a data-fancybox="gallery" href="https://unsplash.it/904">
+            <img src="https://unsplash.it/904" alt="fanchy-box" />
+          </a>
+        </li>
+        <li>
+          <a data-fancybox="gallery" href="https://unsplash.it/905">
+            <img src="https://unsplash.it/905" alt="fanchy-box" />
+          </a>
+        </li>
+        <li>
+          <a data-fancybox="gallery" href="https://unsplash.it/906">
+            <img src="https://unsplash.it/906" alt="fanchy-box" />
+          </a>
+        </li>
+        <li>
+          <a data-fancybox="gallery" href="https://unsplash.it/907">
+            <img src="https://unsplash.it/907" alt="fanchy-box" />
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <script src="js/fancybox.umd.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,192 @@
+ @foreach ($top_section_categories as $category)
+                    @php
+                        $resellerSubCategories = App\Models\ResellerCategory::where(
+                            'reseller_id',
+                            $category->reseller_id,
+                        )
+                            ->where('status', 0)
+                            ->pluck('sub_category_id')
+                            ->toArray();
+                        $subCategories = App\Models\SubCategory::where('category_id', $category->id)
+                            ->where('status', 1)
+                            ->whereIn('id', $resellerSubCategories)
+                            ->get();
+                    @endphp
+
+                    <div class="category_item">
+                        <a href="{{ route('product.category', [$category->slug]) }}" class="category_item_link">
+                            <div class="category_image">
+                                <img src="{{ asset('storage/' . $category->icon_image) }}" alt="{{ $category->name }}">
+                            </div>
+                            <div class="category_name">
+                                <p>{{ $category->name }}</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    @foreach ($subCategories as $subCat)
+                        <div class="category_item">
+                            <a href="{{ route('product.category', [$category->slug, $subCat->slug]) }}"
+                                class="category_item_link">
+                                <div class="category_image">
+                                    <img src="{{ asset('storage/' . $subCat->image) }}" alt="{{ $subCat->name }}">
+                                </div>
+                                <div class="category_name">
+                                    <p>{{ $subCat->name }}</p>
+                                </div>
+                            </a>
+                        </div>
+
+                        @php
+                            $resellerSubSubCategories = App\Models\ResellerCategory::where(
+                                'reseller_id',
+                                $category->reseller_id,
+                            )
+                                ->where('status', 0)
+                                ->pluck('sub_sub_category_id')
+                                ->toArray();
+                            $subSubCategories = App\Models\SubSubCategory::where('subcategory_id', $subCat->id)
+                                ->where('status', 1)
+                                ->whereIn('id', $resellerSubSubCategories)
+                                ->get();
+                        @endphp
+
+
+                        @foreach ($subSubCategories as $subSubCat)
+                            <div class="category_item">
+                                <a href="{{ route('product.category', [$category->slug, $subCat->slug, $subSubCat->slug]) }}"
+                                    class="category_item_link">
+                                    <div class="category_image">
+                                        <img src="{{ asset('storage/' . $subSubCat->image) }}" alt="{{ $subSubCat->id }}">
+                                    </div>
+                                    <div class="category_name">
+                                        <p>{{ $subSubCat->name }}</p>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                    @endforeach
+                @endforeach
+                {{-- @endif --}}
+
+                @foreach ($top_section_subcategories as $sub_category)
+                    @php
+                        $category = App\Models\Category::find($sub_category->category_id);
+                        // get reseller allowed sub and sub-sub ids at once
+                        $resellerSubCategories = App\Models\ResellerCategory::where(
+                            'reseller_id',
+                            $sub_category->reseller_id,
+                        )
+                            ->where('status', 0)
+                            ->pluck('sub_category_id')
+                            ->toArray();
+
+                        $resellerSubSubCategories = App\Models\ResellerCategory::where(
+                            'reseller_id',
+                            $sub_category->reseller_id,
+                        )
+                            ->where('status', 0)
+                            ->pluck('sub_sub_category_id')
+                            ->toArray();
+
+                        // fetch subcategories for this category
+                        $subCategories = App\Models\SubCategory::where('category_id', $category->id)
+                            ->where('status', 1)
+                            ->whereIn('id', $resellerSubCategories)
+                            ->get();
+                    @endphp
+
+                    <div class="category_item">
+                        <a href="{{ route('product.category', [$category->slug, $sub_category->slug]) }}"
+                            class="category_item_link">
+                            <div class="category_image">
+                                <img src="{{ asset('storage/' . $sub_category->image) }}" alt="{{ $sub_category->name }}">
+                            </div>
+                            <div class="category_name">
+                                <p>{{ $sub_category->name }}</p>
+                            </div>
+                        </a>
+                    </div>
+
+                    @php
+                        $subSubCategories = App\Models\SubSubCategory::where('subcategory_id', $sub_category->id)
+                            ->where('status', 1)
+                            ->whereIn('id', $resellerSubSubCategories)
+                            ->get();
+                    @endphp
+
+                    @foreach ($subSubCategories as $subSubCat)
+                        <div class="category_item">
+                            <a href="{{ route('product.category', [$category->slug, $sub_category->slug, $subSubCat->slug]) }}"
+                                class="category_item_link">
+                                <div class="category_image">
+                                    <img src="{{ asset('storage/' . $subSubCat->image) }}" alt="{{ $subSubCat->name }}">
+                                </div>
+                                <div class="category_name">
+                                    <p>{{ $subSubCat->name }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                @endforeach
+
+                @foreach ($top_section_sub_subcategories as $sub_sub_category)
+                    @php
+                        $category = App\Models\Category::find($sub_sub_category->category_id);
+                        $sub_category = App\Models\SubCategory::where('category_id', $category->id)->first();
+                        // reseller allowed sub-sub category ids
+                        $resellerSubSubCategories = App\Models\ResellerCategory::where(
+                            'reseller_id',
+                            $sub_sub_category->reseller_id,
+                        )
+                            ->where('status', 0)
+                            ->pluck('sub_sub_category_id')
+                            ->toArray();
+                    @endphp
+
+                    <div class="category_item">
+                        <a href="{{ route('product.category', [$category->slug, $sub_category->slug, $sub_sub_category->slug]) }}"
+                            class="category_item_link">
+                            <div class="category_image">
+                                <img src="{{ asset('storage/' . $sub_sub_category->image) }}"
+                                    alt="{{ $sub_sub_category->name }}">
+                            </div>
+                            <div class="category_name">
+                                <p>{{ $sub_sub_category->name }}</p>
+                            </div>
+                        </a>
+                    </div>
+                @endforeach
+
+
+$web_site_url = $request->getHttpHost();
+        if (substr($web_site_url, 0, 4) !== 'www.') {
+            $web_site_url = 'www.' . $request->getHttpHost();
+        }
+        $reseller = Reseller::where('website_url', $web_site_url)->first();
+        // $top_section_categories = ResellerCategory::with('category', 'subCategory', 'subSubCategory')
+        //     ->where('reseller_id', $reseller->id)
+        //     ->where('status', 0)
+        //     ->orderBy('id', 'desc')
+        //     ->get();
+
+        $top_section_categories = DB::table('reseller_categories')
+            ->join('categories', 'reseller_categories.category_id', '=', 'categories.id')
+            ->where('reseller_id', $reseller->id)
+            ->where('reseller_categories.status', 0)
+            ->get();
+
+        $top_section_subcategories = DB::table('reseller_categories')
+            ->join('sub_categories', 'reseller_categories.sub_category_id', '=', 'sub_categories.id')
+            ->where('reseller_id', $reseller->id)
+            ->whereNull('reseller_categories.category_id')
+            ->where('reseller_categories.status', 0)
+            ->get();
+
+        $top_section_sub_subcategories = DB::table('reseller_categories')
+            ->join('sub_sub_categories', 'reseller_categories.sub_sub_category_id', '=', 'sub_sub_categories.id')
+            ->where('reseller_id', $reseller->id)
+            ->whereNull('reseller_categories.category_id')
+            ->whereNull('reseller_categories.sub_category_id')
+            ->where('reseller_categories.status', 0)
+            ->get();

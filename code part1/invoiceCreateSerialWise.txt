@@ -22,3 +22,4 @@
                 // $order->invoice_no = rand(111, 999) . $order->id . rand(11, 99);
                 $order->invoice_no = $invoiceNo;
             }
+

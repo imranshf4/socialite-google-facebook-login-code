@@ -1,0 +1,77 @@
+npm install object-to-formdata
+import objectToFormData from "object-to-formdata";
+
+ methods: {
+    handleFileUpload(e) {
+      let file = e.target.files[0];
+      this.formGallery.gallery_image = file;
+    },
+    storeGalleryImage() {
+      this.formGallery
+        .post("/api/add/gallery/image", {
+          transformRequest: [
+            function (data, headers) {
+              return objectToFormData(data);
+            },
+          ],
+        })
+        .then((resp) => {
+          console.log('gallery_image', resp);
+          if (resp.data.status == "SUCCESS") {
+            this.$toastr.s(resp.data.message);
+            // this.$router.push({ name: "url_gallery_image" });
+          }
+        })
+        .catch((error) => {
+          this.$toastr.e(error.response.data.message);
+        });
+    },
+}
+
+ formGallery: new Form({
+        gallery_image: "",
+      }),
+
+<form @submit.prevent="storeGalleryImage" enctype="multipart/form-data">
+
+                <div class="basic_form_group">
+                  <div class="basic_form_title">
+                    <span>Gallery Image</span>
+                  </div>
+
+                  <div class="basic_form_input">
+                    <input class="form-control" type="file" @change="handleFileUpload" name="gallery_image" />
+                  </div>
+                </div>
+
+                <div class="basic_form_group">
+                  <div class="basic_form_title">
+                    <span></span>
+                  </div>
+                  <div class="basic_form_btn">
+                    <button class="basic_form_btn_link" type="submit">Submit</button>
+                  </div>
+                </div>
+              </form>
+
+
+public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'gallery_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
+        if ($request->hasFile('gallery_image')) {
+            $imageFile = $request->file('gallery_image');
+            $imageName = hexdec(uniqid()) . '-' . $imageFile->getClientOriginalName();
+            $path = $imageFile->storeAs('images/galleryImage', $imageName, 'public');
+
+            $validated['gallery_image'] = $path;
+        }
+
+        GalleryImage::create($validated);
+
+        return response()->json([
+            'status' => 'SUCCESS',
+            'message' => 'Image uploaded successfully.',
+        ]);

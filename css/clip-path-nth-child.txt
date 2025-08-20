@@ -1,0 +1,7 @@
+https://www.cssportal.com/css-clip-path-generator/
+@if (optional(optional($subscriptions)->subscriptionBills)->status === 1)
+
+.media_img:nth-child(n+5) {
+        display: none;
+        /* hide 5th and onward */
+    }

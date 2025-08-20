@@ -1,0 +1,4 @@
+packageList() {
+      const url = this.$router.resolve({ name: 'package_list' }).href
+      window.open(url, '_blank')
+    },

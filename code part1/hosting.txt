@@ -1,3 +1,4 @@
+
 php selector (php version update)
 config(app.php,database.php)
 app.php set:
@@ -16,7 +17,7 @@ database.php set:
         ],
 
 public index.php set:
-$app = require_once __DIR__.'/../bootstrap/app.php';
+$app = require_once __DIR__.'/bootstrap/app.php';
 require __DIR__.'/vendor/autoload.php';
 
 
@@ -89,4 +90,10 @@ for solved this trouble, go to HelperService.php ->
     }
 
 
+
+cron jobs
+/usr/bin/php/home/billionp/public_html/artisan order:orderStatusTracking
+
+Minute  Hour mean its reload 1 min por por
+*      *
 

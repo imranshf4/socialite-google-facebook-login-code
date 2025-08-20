@@ -1,0 +1,14 @@
+.comment-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30%;
+    width: fit-content;
+    white-space: normal;
+}
+
+
+for vue
+{{ order.comment.substring(0, 13) }}

@@ -1,0 +1,52 @@
+composer require simplesoftwareio/simple-qrcode
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+'aliases' => [
+    'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
+],
+
+class QRController extends Controller
+{
+    public function generate()
+    {
+        // Generate a basic QR code
+        return QrCode::size(300)->generate('https://your-website.com');
+    }
+}
+
+In a blade file:
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Example</title>
+</head>
+<body>
+    <div>
+        {!! QrCode::size(300)->generate('https://example.com') !!}
+    </div>
+</body>
+</html>
+
+{!! QrCode::size(250)->color(255, 0, 0)->generate('Colored QR Code') !!}
+{!! QrCode::size(250)->backgroundColor(200, 200, 200)->generate('With BG Color') !!}
+
+
+########### for vue
+npm install qrcode.vue
+<template>
+  <qrcode-vue value="https://example.com" :size="200" />
+</template>
+
+<script setup>
+import QrcodeVue from "qrcode.vue";
+</script>
+
+<template>
+  <qrcode-vue :value="value" :size="size" level="H" render-as="svg" />
+  <qrcode-canvas :value="QRCODE.VUE 😄" :size="size" level="H" />
+  <qrcode-svg value="QRCODE.VUE 😄" level="H" />
+</template>
+import QrcodeVue, { QrcodeCanvas, QrcodeSvg } from 'qrcode.vue'
+
+
+https://www.npmjs.com/package/qrcode.vue
