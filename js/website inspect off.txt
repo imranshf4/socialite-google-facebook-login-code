@@ -1,0 +1,14 @@
+// Right Button is not work in full website
+document.addEventListener("contextmenu", function (e) {
+  e.preventDefault();
+});
+
+
+// Right Button is not work in only image
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll("img").forEach(function (img) {
+    img.oncontextmenu = function () {
+      return false;
+    };
+  });
+});

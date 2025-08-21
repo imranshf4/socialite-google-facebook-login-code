@@ -176,12 +176,24 @@ $web_site_url = $request->getHttpHost();
             ->where('reseller_categories.status', 0)
             ->get();
 
+        $usedCategoryIds = $top_section_categories->pluck('id');
+
         $top_section_subcategories = DB::table('reseller_categories')
             ->join('sub_categories', 'reseller_categories.sub_category_id', '=', 'sub_categories.id')
-            ->where('reseller_id', $reseller->id)
             ->whereNull('reseller_categories.category_id')
+            ->where('reseller_id', $reseller->id)
             ->where('reseller_categories.status', 0)
+            ->whereNotIn('sub_categories.category_id', $usedCategoryIds)
             ->get();
+
+        // $top_section_subcategories = DB::table('reseller_categories')
+        //     ->join('sub_categories', 'reseller_categories.sub_category_id', '=', 'sub_categories.id')
+        //     ->where('reseller_id', $reseller->id)
+        //     // ->whereNull('reseller_categories.category_id')
+        //     ->where('reseller_categories.status', 0)
+        //     ->get();
+
+        $usedSubCategoryIds = $top_section_subcategories->pluck('id');
 
         $top_section_sub_subcategories = DB::table('reseller_categories')
             ->join('sub_sub_categories', 'reseller_categories.sub_sub_category_id', '=', 'sub_sub_categories.id')
@@ -189,4 +201,6 @@ $web_site_url = $request->getHttpHost();
             ->whereNull('reseller_categories.category_id')
             ->whereNull('reseller_categories.sub_category_id')
             ->where('reseller_categories.status', 0)
+            ->whereNotIn('sub_sub_categories.category_id', $usedCategoryIds)
+            ->whereNotIn('sub_sub_categories.subCategory_id', $usedSubCategoryIds)
             ->get();
