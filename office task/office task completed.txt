@@ -270,3 +270,51 @@ https://baraqahtraders.com/
 8.live this website
 9.youtube url dynamic
 
+23-08-25
+https://mohasagor.com.bd/
+1.http://Monbuji.com ssl issue solved
+2.reseller site search product not found issue solved
+3.reseller site category show by top orders
+4.reseller site show category,subcategory,subsubcategory when active
+5.update code cpanel
+
+https://baraqahtraders.com/
+1.corporate page dynamic for backend/frontend
+
+https://dashbazar.com/product-category/skin-concern/t-shirt-combo
+1.order button click not goto single product page issue solved
+
+
+24-08-25
+https://baraqahtraders.com/corporate/page
+1.upload live server
+
+https://mohasagor.com.bd/
+1.clipboard text copy issue solved
+2.reseller active category wise all issue solved
+3.reseller incomplete order cancel button issue solved
+
+https://goynarputli.com/
+1.delivery area show radio button
+2.product increment or decremnt issue solved
+
+25-08-2025
+https://goynarputli.com/
+1.delivery area design change
+2.landing page slug edit option enable
+3.landing page product qty validation wise order submit & product qty dynamic for header setting
+4.update this code cpanel
+
+https://mohasagor.com.bd/
+1.previous day task upload cpanel
+
+
+https://billionpoint.com/
+1.A6_PRINT page design & dynamic
+
+26-08-25
+https://billionpoint.com/
+1.pending A6_PRINT design and barcode add
+
+https://mohasagor.com.bd/
+1. reseller category,sub category, sub sub catgory wise product show & error solved

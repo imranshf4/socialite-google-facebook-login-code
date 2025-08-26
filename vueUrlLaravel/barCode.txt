@@ -8,6 +8,16 @@
 }
 
 composer require milon/barcode
+In config/app.php:
+
+'providers' => [
+    Milon\Barcode\BarcodeServiceProvider::class,
+],
+
+'aliases' => [
+    'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
+    'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+],
 https://github.com/milon/barcode
 {!! DNS1D::getBarcodeHTML($order->customer_phone, 'C128', 2, 50) !!}
 

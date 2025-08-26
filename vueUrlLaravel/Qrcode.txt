@@ -1,5 +1,7 @@
 composer require simplesoftwareio/simple-qrcode
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
+app.php
 'aliases' => [
     'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
 ],
@@ -22,6 +24,7 @@ In a blade file:
 </head>
 <body>
     <div>
+        {!! QrCode::size(50)->generate($order->memo_no) !!}
         {!! QrCode::size(300)->generate('https://example.com') !!}
     </div>
 </body>

@@ -204,3 +204,118 @@ $web_site_url = $request->getHttpHost();
             ->whereNotIn('sub_sub_categories.category_id', $usedCategoryIds)
             ->whereNotIn('sub_sub_categories.subCategory_id', $usedSubCategoryIds)
             ->get();
+
+
+
+
+public function loadMoreCategoryProduct(Request $request)
+    {
+        $page = $request->page;
+        $limit = $request->limit;
+        $start = ($page - 1) * $limit;
+        //---------------category wise product---------
+
+        $web_site_url = $request->getHttpHost();
+        $possibleDomains = [
+            $web_site_url,
+            preg_replace('/^www\./', '', $web_site_url),
+            'www.' . preg_replace('/^www\./', '', $web_site_url)
+        ];
+
+        // Try to find reseller by any of these
+        $reseller = Reseller::whereIn('website_url', $possibleDomains)->first();
+        //view all categories
+        $categoriesReseller = Category::select('categories.id', 'categories.name', 'categories.slug')
+            ->join('reseller_categories', 'reseller_categories.category_id', '=', 'categories.id')
+            ->where('reseller_categories.reseller_id', $reseller->id)
+            ->where('reseller_categories.status', 0)
+            ->with(['filteredSubCategories' => function ($query) use ($reseller) {
+                $query->select('id', 'category_id', 'name', 'slug')
+                    ->whereHas('resellerSubCategories', function ($q) use ($reseller) {
+                        $q->where('status', 0)
+                            ->where('reseller_id', $reseller->id);
+                    });
+            }, 'subCategory:id,category_id,name,slug'])
+            ->orderBy('categories.position', 'asc')
+            ->paginate($limit);
+
+        if ($categoriesReseller->total() > 0) {
+            foreach ($categoriesReseller as $category) {
+                $category->{'products'} = $this::getProducts('category_id', $category->id, 12);
+            }
+
+            $data = "";
+            foreach ($categoriesReseller as $category) {
+                $data .= view('frontend.components.load_more_category_product', compact('category'))->render();
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $data,
+                'category_length' => $categoriesReseller->count(),
+                'message' => 'load Data with category product',
+            ]);
+        } else {
+            $categories = Category::skip($start)->orderBy('position', 'asc')->where('status', 1)->select('id', 'name', 'slug')->with(['subCategory:id,category_id,name,slug'])->paginate($limit);
+
+            foreach ($categories as $category) {
+                $category->{'products'} = $this::getProducts('category_id', $category->id, 12);
+            }
+
+            $data = "";
+            foreach ($categories as $category) {
+                $data .= view('frontend.components.load_more_category_product', compact('category'))->render();
+            }
+
+            return response()->json([
+                'status' => true,
+                'data' => $data,
+                'category_length' => $categories->count(),
+                'message' => 'load Data with category product',
+            ]);
+        }
+
+
+        // $web_site_url = $request->getHttpHost();
+        // if (substr($web_site_url, 0, 4) !== 'www.') {
+        //     $web_site_url = 'www.' . $request->getHttpHost();
+        // }
+        // $reseller = Reseller::where('website_url', $web_site_url)->first();
+        // $resellerCategories = ResellerCategory::where('reseller_id', $reseller->id)
+        //     ->where('status', 0)
+        //     ->with(['category:id,name,slug', 'subCategory:id,category_id,name,slug', 'subSubCategory:id,subcategory_id,name,slug'])
+        //     ->paginate($limit);
+
+        // foreach ($resellerCategories as $resellerCategory) {
+        //     $resellerCategory->{'products'} = $this::getProducts('category_id', $resellerCategory->category_id, 12);
+        // }
+
+        // $data = "";
+        // foreach ($resellerCategories as $resellerCategory) {
+        //     $data .= view('frontend.components.load_more_category_product', compact('resellerCategory'))->render();
+        // }
+
+
+        // return response()->json([
+        //     'status' => true,
+        //     'data' => $resellerCategories,
+        //     'category_length' => $resellerCategories->count(),
+        //     'message' => 'load Data with category product',
+        // ]);
+    }
+
+
+#######################class Category extends Model ###############
+ public function filteredSubCategories()
+    {
+        return $this->hasMany(SubCategory::class, 'category_id', 'id')
+            ->whereHas('resellerSubCategories', function ($query) {
+                $query->where('status', 0);
+            });
+    }
+
+#######################class SubCategory extends Model ###############
+public function resellerSubCategories()
+    {
+        return $this->hasMany(ResellerCategory::class, 'sub_category_id', 'id');
+    }

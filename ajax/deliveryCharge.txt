@@ -1,0 +1,8 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let firstChecked = document.querySelector('input[name="shipping_charge"]:checked');
+        if (firstChecked) {
+            shippingChargeBySelectArea(firstChecked.id, firstChecked.value);
+        }
+    });
+</script>

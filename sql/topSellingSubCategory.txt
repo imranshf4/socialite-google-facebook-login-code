@@ -1,0 +1,22 @@
+ $sub_categories = SubCategory::select(
+            'sub_categories.*',
+            DB::raw('SUM(product_sales.total_orders) as total_orders')
+        )
+            ->join('products', 'products.sub_category_id', '=', 'sub_categories.id')
+            ->joinSub(
+                OrderItem::select('order_items.product_id', DB::raw('SUM(order_items.quantity) as total_orders'))
+                    ->join('orders', 'orders.id', '=', 'order_items.order_id')
+                    ->where('orders.status', '!=', 9)
+                    ->where('orders.created_at', '>=', now()->subDays(7))
+                    ->groupBy('order_items.product_id'),
+                'product_sales',
+                function ($join) {
+                    $join->on('products.id', '=', 'product_sales.product_id');
+                }
+            )
+            ->where('sub_categories.status', 1)
+            ->with('category')
+            ->groupBy('sub_categories.id')
+            ->orderByDesc('total_orders')
+            ->take(16)
+            ->get();

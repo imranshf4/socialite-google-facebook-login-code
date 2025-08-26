@@ -1,0 +1,126 @@
+<div class="_single_product_modal_form_item">
+                                    <h6 class="fw-normal">{{ dynamic_lang('delivery_area') }}</h6>
+                                    @foreach ($delivery_charges as $index => $delivery_charge)
+                                        <div class="d-flex align-items-center gap-2 delivery_charge_item">
+                                            <input required class="form-check-input"
+                                                value="{{ $delivery_charge->delivery_charge }}" type="radio"
+                                                onclick="shippingChargeBySelectArea(this.id , {{ $delivery_charge->delivery_charge }})"
+                                                name="shipping_charge" id="{{ $delivery_charge->id }}"
+                                                {{ old('shipping_charge', $index === 0 ? $delivery_charge->id : '') == $delivery_charge->id ? 'checked' : '' }}>
+
+                                            <label class="form-check-label" for="{{ $delivery_charge->id }}">
+                                                {{ $delivery_charge->name }}
+                                            </label>
+                                            @error('shipping_charge')
+                                                <span style="color:red">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    @endforeach
+                                </div>
+
+
+
+###########################
+script
+###########################
+document.addEventListener("DOMContentLoaded", function() {
+            let firstChecked = document.querySelector('input[name="shipping_charge"]:checked');
+            if (firstChecked) {
+                shippingChargeBySelectArea(firstChecked.id, parseFloat(firstChecked.value));
+            }
+        });
+
+        function shippingChargeBySelectArea(id, val) {
+            shipping_charge = val > 0 ? val : 0;
+
+            $('#shipping_charge').val(shipping_charge);
+            $('.shipping_charge').text(shipping_charge + ' TK');
+
+            updateCartTotalWithShipping(shipping_charge);
+        }
+
+
+function incrementQuantity(button) {
+            const li = $(button).closest('.landing_page_product_qty');
+            const input = li.find('input.product-qty');
+            const productId = input.data('product-id');
+
+            let currentValue = parseInt(input.val()) || 0;
+            let newValue = currentValue + 1;
+
+            input.val(newValue);
+            updateCartQuantity(productId, newValue);
+        }
+
+        function decrementQuantity(button) {
+            const li = $(button).closest('.landing_page_product_qty');
+            const input = li.find('input.product-qty');
+            const productId = input.data('product-id');
+
+            let currentValue = parseInt(input.val()) || 1;
+            let newValue = currentValue > 1 ? currentValue - 1 : 1;
+
+            input.val(newValue);
+            updateCartQuantity(productId, newValue);
+        }
+
+function updateCartQuantity(productId, qty) {
+            // Find the rowId for the productId
+            const rowId = cartItems[productId];
+            console.log(rowId, cartItems);
+            if (rowId) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/cart/update/with/productid',
+                    dataType: 'json',
+                    data: {
+                        productId: productId,
+                        qty: qty,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            updateCartSection();
+                            fetchCartContent();
+                            toastr.success('Cart updated successfully');
+                        } else {
+                            toastr.error('Failed to update cart');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating cart:', error);
+                        toastr.error('Error updating cart');
+                    }
+                });
+            } else {
+
+                toastr.error('Add product to cart first');
+            }
+        }
+
+public function cartUpdateWithProduct(Request $request)
+    {
+        $request->validate([
+            'productId' => 'required|numeric',
+            'qty' => 'required|numeric|min:1',
+        ]);
+
+        foreach (Cart::content() as $item) {
+            if ($item->id == $request->productId) {
+                Cart::update($item->rowId, $request->qty);
+                break;
+            }
+        }
+
+        return $this->index();
+    }
+
+
+<script>
+        $(document).ready(function() {
+            // Prevent page reload when +/- buttons are clicked
+            $(document).on('click', '.landing_page_product_qty_minus, .landing_page_product_qty_plus', function(e) {
+                e.preventDefault(); // stop form submission
+            });
+        });
+    </script>
