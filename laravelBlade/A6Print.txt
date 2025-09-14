@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- caption -->
+    <title>order invoice</title>
+    <!-- style.css link -->
+    <link rel="stylesheet" href="{{ asset('admin/css/style.css') }}">
+    <!--bootstrap link -->
+    {{-- <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="bootstrap.bundle.min.js">
+      <!-- font awesome link -->
+      <link rel="stylesheet" href="font-awesome-4.7.0/css/font-awesome.min.css"> --}}
+    @include('admin.partials.css')
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Calibri';
+        }
+
+        .full {
+            width: 105mm;
+            height: 148mm;
+            margin: 0 auto;
+        }
+
+        /*====first area start====*/
+        /* .first-area {
+            border-bottom: 2px solid #ddd;
+        } */
+
+        /*logo and address start*/
+
+        .first-area-l-and-a {
+            display: flex;
+            justify-content: end;
+        }
+
+        .first-area-logo img {
+            width: 70px;
+            /* height: 40px; */
+        }
+
+        .first-area-l-and-a p {
+            color: #000;
+            line-height: 0.5;
+            font-size: 14px;
+        }
+
+        .first-area-logo-and-address-border-bottom {
+            border: 2px solid #DDDDDD;
+            width: 252px;
+            border-radius: 5px;
+        }
+
+        /*logo and address end*/
+
+
+
+        /*first area invoice start*/
+        .first-area-invoice {
+            display: flex;
+            justify-content: center;
+            /* align-items: center; */
+            gap: 22px;
+        }
+
+        .first-area-invoice-left {
+            /* line-height: 0.8; */
+            width: 56%;
+        }
+
+        .first-area-invoice-mobail-no {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 10px;
+        }
+
+        .first-area-invoice-bill-and-client {
+            margin-top: -7px !important;
+        }
+
+        .first-area-invoice-bill-and-client p {
+            font-size: 13px;
+        }
+
+        .call p {
+            font-size: 13px;
+        }
+
+        .first-area-invoice-bill-and-client_two p {
+            font-size: 13px;
+        }
+
+        .first-area-invoice-bill-and-client_two span,
+        .first-area-invoice-mobail-no span,
+        .first-area-invoice-address span {
+            font-size: 12px !important;
+        }
+
+        .address-text p {
+            font-size: 13px;
+        }
+
+        .address_text_main p {
+            font-size: 13px;
+        }
+
+        .h4,
+        h4 {
+            font-size: 20px;
+        }
+
+        .invoice-no p {
+            font-size: 13px;
+            margin-left: 3px;
+        }
+
+        p.disclaimer {
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .total_qty {
+            font-size: 13px !important;
+        }
+
+        .barcode p {
+            font-size: 10px !important;
+        }
+
+        .page_number {
+            text-align: end;
+            font-size: 13px;
+            font-weight: bold;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .address_text_main svg {
+            width: 25px;
+            margin-right: 2px;
+        }
+
+        .address_text_main span b {
+            display: flex;
+            /* gap: 5px; */
+        }
+
+        .address_text_main span b p {
+            margin-top: -3px;
+        }
+
+        .first-area-invoice-address {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .full-address p {
+            font-size: 10px;
+        }
+
+        .first-area-invoice-right {
+            /* margin-top: 13px; */
+            /* margin-bottom: 4px; */
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            line-height: 1.3;
+            width: 85%;
+        }
+
+        .invoice-time-and-no {
+            /* line-height: 0.5; */
+            /* margin-top: 105px; */
+        }
+
+        /*first area invoice end*/
+
+        /*=====first area end=====*/
+
+        /*====middle area start====*/
+        .invoice_table_bg_th tbody tr th {
+            background-color: #000000;
+            color: #ffffff;
+        }
+
+        /* .middle-area {
+            margin: 10px 0px;
+        } */
+
+        /*====middle area start====*/
+
+        /*====last area start====*/
+        .last-area {}
+
+        .last-area-term-and-prepare {
+            overflow: hidden;
+        }
+
+        .head-and-text {
+            text-align: justify;
+            width: 200px;
+            float: left;
+        }
+
+        .head-and-text h6 {
+            font-size: 14px;
+        }
+
+        .head-and-text p {
+            font-size: 13px;
+        }
+
+        .prepare-by-falconzone {
+            text-align: right;
+        }
+
+        .prepare-by-falconzone h6 {
+            font-size: 14px;
+        }
+
+        .prepare-by-falconzone p {
+            font-size: 13px;
+        }
+
+        .communication {
+            background: #D9D9D9;
+            border-radius: 30px;
+            padding: 10px 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hotline {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            gap: 10px
+        }
+
+        .mail {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px
+        }
+
+        .whatsapp {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            gap: 10px
+        }
+
+        .fontsize-10px {
+            font-size: 11px;
+            line-height: 0.5;
+        }
+
+        .icon-fontsize i {
+            font-size: 25px;
+        }
+
+        .italic-svg {
+            transform: skewX(-10deg);
+            display: inline-block;
+            width: 16px;
+        }
+
+        .table th {
+            background-color: #00000000 !important;
+            color: #000000 !important;
+            font-weight: normal !important;
+            border: 1px solid #ddd !important;
+            font-size: 13px;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        tr td {
+            font-size: 12px;
+        }
+
+        /* .barcode div {
+            height: 50px !important;
+        } */
+
+        /* .barcode p {
+            padding: 2px 0px !important;
+        } */
+
+        .barcode {
+            margin-bottom: 0px;
+            position: absolute;
+        }
+
+
+        .page_number button {
+            border: none;
+            background: white;
+        }
+
+        .table th {
+            padding: 7px 12px !important;
+        }
+
+        .table td {
+            padding: 5px 12px !important;
+            /* font-size: 9px !important; */
+        }
+
+        table.table.invoice_table_bg_th {
+            margin-top: 13px;
+        }
+
+        .container {
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+        }
+
+        .total_bill span {
+            font-size: 13px !important
+        }
+
+        .web_and_contact {
+            display: flex;
+            gap: 5px;
+        }
+
+        @media print {
+            @page {
+                size: 105mm 148mm;
+            }
+
+            body,
+            html {
+                width: 105mm;
+                height: 148mm;
+                margin: 0;
+                padding: 0;
+            }
+
+            .invoice_page {
+                page-break-after: always;
+                padding: 3mm;
+                width: 105mm;
+                height: 148mm;
+                /* margin: 0 auto;
+                display: flex;
+                flex-direction: column; */
+            }
+        }
+
+        /*====last area start====*/
+    </style>
+
+    @php
+        $setting = App\Models\GeneralSetting::latest()->first();
+    @endphp
+</head>
+
+<body>
+    <div class="full">
+        @foreach ($orders as $order)
+            @php
+                // Define $pages from the chunked order items array
+                $pages = $paginatedOrderItems[$order->id];
+                $totalPages = count($pages);
+            @endphp
+            <!-- ==first area start== -->
+
+            <!-- ==first area end== -->
+
+
+
+            @php $totalPages = $pages->count(); @endphp
+
+            @foreach ($pages as $pageIndex => $order->orderItemsChunk)
+                {{-- <div class="full"> --}}
+                {{-- Header, logo, address --}}
+
+                <div class="invoice_page">
+                    <div class="first-area">
+                        <!-- ==logo and address start== -->
+                        {{-- <div class="first-area-logo-and-address">
+                    <div class="container order_description">
+                        <div class="row">
+                            <div class="col-lg-12 first-area-l-and-a">
+                                <div class="first-area-logo mb-2">
+                                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="logo">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 first-area-l-and-a">
+                                <div class="invoice_address_details">
+                                    <p> {!! $setting->invoice_address_details !!} </p>
+                                </div>
+                            </div> --}}
+                        {{-- <div class="col-lg-12 first-area-l-and-a">
+                                <p>Mirpur-10,Dhaka-1216</p>
+                            </div> --}}
+                        {{-- <div class="col-lg-12 first-area-l-and-a">
+                               <div class="invoice_number">
+                                    <p>Call:{{ $setting->header_contact_number }}</p>
+                               </div>
+                            </div> --}}
+                        {{-- <div class="col-lg-12 first-area-l-and-a">
+                                <div class="first-area-logo-and-address-border-bottom">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> --}}
+                        <!-- ==logo and address end== -->
+
+
+                        <!-- ==first area invoice start== -->
+                        <div class="container order_description">
+                            <div class="first-area-invoice">
+                                <div class="first-area-invoice-left"
+                                    style="display: flex;flex-direction: column; justify-content: space-between;">
+                                    <div>
+                                        <div class="first-area-invoice-text">
+                                            <h4><b>INVOICE</b></h4>
+                                        </div>
+                                        <div class="first-area-invoice-bill-and-client">
+                                            <p><b>Invoice No: {{ $order->invoice_no ?? '' }}</b></p>
+                                        </div>
+                                        <div class="first-area-invoice-mobail-no">
+                                            <div class="call">
+                                                <p><b>Date: {{ $order->created_at->format('d/m/Y') }}</b></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="first-area-invoice-address invoice_address_table_cell">
+                                        <div class="address-text">
+                                            <p><b>SHIPPING TO:</b></p>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="first-area-invoice-right">
+                                    <div class="invoice-time-and-no">
+                                        <div class="first-area-logo mb-2">
+                                            <img src="{{ asset('storage/' . $setting->logo) }}" alt="logo">
+                                        </div>
+                                        <div class="address_text_main">
+                                            <span><b><svg viewBox="0 0 24 24" width="12" height="12"
+                                                        stroke="currentColor" stroke-width="2" fill="none"
+                                                        stroke-linecap="round" stroke-linejoin="round"
+                                                        class="css-i6dzq1">
+                                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                        <circle cx="12" cy="10" r="3"></circle>
+                                                    </svg> {!! $setting->invoice_address_details !!}</b>
+                                            </span>
+                                        </div>
+                                        <div class="web_and_contact">
+                                            <div class="invoice-no" style="margin-top: 5px;">
+                                                <p><b><svg viewBox="0 0 24 24" width="11" height="11"
+                                                            style="margin-right: 2px" stroke="currentColor"
+                                                            stroke-width="2" fill="none" stroke-linecap="round"
+                                                            stroke-linejoin="round" class="css-i6dzq1">
+                                                            <path
+                                                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                                            </path>
+                                                        </svg> {{ $setting->header_contact_number }}</b></p>
+                                            </div>
+                                            <div class="invoice-no" style="margin-top: 5px;">
+                                                <p><b><svg xmlns="http://www.w3.org/2000/svg" width="13"
+                                                            height="13" style="margin-right: 2px"
+                                                            viewBox="0 0 24 24">
+                                                            <path fill="currentColor"
+                                                                d="M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2" />
+                                                        </svg> {{ $setting->title }}</b></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @if ($pageIndex === 0)
+                                <div class="first-area-invoice_two"
+                                    style="border: 1px dashed #333;padding: 10px;margin-top: 10px;">
+                                    <div class="first-area-invoice-left_two">
+                                        <div class="first-area-invoice-bill-and-client_two">
+                                            <p><b>Mobile No:</b> <span>{{ $order->customer->phone ?? '' }}</span></p>
+                                        </div>
+                                        <div class="first-area-invoice-mobail-no">
+                                            <div class="call">
+                                                <p><b>Name:</b> <span>{{ $order->customer->name ?? '' }}</span></p>
+                                            </div>
+                                        </div>
+                                        <div class="first-area-invoice-address invoice_address_table_cell">
+                                            <div class="address-text">
+                                                <p><b>Address:</b> <span>{{ $order->customer->address ?? '' }}</span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                        <!-- ==first area invoice end== -->
+                    </div>
+
+                    {{-- Items Table --}}
+                    <div class="middle-area">
+                        <table class="table invoice_table_bg_th">
+                            <tr>
+                                <th>SL</th>
+                                <th>Product</th>
+                                <th>Code</th>
+                                <th>Qty</th>
+                                <th>Bill</th>
+                            </tr>
+                            @foreach ($order->orderItemsChunk as $k => $item)
+                                <tr>
+                                    <td>{{ $k + 1 }}</td>
+                                    <td>{{ $item->product->name }}</td>
+                                    <td>{{ $item->product->product_code }}</td>
+                                    <td>{{ $item->quantity }}</td>
+                                    <td>{{ $item->quantity * $item->price }}</td>
+                                </tr>
+                            @endforeach
+
+                            {{-- Only show totals on last page --}}
+                            @if ($pageIndex + 1 === $totalPages)
+                                <tr>
+                                    <td colspan="3" class="text-right total_qty"><b>Total Qty & Delivery Charge</b>
+                                    </td>
+                                    <td class="text-right"> {{ $order->orderItem->sum('quantity') }}</td>
+                                    <td class="text-right"> {{ $order->shipping_cost }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="2" style="border: none;">
+                                        <div class="barcode text-center"
+                                            style="margin-top: 10px;display: inline-block;">
+                                            {!! DNS1D::getBarcodeHTML($order->invoice_no ?? '', 'C128') !!}
+                                            {{-- <p>{{ $order->invoice_no ?? '' }}</p> --}}
+                                        </div>
+                                    </td>
+                                    <td colspan="2" class="text-right total_bill"><span>Total Bill</span> </td>
+                                    <td class="text-right">
+                                        <p>{{ $order->shipping_cost + $order->total }}</p>
+                                    </td>
+                                </tr>
+                                @if ($order->discount > 0)
+                                    <tr>
+                                        <td colspan="2" style="border: none;"></td>
+                                        <td colspan="2" class="text-right total_bill"><span>Discount:</span></td>
+                                        <td class="text-right"> {{ $order->discount }}</td>
+                                    </tr>
+                                @endif
+                                @if ($order->paid > 0)
+                                    <tr>
+                                        <td colspan="2" style="border: none;"></td>
+                                        <td colspan="2" class="text-right total_bill"><span>Advance:</span></td>
+                                        <td class="text-right"> {{ $order->paid }}</td>
+                                    </tr>
+                                @endif
+                                <tr>
+                                    <td colspan="2" style="border: none;"></td>
+                                    <td colspan="2" class="text-right total_bill"><span>Due:</span></td>
+                                    <td class="text-right">
+                                        {{ $order->total - ($order->paid + $order->discount) + $order->shipping_cost }}
+                                    </td>
+                                </tr>
+                            @endif
+                        </table>
+                    </div>
+                    @if ($pageIndex + 1 === $totalPages)
+                        <div class="last-area">
+                            <div class="container order_description">
+                                <p class="disclaimer">️
+                                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round"
+                                        stroke-linejoin="round" class="css-i6dzq1 italic-svg">
+                                        <path
+                                            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                                        </path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    প্রোডাক্ট সংক্রান্ত অভিযোগের জন্য ৭ দিনের মধ্যে যোগাযোগ করুন
+                                </p>
+                            </div>
+                        </div>
+                    @endif
+                    {{-- Pagination --}}
+                    <div class="pagination-controls page_number">
+                        <span>Page {{ $pageIndex + 1 }} of {{ $totalPages }}</span>
+                    </div>
+                </div>
+
+                {{-- </div> --}}
+                @php $pageIndex++; @endphp
+            @endforeach
+
+            <!-- ==middle area end== -->
+            <!-- ==last area start== -->
+        @endforeach
+
+    </div>
+
+
+</body>
+
+</html>

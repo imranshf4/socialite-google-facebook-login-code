@@ -1,4 +1,4 @@
-
+deal_offer image,slug,position
 php selector (php version update)
 config(app.php,database.php)
 app.php set:

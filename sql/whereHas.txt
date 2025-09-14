@@ -1,0 +1,8 @@
+->where(function ($query) {
+                $query->whereHas('subscription.paidSubscriptionBills')
+                    ->orWhereDoesntHave('subscription');
+            })
+
+ public function paidSubscriptionBills(){
+        return $this->hasMany(SubscriptionBill::class,'subscription_id')->where('status',1);
+    }

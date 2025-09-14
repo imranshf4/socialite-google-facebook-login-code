@@ -318,3 +318,113 @@ https://billionpoint.com/
 
 https://mohasagor.com.bd/
 1. reseller category,sub category, sub sub catgory wise product show & error solved
+2. productList top order or zero order wise filter issue solved.
+3. inactive user not login
+
+https://amazantextile.com/
+1.product code error solved
+2.product purchase edit action uncomment
+3.update cpanel
+
+27/28-08-2025
+https://mohasagor.com.bd/
+https://timestore.xyz/
+1. reseller wise active category,sub category,sub sub category show home page(this site main problem error not show console)
+2. update cpanel
+
+3.dropshipper analysis error solved
+4.cancel option add incomplete order action button for reseller
+5.deactive not login code uncomment
+6.update this code cpanel
+
+30-08-2025
+https://mohasagor.com.bd/
+1. order-return with cost/returned(stock increment issue solved)
+2. most order product percentage calculation error solved
+3. dropshipper list table payment status section show package name,price
+4. incomplete order design change and dynamic for reseller
+5. hopefully dropshipper my shop incomplete order not depend Timeout issue solved
+6.update this code cpanel
+
+576,768,992,1200,1400,
+
+31-08-2025/01-09-2025
+https://billionpoint.com/
+1.a6 print page, page number add not pagination
+2.duplicate order show if greater than 1
+3.update cpanel
+
+https://mohasagor.com.bd/
+1. dropshipper list issue solved
+2. product list order wise category,sub category,sub sub category product filter
+3. most order list date filter issue solved
+4. check docs file 43 no issue, already updated
+5. 44 number problem solved
+6. 45 number problem solved
+7. reseller edit & update issue solved
+8. 48 number problem solved
+9. 50 maybe ok
+10. 56 number already solved
+11. 57 number problem solved
+
+https://goynarputli.com/
+1. general setting email,product qty empty issue solved also update main
+
+02-09-2025
+https://mohasagor.com.bd/
+1. 59 number problem solved
+2. 58 number already solved
+3. 53 maybe ok because orders page total/paid show on product price-discount+shipping cost
+4. 52 number problem solved
+5. orders page show active supplier & also update supplier by product edit/update
+6. product filter by upload product
+
+03-09-2025
+https://mohasagor.com.bd/
+1. 51 number problem solved
+2. 47 number problem solved
+3. unpaid or expired wise filter button add
+4. supplier issue solved
+5. ready campaign product issue solved
+
+04/06-09-2025
+1. https://goynarputli.com/ side transfer
+https://mohasagor.com.bd/
+2. productImage update based on current date
+3. combo product view page retunred system add but order_items table store only main product id
+
+https://billionpoint.com/
+1. a6 print page text size change
+
+https://amazantextile.com/
+1. add exchage order database error solved
+
+https://mohasagor.com.bd/
+1. 49 combo product partial delivery issue solved
+2. category,sub category,sub sub category wise product filter by order wise(asc,desc)
+3. product stock tracking by product code 
+4. update cpanel
+
+https://amazantextile.com/
+1. error solved and update cpanel
+
+https://mohasagor.com.bd/
+1. reseller list active button show only active & paid reseller & active class add
+2. reseller edit issue solved
+3. product stock tracking issue solved
+4. reseller balance check order details modal show and balance wise order show
+
+09/10-09-2025
+https://rayalmart.store/
+1.new site up & product add,file info,brands text hide,exhange order error solved
+
+https://mohasagor.com.bd/
+1. orders page two section gap issue solved
+2. reseller max-in-stock wise product show\
+3. 60 number solved
+4. 61 number solved
+5. reseller balance check order lists issue solved
+6. reseller dashboard issue solved
+
+https://www.shazghor.com/
+1. deal offer crud app create

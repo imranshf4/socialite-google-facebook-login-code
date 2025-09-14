@@ -5,3 +5,13 @@ getTotalAmount() {
                 return total + Number(project.total_amount);
             }, 0);
         },
+
+
+<td>{{ getTotalAmount(reports.purchase_records) }}</td>
+
+ getTotalAmount(purchaseRecords = []) {
+      return purchaseRecords.reduce((total, item) => {
+        const price = parseInt(item.price);
+        return total + price;
+      }, 0);
+    },
