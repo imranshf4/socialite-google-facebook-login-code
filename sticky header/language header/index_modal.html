@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>default show modal</title>
+    <style>
+      /* default-show-banner */
+      #fixed_banner_container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #0000009c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99;
+      }
+      .fixed_banner_img_with_closeIcon {
+        position: relative;
+        margin: 12px;
+      }
+      .fixed_banner_img_with_closeIcon img {
+        max-width: 100%;
+        max-height: 100vh;
+      }
+      .fixed_banner_img_with_closeIcon svg {
+        color: #fff;
+        z-index: 999;
+        position: absolute;
+        bottom: calc(100% + 5px);
+        right: 0;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- default-show-banner -->
+    <div id="fixed_banner_container" onclick="closeBanner()">
+      <div class="fixed_banner_img_with_closeIcon">
+        <img
+          src="https://www.robe.com.bd/public/storage/images/banner/TO6xjWBj8QPylpSKhTupwWVGCVQfNuQ3oWskla36.jpg"
+          alt="fixed-banner"
+        />
+        <svg
+          viewBox="0 0 24 24"
+          width="28"
+          height="28"
+          stroke="currentColor"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="css-i6dzq1"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </div>
+    </div>
+    <script>
+      function closeBanner() {
+        if (!event.target.closest(".fixed_banner_img_with_closeIcon img")) {
+          document.getElementById("fixed_banner_container").style.display =
+            "none";
+        }
+      }
+    </script>
+    <!-- default-show-banner -->
+  </body>
+</html>

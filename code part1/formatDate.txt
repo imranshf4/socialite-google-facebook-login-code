@@ -20,3 +20,37 @@ formatDateTime(datetime) {
 {{ \Carbon\Carbon::parse($subscription->end_date)->diffInDays(\Carbon\Carbon::parse($subscription->start_date)) }} days
 {{ \Carbon\Carbon::parse($bill->due_date)->format('d M Y, h:i A') }}
 ->format('F j,Y') --january 1 year
+
+getLastOrderDaysAgo(datetime) {
+            if (!datetime) return '';
+
+            const startDate = new Date(datetime);
+            const endDate = new Date();
+
+            // Reset time part
+            startDate.setHours(0, 0, 0, 0);
+            endDate.setHours(0, 0, 0, 0);
+
+            let years = endDate.getFullYear() - startDate.getFullYear();
+            let months = endDate.getMonth() - startDate.getMonth();
+            let days = endDate.getDate() - startDate.getDate();
+
+            if (days < 0) {
+                months--;
+                const prevMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+                days += prevMonth.getDate(); // Add days in previous month
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            let result = [];
+
+            if (years > 0) result.push(`${years} year${years > 1 ? 's' : ''}`);
+            if (months > 0) result.push(`${months} month${months > 1 ? 's' : ''}`);
+            if (days > 0 || result.length === 0) result.push(`${days} day${days > 1 ? 's' : ''}`);
+
+            return result.join(', ') + ' ago';
+        },

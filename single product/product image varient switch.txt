@@ -1,0 +1,45 @@
+https://codepen.io/RamonE/pen/WKoZKQ
+<img id="main-image" class="big-image" src="https://images.unsplash.com/photo-1531999577375-41b90044d391" />
+
+<img id="vairiant-images" class="small-images" src ="https://images.unsplash.com/photo-1531931477284-7e16215c9540" data-large="ramon" />
+<img id="vairiant-images" class="small-images" src ="https://images.unsplash.com/photo-1531966662811-c6501e46eda6" data-large="ramon" />
+<img id="vairiant-images" class="small-images" src ="https://images.unsplash.com/photo-1531969179221-3946e6b5a5e7" data-large="ramon" />
+<img id="vairiant-images" class="small-images" src="https://images.unsplash.com/photo-1531999577375-41b90044d391" data-large="ramon" />
+
+
+.big-image{
+  max-width: 500px;
+  display: block;
+  margin-bottom:25px;
+}
+
+.small-images{
+  max-width: 200px;
+  display: inline-block;
+}
+
+const mainImage = document.getElementById('main-image')
+const variantId = document.querySelectorAll('#vairiant-images');
+
+
+function imageSwap(e) {
+  console.log(mainImage);
+  console.log(this.src);
+  console.log(this.getAttribute('data-large'))
+  mainImage.src = this.src;
+};
+
+for (var i = 0; i < variantId.length; i++) {
+    variantId[i].addEventListener('click', imageSwap, false);
+}
+
+###########################################
+<script>
+        const mainImage = document.getElementById('main-image');
+
+        document.querySelectorAll('.color-images img').forEach(img => {
+            img.addEventListener('click', function() {
+                mainImage.src = this.src;
+            });
+        });
+    </script>

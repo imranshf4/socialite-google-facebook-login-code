@@ -428,3 +428,32 @@ https://mohasagor.com.bd/
 
 https://www.shazghor.com/
 1. deal offer crud app create
+
+28-09-25
+https://nafscart.com/
+1.specification details issue solved and update cpanel
+
+seo_friendly_ecommerce_2.0(main)
+1.pdf and csv file download system
+2. size chart add and modal show
+3.......
+
+29-09-25
+https://nafscart.com/
+1. product size,specification,details issue solved
+2. update cpanel
+
+https://sobkichu24.com/
+1. variant wise checkout page thumbnail image change but error show select variant but show error
+
+nkplusbd.com
+1.live this site
+
+https://www.shazghor.com/
+1. header brands wise issue solved
+2. mobile/desktop menu top brands show first category(makeup)
+3. mobile/desktop menu shop by skin concern show 4th category(skin care)
+4. update this code cpanel
+
+https://nkplusbd.com
+1. storage image issue solved

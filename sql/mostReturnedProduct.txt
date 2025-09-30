@@ -1,0 +1,71 @@
+public function mostReturnProduct(Request $request)
+    {
+        $startDate = $request->start_date ? $request->start_date . ' 00:00:00' : null;
+        $endDate = $request->end_date ? $request->end_date . ' 23:59:59' : null;
+        $perPage = $request->items ?? 10; // Default pagination if items not provided
+
+        // Subquery to get total orders per product
+        $orderSubquery = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->select('order_items.product_id', DB::raw('COUNT(order_items.order_id) as total_orders'))
+            ->whereNotIn('orders.status', [6,12])
+            ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                return $query->whereBetween('orders.created_at', [$startDate, $endDate]);
+            })
+            ->groupBy('order_items.product_id');
+
+        // Join products with order subquery and order by total_orders
+        $products = Product::joinSub($orderSubquery, 'order_summary', function ($join) {
+            $join->on('products.id', '=', 'order_summary.product_id');
+        })
+            ->where('products.stock', '>', 0)
+            ->select('products.id', 'products.name', 'products.purchase_price', 'products.stock', 'products.thumbnail_img', 'products.product_code', 'order_summary.total_orders')
+            ->orderByDesc('order_summary.total_orders')
+            ->paginate($perPage);
+
+        // Transform product collection to add order details
+        $products->getCollection()->transform(function ($product) use ($startDate, $endDate) {
+            // Fetch status-wise order summary (excluding status 6)
+            $statusResults = DB::table('order_items')
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->where('order_items.product_id', $product->id)
+                ->whereNotIn('orders.status', [6,12])
+                ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    return $query->whereBetween('orders.created_at', [$startDate, $endDate]);
+                })
+                ->select('orders.status', DB::raw('COUNT(order_items.order_id) as total'))
+                ->groupBy('orders.status')
+                ->get()
+                ->keyBy('status');
+
+            $product->status_wise_order = $statusResults->filter(function ($status) {
+                return $status->total > 0;
+            })->values();
+
+            // Total quantity ordered (excluding status 6)
+            $product->total_qty = DB::table('order_items')
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->where('order_items.product_id', $product->id)
+                ->whereNotIn('orders.status', [6,12])
+                ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    return $query->whereBetween('orders.created_at', [$startDate, $endDate]);
+                })
+                ->sum('order_items.quantity');
+
+            // Total return quantity (only status 9)
+            $product->total_return_qty = DB::table('order_items')
+                ->join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->where('order_items.product_id', $product->id)
+                ->where('orders.status', 9)
+                ->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
+                    return $query->whereBetween('orders.created_at', [$startDate, $endDate]);
+                })
+                ->sum('order_items.quantity');
+
+            return $product;
+        });
+
+        return response()->json([
+            'products' => $products,
+        ]);
+    }

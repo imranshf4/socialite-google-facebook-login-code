@@ -1,4 +1,6 @@
-deal_offer image,slug,position
+nafscart -specification
+20,17,15,
+Purchase Edit, Sale Edit, Debit edit option lagbe admin(is_super_admin == 1) Uni ei action gula korte parbe
 php selector (php version update)
 config(app.php,database.php)
 app.php set:

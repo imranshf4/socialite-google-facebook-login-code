@@ -1,0 +1,16 @@
+const cookieBox = document.getElementById("fixed_banner_container");
+        if (document.cookie.includes("hide_banner=nafscart")) {
+            if (cookieBox) {
+                cookieBox.remove();
+            }
+        }
+
+        function closeBanner() {
+            if (!event.target.closest(".fixed_banner_img_with_closeIcon img")) {
+                // document.getElementById("fixed_banner_container").style.display =
+                //     "none";
+                cookieBox.remove();
+            }
+            document.cookie = "hide_banner=nafscart; max-age=" + 60 * 60 * 24; // 1 day
+        }
+    </script>

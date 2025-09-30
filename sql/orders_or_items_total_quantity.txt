@@ -27,3 +27,22 @@ SELECT
 FROM order_items
 WHERE product_id = 449
 GROUP BY product_id;
+
+
+SELECT 
+    products.id AS product_id,
+    products.name,
+    IFNULL(oi.total_orders, 0) AS total_orders, 
+    IFNULL(oi.last_ordered_date, NULL) AS last_ordered_date
+FROM products
+LEFT JOIN (
+    SELECT 
+        order_items.product_id, 
+        COUNT(order_items.order_id) AS total_orders,
+        MAX(orders.created_at) AS last_ordered_date
+    FROM order_items
+    INNER JOIN orders ON orders.id = order_items.order_id
+    WHERE orders.status IN (1, 2, 3, 4, 5, 6, 8, 9)
+    GROUP BY order_items.product_id
+) AS oi ON products.id = oi.product_id
+ORDER BY total_orders DESC, products.created_at ASC;

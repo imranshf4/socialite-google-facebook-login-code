@@ -1,0 +1,65 @@
+<div class="container section_top_space">
+                <div class="row">
+                    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="slick-wrapper">
+                            <div id="slick1">
+                                @foreach ($top_selling_products as $product)
+                                    <div class="slide-item">
+                                        @include("frontend.components.product_content.$template", [
+                                            'product' => $product,
+                                        ])
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+{{-- slick slider --}}
+    <script>
+        $('#slick1').slick({
+            rows: 2,
+            dots: false,
+            arrows: false,
+            speed: 600,
+            slidesToShow: 6,
+            slidesToScroll: 2,
+            infinite: true,
+            focusOnSelect: true,
+            variableWidth: false,
+            autoplay: true,
+            autoplaySpeed: 3000,
+            responsive: [{
+                    breakpoint: 1400,
+                    settings: {
+                        slidesToShow: 4
+                    }
+                },
+                {
+                    breakpoint: 1200,
+                    settings: {
+                        slidesToShow: 3
+                    }
+                },
+                {
+                    breakpoint: 992,
+                    settings: {
+                        slidesToShow: 3
+                    }
+                },
+                {
+                    breakpoint: 768,
+                    settings: {
+                        slidesToShow: 2
+                    }
+                },
+                {
+                    breakpoint: 576,
+                    settings: {
+                        slidesToShow: 2
+                    }
+                }
+            ]
+        });
+    </script>

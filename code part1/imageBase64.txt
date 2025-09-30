@@ -1,0 +1,35 @@
+ uploadSizeChart(e) {
+            let file = e.target.files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = evt => {
+                let img = new Image();
+                img.onload = () => {
+                    this.form.size_chart = evt.target.result;
+                };
+                img.src = evt.target.result;
+            };
+        },
+
+
+if ($data['size_chart']) {
+                $file = $data['size_chart'];
+                $storagePath = 'public/images/products/size_chart/';
+
+                if (strlen($file) > 6 && preg_match('/^data:image\/(\w+);base64,/', $file)) {
+                    $image_data = substr($file, strpos($file, ',') + 1);
+                    $image_data = base64_decode($image_data);
+
+                    if ($image_data === false) {
+                        throw new Exception('Base64 decode failed.');
+                    }
+                    $img_path = 'thumbnail_' . time() . '_' . rand(1111, 9999) . '.jpg';
+                    Storage::put($storagePath . $img_path, $image_data);
+                    // $image_resize = Image::make(Storage::path($storagePath . $img_path));
+                    // $image_resize->resize(400, 400, function ($constraint) {
+                    //     $constraint->upsize();
+                    // });
+                    // $image_resize->save(Storage::path($storagePath . $img_path));
+                    $data['size_chart'] = 'images/products/size_chart/' . $img_path;
+                }
+            };
