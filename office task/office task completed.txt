@@ -449,6 +449,10 @@ https://sobkichu24.com/
 nkplusbd.com
 1.live this site
 
+30-09-25
+https://sobkichu24.com/
+1. variant wise image issue solved
+
 https://www.shazghor.com/
 1. header brands wise issue solved
 2. mobile/desktop menu top brands show first category(makeup)
@@ -457,3 +461,42 @@ https://www.shazghor.com/
 
 https://nkplusbd.com
 1. storage image issue solved
+
+02-10-25
+dropshipping.com.bd
+1.invoice number change by order_id
+
+https://mohasagor.com.bd/
+1. invoice generate start 1000 then increment one by one if use order_id more duplicate invoice create
+
+https://incubatorbd.com/
+1. add to cart color/variant issue solved issue solved
+
+04/05-10-2025
+https://ponnoza.com/
+1. city-subcity add checkout page and subcity wise delivery charge change,unnecessary field remove,cupon option control site configuration
+2. product single page size/without wise stock show,discount percentage,sold product show
+3. product add/edit permission add
+4. live this site
+
+https://mohasagor.com.bd/
+1. duplicate invoice change from database
+2. new requirement wise invoice issue solved, reseller shop page multiple order issue solved
+3. update this code cpanel
+
+
+https://nafscart.com/
+1. product.vue page supplier/print/slug issue solved
+2. phone number format, length/footer url customer/dropshipper/merchant url and merchant register issue solved
+3. translate issue solved
+4. home page two side banner carousel issue solved
+
+
+https://nkplusbd.com/
+1. 1 no issue solved
+2. 5 no issue solved
+3. 12 no issue solved
+4. 17 no issue solved
+5. product add/edit required/purchase_price issue solved
+6. update this code cpanel
+

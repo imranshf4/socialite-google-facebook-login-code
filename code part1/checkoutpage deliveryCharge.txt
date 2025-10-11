@@ -1,0 +1,36 @@
+<div class="checkout_form_checkbox_group">
+                                    <div class="checkout_form_checkbox_title_">
+                                        <h4>{{ dynamic_lang('delivery_area') }}</h4>
+                                    </div>
+                                    @foreach ($delivery_charges as $index => $delivery_charge)
+                                        <div class="checkout_form_checkbox form-check">
+                                            <input required class="form-check-input"
+                                                value="{{ $delivery_charge->delivery_charge }}"
+                                                @if ($index === 0) checked @endif
+                                                onclick="shippingChargeBySelectArea(this.id , {{ $delivery_charge->delivery_charge }}, {{ $has_free_delivery }})"
+                                                type="radio" name="shipping_charge" id="{{ $delivery_charge->id }}"
+                                                {{ old('shipping_charge') == $delivery_charge->id ? 'checked' : '' }}>
+
+                                            <label class="form-check-label" for="{{ $delivery_charge->id }}">
+                                                {{ $delivery_charge->name }}
+                                            </label>
+                                        </div>
+                                        @error('shipping_charge')
+                                            <span style="color:red">{{ $message }}</span>
+                                        @enderror
+                                    @endforeach
+
+                                </div>
+
+                                <div class="checkout_form_group">
+                                    <label>Delivery Area</label>
+                                    <select id="select_area"
+                                        onchange="shippingChargeBySelectArea(this.options[this.selectedIndex].id , this.value, {{ $has_free_delivery }})"
+                                        class="checkout_form_select">
+                                        @foreach ($delivery_charges as $index => $delivery_charge)
+                                            <option value="{{ $delivery_charge->delivery_charge }}"
+                                                @if ($index === 0) selected @endif>
+                                                {{ $delivery_charge->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>

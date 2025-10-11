@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timer</title>
+  <style>
+    /* Countdown Timer Start */
+    .countdown_container {
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+      font-family: "Noto Sans Bengali", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 35px 0px;
+      margin: 0px 0px 40px;
+    }
+
+    .countdown_container .countdown-wrapper {
+      text-align: center;
+    }
+
+    .countdown_container .countdown-title {
+      font-size: 28px;
+      color: #222;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+    }
+
+    .countdown_container .countdown {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffffcc;
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      padding: 20px 30px;
+      gap: 10px;
+    }
+
+    .countdown_container .time-box {
+      background: white;
+      border-radius: 12px;
+      padding: 15px;
+      min-width: 100px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .countdown_container .time-box:hover {
+      transform: translateY(-5px);
+    }
+
+    .countdown_container .time {
+      display: block;
+      font-size: 34px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .countdown_container .label {
+      font-size: 14px;
+      color: #777;
+    }
+
+    .countdown_container .separator {
+      font-size: 30px;
+      color: #555;
+      font-weight: bold;
+      margin: 0 5px;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 768px) {
+      .countdown_container {
+        padding: 20px 0px;
+        margin: 0px 0px 25px;
+      }
+
+      .countdown_container .countdown {
+        padding: 10px;
+        gap: 5px;
+        border-radius: 6px;
+      }
+
+      .countdown_container .time-box {
+        border-radius: 6px;
+        padding: 10px;
+        min-width: 80px;
+      }
+
+      .countdown_container .countdown-title {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+    }
+
+    @media screen and (max-width: 576px) {
+      .countdown_container .countdown-title {
+        font-size: 22px;
+      }
+
+      .countdown_container .time-box {
+        padding: 5px;
+        min-width: 70px;
+      }
+
+      .countdown_container .time {
+        font-size: 22px;
+        font-weight: 600;
+      }
+    }
+
+    /* Countdown Timer End */
+  </style>
+</head>
+
+<body>
+  <div class="countdown_container">
+    <div class="countdown-wrapper">
+      <h2 class="countdown-title">অফার শেষ হতে যাচ্ছে:</h2>
+      <div class="countdown">
+        <div class="time-box">
+          <span id="days" class="time">000</span>
+          <span class="label">দিন</span>
+        </div>
+        <div class="separator d-none d-sm-block">:</div>
+        <div class="time-box">
+          <span id="hours" class="time">00</span>
+          <span class="label">ঘন্টা</span>
+        </div>
+        <div class="separator d-none d-sm-block">:</div>
+        <div class="time-box">
+          <span id="minutes" class="time">00</span>
+          <span class="label">মিনিট</span>
+        </div>
+        <div class="separator d-none d-sm-block">:</div>
+        <div class="time-box">
+          <span id="seconds" class="time">00</span>
+          <span class="label">সেকেন্ড</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // set the end date
+    const endDate = new Date("2023-09-29T00:00:00").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const gap = endDate - now;
+
+      const day = 1000 * 60 * 60 * 24;
+      const hour = 1000 * 60 * 60;
+      const minute = 1000 * 60;
+      const second = 1000;
+
+      const days = Math.floor(gap / day);
+      const hours = Math.floor((gap % day) / hour);
+      const minutes = Math.floor((gap % hour) / minute);
+      const seconds = Math.floor((gap % minute) / second);
+
+      document.getElementById("days").innerText = days;
+      document.getElementById("hours").innerText = hours;
+      document.getElementById("minutes").innerText = minutes;
+      document.getElementById("seconds").innerText = seconds;
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // const offerTime = $("#offer_time_").val();
+    // const endDate = new Date("2023-09-29T00:00:00").getTime();
+
+    // function updateCountdown() {
+    //   const now = new Date().getTime();
+    //   let gap = endDate - now;
+
+    //   // Check if the countdown has finished
+    //   if (gap <= 0) {
+    //     document.getElementById("days").innerText = "00";
+    //     document.getElementById("hours").innerText = "00";
+    //     document.getElementById("minutes").innerText = "00";
+    //     document.getElementById("seconds").innerText = "00";
+    //     // Optionally, stop the interval when the countdown finishes
+    //     clearInterval(countdownInterval);
+    //     return; // Exit the function
+    //   }
+
+    //   const day = 1000 * 60 * 60 * 24;
+    //   const hour = 1000 * 60 * 60;
+    //   const minute = 1000 * 60;
+    //   const second = 1000;
+
+    //   const days = Math.floor(gap / day);
+    //   const hours = Math.floor((gap % day) / hour);
+    //   const minutes = Math.floor((gap % hour) / minute);
+    //   const seconds = Math.floor((gap % minute) / second);
+
+    //   // Function to ensure two digits (e.g., 5 becomes 05)
+    //   const pad = (num) => (num < 10 ? "0" : "") + num;
+
+    //   document.getElementById("days").innerText = pad(days);
+    //   document.getElementById("hours").innerText = pad(hours);
+    //   document.getElementById("minutes").innerText = pad(minutes);
+    //   document.getElementById("seconds").innerText = pad(seconds);
+    // }
+
+    // // Store the interval ID to be able to clear it later
+    // const countdownInterval = setInterval(updateCountdown, 1000);
+    // updateCountdown();
+  </script>
+</body>
+
+</html>

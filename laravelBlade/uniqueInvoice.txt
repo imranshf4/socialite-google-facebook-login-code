@@ -1,0 +1,3 @@
+$firstChar = substr($order->id, 0, strlen($order->id) - 5);
+            $lastChar = substr($order->id, -3);
+            $order->invoice_no = 'M' . $firstChar . $lastChar;

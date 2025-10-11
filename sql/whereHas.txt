@@ -6,3 +6,17 @@
  public function paidSubscriptionBills(){
         return $this->hasMany(SubscriptionBill::class,'subscription_id')->where('status',1);
     }
+
+
+@php
+                                $totalSold = \App\Models\Order::join(
+                                    'order_items',
+                                    'orders.id',
+                                    '=',
+                                    'order_items.order_id',
+                                )
+                                    ->where('order_items.product_id', $product->id)
+                                    ->where('orders.status', 5)
+                                    ->sum('order_items.quantity');
+
+                            @endphp

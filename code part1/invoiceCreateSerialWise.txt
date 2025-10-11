@@ -23,3 +23,15 @@
                 $order->invoice_no = $invoiceNo;
             }
 
+
+
+
+$startNumber = 1000;
+            $prefix = 'M';
+            $invoiceNo = $prefix . $startNumber;
+            while (Order::where('invoice_no', $invoiceNo)->exists()) {
+                $startNumber++;
+                $invoiceNo = $prefix . $startNumber;
+            }
+            $order->invoice_no = $invoiceNo;
+

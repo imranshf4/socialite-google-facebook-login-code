@@ -1,6 +1,5 @@
-nafscart -specification
-20,17,15,
-Purchase Edit, Sale Edit, Debit edit option lagbe admin(is_super_admin == 1) Uni ei action gula korte parbe
+/login/super/admin/dashboard
+
 php selector (php version update)
 config(app.php,database.php)
 app.php set:
@@ -98,4 +97,36 @@ cron jobs
 
 Minute  Hour mean its reload 1 min por por
 *      *
+<div class="call_copy_whatsapp">
+                                            <a :href="'tel:' + order.customer_phone">
+                                             <i class="fa-solid fa-phone"></i>
+                                            </a>
+                                            <span @click="copyPhoneNumber">
+                                               <i class="fa-regular fa-copy"></i>
+                                            </span>
+                                            <a :href="'https://wa.me/' + order.customer_phone">
+                                               <i class="fa-brands fa-whatsapp"></i>
+                                            </a>
+                                        </div>
+
+
+copyPhoneNumber(order) {
+            navigator.clipboard.writeText(order.customer_phone)
+                .then(() => {
+                    this.$toasted.show('Copied', {
+                        type: 'success',
+                        duration: 3000,
+                        position: 'top-right',
+                    })
+                })
+                .catch(err => {
+                    this.$toasted.show('Failed to copy', {
+                        type: 'error',
+                        duration: 3000,
+                        position: 'top-right',
+                    })
+                });
+        },
+
+
 

@@ -1,0 +1,104 @@
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+
+            radioButtons.forEach(function(radio) {
+                radio.addEventListener("change", function() {
+                    const stock = this.getAttribute("data-stock");
+
+                    const container = this.closest('.select_attribute_container');
+                    const stockDisplay = container.querySelector('.product_stock');
+                    const stockCount = container.querySelector('.stock_count');
+
+                    if (stockDisplay && stockCount) {
+                        stockCount.textContent = stock;
+                        stockDisplay.style.display = "block";
+                    }
+                });
+            });
+        });
+    </script>
+
+@foreach ($attributes as $attribute_id => $attribute_name)
+                                    @if ($product->productVariant->contains('attribute_id', $attribute_id))
+                                        <div class="select_attribute_container s_p_select mt-1 mt-md-2">
+                                            <strong class="single_product_attribute_label">Select
+                                                {{ $attribute_name }}</strong>
+                                            <div class="single_product_attribute">
+                                                <div class="single_product_size_checkbox_list"
+                                                    id="product_variant_{{ strtolower($attribute_name) }}">
+                                                    <ul> @php
+                                                        $sizeOrder = [
+                                                            '26',
+                                                            '27',
+                                                            '28',
+                                                            '29',
+                                                            '30',
+                                                            '31',
+                                                            '32',
+                                                            '33',
+                                                            '34',
+                                                            '35',
+                                                            '36',
+                                                            '37',
+                                                            '38',
+                                                            '39',
+                                                            '40',
+                                                            '41',
+                                                            '42',
+                                                            '43',
+                                                            '44',
+                                                            'XXS',
+                                                            'XS',
+                                                            'S',
+                                                            'M',
+                                                            'L',
+                                                            'XL',
+                                                            'XXL',
+                                                            '2XL',
+                                                            '3XL',
+                                                            '4XL',
+                                                            '5XL',
+                                                        ];
+
+                                                        $sortedVariants = $product->productVariant
+                                                            ->where('attribute_id', $attribute_id)
+                                                            ->sortBy(function ($variant) use ($sizeOrder) {
+                                                                return array_search(
+                                                                    $variant->variant->name,
+                                                                    $sizeOrder,
+                                                                ) !== false
+                                                                    ? array_search($variant->variant->name, $sizeOrder)
+                                                                    : 999;
+                                                            });
+                                                    @endphp
+                                                        @foreach ($sortedVariants as $variant)
+                                                            <li>
+                                                                <div
+                                                                    class="single_product_size_checkbox_list_group  variant">
+                                                                    <input type="radio"
+                                                                        name="variant{{ $attribute_name }}"
+                                                                        value="{{ $variant->variant->name }}"
+                                                                        data-stock="{{ $variant->stock }}"
+                                                                        onclick="getVariant(this.id, {{ $variant->price }}, {{ $product->sale_price }})"
+                                                                        id="{{ $variant->variant->name . $variant->variant->id }}">
+                                                                    <label
+                                                                        for="{{ $variant->variant->name . $variant->variant->id }}">
+                                                                        <div class="title"
+                                                                            onclick="stockShow({{ $variant->stock }})">
+                                                                            {{ $variant->variant->name }}
+                                                                        </div>
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                            <div class="product_stock" style="display: none;">
+                                                <span class="title">Stock: <span class="stock_count">0</span></span>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endforeach
