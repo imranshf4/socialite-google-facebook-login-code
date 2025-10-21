@@ -1,0 +1,65 @@
+<script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const radioButtons = document.querySelectorAll('input[type="radio"][data-product-stock]');
+            const stockIn = document.querySelector(".ast-stock-detail");
+            const stockOut = document.querySelector(".ast-out-of-stock-detail");
+
+            // Function to update stock message
+            function updateStockDisplay(stock) {
+                if (parseInt(stock) > 0) {
+                    stockIn.style.display = "block";
+                    stockOut.style.display = "none";
+                } else {
+                    stockIn.style.display = "none";
+                    stockOut.style.display = "block";
+                }
+            }
+
+            // Set initial display based on checked color
+            const checkedRadio = document.querySelector('input[type="radio"]:checked[data-product-stock]');
+            if (checkedRadio) {
+                updateStockDisplay(checkedRadio.getAttribute("data-product-stock"));
+            }
+
+            // Update display when user changes color
+            radioButtons.forEach(function(radio) {
+                radio.addEventListener("change", function() {
+                    const stock = this.getAttribute("data-product-stock");
+                    updateStockDisplay(stock);
+                });
+            });
+        });
+    </script>
+
+<div class="color_show_checkbox_list">
+                                        <ul>
+                                            @foreach ($colors as $index => $color)
+                                                <li>
+                                                    <div class="color_show_checkbox_list_group product_color">
+                                                        <input type="radio" name="color"
+                                                            value="{{ $color->color_id }}"
+                                                            id="color_{{ $color->color_id }}"
+                                                            data-slug="{{ $color->slug }}"
+                                                            data-product-stock="{{ $color->colorVariant->stock ?? 0 }}"
+                                                            @if ($product->color_id == $color->color_id) checked @endif
+                                                            onclick="getVariantByColor(this.getAttribute('data-slug'))">
+                                                        <label for="color_{{ $color->color_id }}" class="title">
+
+                                                            <div class="label_img">
+                                                                <img src="{{ asset('storage/images/product_thumbnail_img/' . $color->thumbnail_img) }}"
+                                                                    alt="{{ @$color->color->name }}">
+                                                            </div>
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                        <div class="ast-stock-detail" style="display: none;">
+                                            <span class="ast-stock-avail">Availability:</span>
+                                            <span class="stock in-stock">In stock</span>
+                                        </div>
+                                        <div class="ast-out-of-stock-detail" style="display: none;">
+                                            <span class="ast-stock-avail">Availability:</span>
+                                            <span class="stock out-of-stock">Out of stock</span>
+                                        </div>
+                                    </div>

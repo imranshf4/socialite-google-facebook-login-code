@@ -1,0 +1,174 @@
+<div class="col-xl-4 col-lg-12 mb-lg-0 mb-3">
+
+                                                    <div class="category_box_container info_basic_item">
+                                                        <p>Category</p>
+                                                        <div class="form-group">
+                                                            <!-- <label>
+                                                                    Categories
+                                                                </label> -->
+                                                            <div class="categories_items_container">
+                                                                <div class="sub_categories_items"
+                                                                    v-for="(category, category_index) in categories"
+                                                                    :key="category_index">
+                                                                    <div class="sub_toggle_list">
+                                                                        <label class="form-check-label category_label">
+                                                                            <input class="form-check-input"
+                                                                                name="category[]"
+                                                                                v-model="form.categories"
+                                                                                :value="category.id" type="checkbox" />
+                                                                            <span>
+                                                                                {{ category.name }}
+                                                                            </span>
+                                                                        </label>
+
+                                                                        <span class="sub_menu_toggle">
+                                                                            <div class="">
+                                                                                <i @click="toggleSubMenu(category_index)"
+                                                                                    class="fa fa-angle-down angle_icon"
+                                                                                    :id="'sub_menu_angle' + category_index"></i>
+                                                                            </div>
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div class="sub_category_list"
+                                                                        :id="'sub_category_list' + category_index"
+                                                                        v-if="category.sub_category.length > 0">
+                                                                        <span
+                                                                            v-for="sub_category in category.sub_category"
+                                                                            :key="sub_category.id">
+                                                                            <label
+                                                                                class="form-check-label sub_category_label">
+                                                                                <input class="form-check-input"
+                                                                                    name="sub_category[]"
+                                                                                    v-model="form.sub_categories"
+                                                                                    :value="sub_category.id"
+                                                                                    type="checkbox" />
+                                                                                <span class="sub_category_checkbox">{{
+                                                                                    sub_category.name
+                                                                                    }}</span>
+                                                                            </label>
+
+                                                                            <div class="sub_sub_category_list" v-if="
+                                                                                sub_category.sub_sub_category.length > 0
+                                                                            ">
+                                                                                <span
+                                                                                    v-for="sub_sub_category in sub_category.sub_sub_category"
+                                                                                    :key="sub_sub_category.id">
+                                                                                    <label
+                                                                                        class="form-check-label sub_sub_category_label">
+                                                                                        <input class="form-check-input"
+                                                                                            name="sub_sub_category[]"
+                                                                                            v-model="form.sub_sub_categories
+                                                                                                "
+                                                                                            :value="sub_sub_category.id"
+                                                                                            type="checkbox" />
+                                                                                        {{ sub_sub_category.name }}
+                                                                                    </label>
+                                                                                </span>
+                                                                            </div>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                </div>
+
+//product categories
+            $submitted_categories = $request->categories ?? [];
+            $existing_categories = ProductCategory::where('product_id', $product->id)->pluck('category_id')->toArray();
+
+            foreach ($submitted_categories as $category_id) {
+                if (!in_array($category_id, $existing_categories)) {
+                    ProductCategory::create([
+                        'product_id' => $product->id,
+                        'category_id' => $category_id
+                    ]);
+                }
+            }
+            $categories_to_delete = array_diff($existing_categories, $submitted_categories);
+            if (!empty($categories_to_delete)) {
+                ProductCategory::where('product_id', $product->id)
+                    ->whereIn('category_id', $categories_to_delete)
+                    ->delete();
+            }
+
+            //product sub categories
+            $submitted_sub_categories = $request->sub_categories ?? [];
+            $existing_sub_categories = ProductSubCategory::where('product_id', $product->id)->pluck('sub_category_id')->toArray();
+
+            foreach ($submitted_sub_categories as $sub_category_id) {
+                if (!in_array($sub_category_id, $existing_sub_categories)) {
+                    ProductSubCategory::create([
+                        'product_id' => $product->id,
+                        'sub_category_id' => $sub_category_id
+                    ]);
+                }
+            }
+
+            $categories_to_delete = array_diff($existing_sub_categories, $submitted_sub_categories);
+            if (!empty($categories_to_delete)) {
+                ProductSubCategory::where('product_id', $product->id)
+                    ->whereIn('sub_category_id', $categories_to_delete)
+                    ->delete();
+            }
+
+
+            //product sub sub categories
+            $submitted_sub_sub_categories = $request->sub_sub_categories ?? [];
+            $existing_sub_sub_categories = ProductSubSubCategory::where('product_id', $product->id)->pluck('sub_sub_category_id')->toArray();
+
+            foreach ($submitted_sub_sub_categories as $sub_sub_category_id) {
+                if (!in_array($sub_sub_category_id, $existing_sub_sub_categories)) {
+                    ProductSubSubCategory::create([
+                        'product_id' => $product->id,
+                        'sub_sub_category_id' => $sub_sub_category_id
+                    ]);
+                }
+            }
+
+            $categories_to_delete = array_diff($existing_sub_sub_categories, $submitted_sub_sub_categories);
+            if (!empty($categories_to_delete)) {
+                ProductSubSubCategory::where('product_id', $product->id)
+                    ->whereIn('sub_sub_category_id', $categories_to_delete)
+                    ->delete();
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//vue
+resp.data.product_skin.forEach(item => {
+                        if (item) {
+                            this.form.skin_id.push(item);
+                        }
+                    });
+                    resp.data.product_categories.forEach(item => {
+                        if (item) {
+                            this.form.categories.push(item);
+                        }
+                    });
+
+                    resp.data.product_sub_categories.forEach(item => {
+                        if (item) {
+                            this.form.sub_categories.push(item);
+                        }
+                    });
+
+                    resp.data.product_sub_sub_categories.forEach(item => {
+                        if (item) {
+                            this.form.sub_sub_categories.push(item);
+                        }
+                    });

@@ -500,3 +500,59 @@ https://nkplusbd.com/
 5. product add/edit required/purchase_price issue solved
 6. update this code cpanel
 
+11-10-25
+https://nkplusbd.com/
+1. product variant wise stock show
+
+https://nafscart.com/
+1. admin product add/edit field same for merchant product add/edit issue solved
+2. admin manage product filter by merchant wise
+3. smsApi update
+4. update cpanel
+
+https://toppinglifestyle.com/
+1. offer time add-end offer show 00 and update cpanel
+
+12/13-10-25
+https://www.shazghor.com/
+1. header select category, subcategory, subsubcategory/skin concern wise product show
+2. update cpanel
+
+https://mohasagor.com.bd/
+1. product edit add active supplier
+2. supplier product list issue
+3. order invoce issue
+4. update cpanel
+
+https://etisap.com/
+1. new site setup
+
+https://nafscart.com/
+1. dynamic_lang error issue solved single_product page
+2. update cpanel
+
+14/15-10-25
+https://toppinglifestyle.com/
+1. landing page Product Description duplicate and Video Title ckeditor add
+2. update cpanel
+
+https://www.shazghor.com/
+1. category for home_page active/deactive and index page show select category wise product
+2.  add to bag hover color/all categories data insert 
+3.  home page all category product show 2 rows and if has size modal show
+4.  update cpanel
+
+https://amazantextile.com/
+1. Account > Due > Get Paid > Submit এ কাজ করে না, ২। ঠিকানা চেঞ্জ করা যায় না। ৩। ফুটারে ডেলিভারি সিস্টেম এবং Pay With বাদ দিতে হবে 
+
+https://www.aaaaconsulting.com/
+1. when image upload preview image show
+
+https://fuisonhive.com/
+1.  শিপমেন্ট থেকে পারশিয়াল ডেলিভারি অপশন add
+2. order report filter by order status and date
+3. update cpanel
+
+https://rahilfashion.com/
+1. Task - 3 thumbnail image, color wise stock in/out of stock show
+2. product update and back productList page on page_no wise

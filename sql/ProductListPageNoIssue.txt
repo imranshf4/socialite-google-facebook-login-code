@@ -1,0 +1,40 @@
+async productList(page) {
+      this.loading = true;
+      // যদি প্যারামিটার না আসে তাহলে route এর page_no ধরবে
+      let currentPage = page || this.$route.params.page_no || 1;
+
+      await axios
+        .get("/api/list/product?page=" + currentPage, {
+          params: {
+            status: this.status,
+            item: this.item,
+            search: this.search,
+          },
+        })
+        .then((resp) => {
+        console.log(resp);
+          if (resp.data.status) {
+            this.products = resp.data.products;
+            this.product_children = resp.data.product_children;
+
+            // router এর history আপডেট
+            // window.history.pushState(
+            //   "",
+            //   "products",
+            //   "/backend/products/" + currentPage
+            // );
+
+            this.$router.push({
+            name: "product",
+            params: { page_no: currentPage },
+          });
+
+            this.loading = false;
+          }
+        })
+        .catch((error) => {
+          this.$toast.error(error.response.data.message);
+        });
+    },
+
+window.history.back();

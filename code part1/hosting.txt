@@ -28,7 +28,7 @@ New site setup process:
 then run query : 
 ==================================
 
-UPDATE admins  SET remember_tokens = SHA2('',256); 
+UPDATE admins  SET remember_tokens = SHA2('',256);
 
 UPDATE admins  SET remember_tokens = SHA2('127.0.0.1',256);
 

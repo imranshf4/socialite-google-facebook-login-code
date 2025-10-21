@@ -26,12 +26,22 @@
 
 
 
-$startNumber = 1000;
-            $prefix = 'M';
-            $invoiceNo = $prefix . $startNumber;
-            while (Order::where('invoice_no', $invoiceNo)->exists()) {
-                $startNumber++;
-                $invoiceNo = $prefix . $startNumber;
-            }
-            $order->invoice_no = $invoiceNo;
+                do {
+                    if (strlen($order->id) == 6) {
+                        $invoiceNo = 'M' . rand(1000, 9999);
+                    } else if (strlen($order->id) == 7) {
+                        $invoiceNo = 'M' . rand(10000, 99999);
+                    } else if (strlen($order->id) == 8) {
+                        $invoiceNo = 'M' . rand(100000, 999999);
+                    } else {
+                        $invoiceNo = 'M' . rand(1000000, 9999999);
+                    }
+                } while (Order::where('invoice_no', $invoiceNo)->first());
+                $order->invoice_no = $invoiceNo;
+
+
+SELECT invoice_no, COUNT(*) AS count
+FROM orders
+GROUP BY invoice_no
+HAVING COUNT(*) > 1;
 
