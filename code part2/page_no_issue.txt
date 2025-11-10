@@ -1,0 +1,65 @@
+ getCategories(page = this.currentPage) {
+            axios.get('/api/list/category?page=' + page)
+                .then((resp) => {
+                    console.log('getCategories', resp)
+                    if (resp.data.status) {
+                        this.categories = resp.data.categories;
+                        this.loading = false
+
+                        this.currentPage = page;
+                        this.$router.replace({
+                            path: this.$route.path,
+                            query: { ...this.$route.query, page: page },
+                        });
+                    }
+                })
+                .catch(error => {
+                    this.$toastr.e(error.response.data.message);
+                });
+        },
+currentPage: this.$route.query.page || 1,
+
+<router-link :to="{ name: 'CategoryEdit', params: { categoryId: category.id }, query: { page: currentPage } }"
+                                                            class="common_edit_btn" title="Edit"><i
+                                                                class="fa fa-edit"></i></router-link>
+
+
+update() {
+            this.form.post('/update/category/' + this.$route.params.categoryId, {
+                transformRequest: [function (data, headers) {
+                    return objectToFormData(data)
+                }],
+            })
+                .then((resp) => {
+                    console.log(resp)
+                    if (resp.data.status) {
+                        // this.$router.push({name: 'category'});
+                        this.$toasted.show(resp.data.message, {
+                            type: "success",
+                            position: 'top-center',
+                            duration: 4000
+                        });
+                        window.history.back();
+                    }
+
+                })
+                .catch(error => {
+                    this.$toastr.e(error.response.data.message);
+                });
+        },
+
+<div class="box-footer">
+                                    <div class="row" style="margin-left:0;margin-right:0">
+                                        <div class="col-lg-6">
+                                            <pagination :data="categories" @pagination-change-page="getCategories"
+                                                :limit="3"></pagination>
+                                        </div>
+                                        <div class="col-lg-6 mt-1" style="margin-top: 25px;text-align:right;">
+                                            <p>Showing <strong>{{ categories.from }}</strong> to
+                                                <strong>{{ categories.to }}</strong> of total
+                                                <strong>{{ categories.total }}</strong> entries
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>

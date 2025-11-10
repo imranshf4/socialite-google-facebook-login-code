@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+
+  <meta charset="UTF-8">
+  <title>{{ $showroom->name }} sale recipient  </title>
+
+  <style>
+    #invoice-POS {
+        box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+        padding: 2mm;
+        margin: 0 auto;
+        width: 70mm;
+        background: #FFF;
+    }
+
+    ::selection {
+        background: #f31544;
+        color: #FFF;
+    }
+
+    ::moz-selection {
+        background: #f31544;
+        color: #FFF;
+    }
+
+    h1 {
+        font-size: 1.5em;
+        color: #000;
+    }
+
+    h2 {
+        font-size: .9em;
+    }
+
+    h3 {
+        font-size: 1.2em;
+        font-weight: 300;
+        line-height: 2em;
+    }
+
+    p {
+        font-size: 1em;
+        color: #000;
+        line-height: 1.2em;
+        font-weight: bold;
+        font-family: 'Gill Sans';
+    }
+
+    #top,
+    #mid,
+    #bot {
+        /* Targets all id with 'col-' */
+        border-bottom: 1px solid #EEE;
+    }
+
+    #top {
+        min-height: 100px;
+    }
+
+    #mid {
+        min-height: 80px;
+    }
+
+    #bot {
+        min-height: 50px;
+    }
+
+    #top .logo {
+        height: 60px;
+        width: 60px;
+        background: url(http://michaeltruong.ca/images/logo1.png) no-repeat;
+        background-size: 60px 60px;
+    }
+
+    .clientlogo {
+        float: left;
+        height: 60px;
+        width: 60px;
+        background: url(http://michaeltruong.ca/images/client.jpg) no-repeat;
+        background-size: 60px 60px;
+        border-radius: 50px;
+    }
+
+    .info {
+        display: block;
+        margin-left: 0;
+    }
+
+    .title {
+        float: right;
+    }
+
+    .title p {
+        text-align: right;
+        font-family: 'Gill Sans';
+        ;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+   .table_heading {
+        font-size: .8em;
+        background: #EEE;
+        font-weight: bold;
+        font-family: Arial, Helvetica;
+    }
+
+    .tabletitle {
+        font-size: 1em;
+        background: #EEE;
+        font-weight: bold;
+        font-family: Arial, Helvetica;
+        line-height: 5px;
+    }
+
+    .service {
+        border-bottom: 1px solid #EEE;
+    }
+
+    .item {
+        width: 24mm;
+    }
+
+    .itemtext {
+        font-size: 15px;
+        color: #000;
+        font-weight: normal;
+        font-family: 'Gill Sans';
+    }
+
+    #legalcopy {
+        margin-top: 5mm;
+    }
+
+    .info.custom__p__info h4 {
+        margin: 0px;
+        margin-top: 10px;
+    }
+    .info.custom__p__info p {
+        margin: 10px 0px 10px 0px;
+    }
+
+    .custom__p__tableitem p {
+        margin: 7px 0px;
+    }
+
+</style>
+
+  <script>
+  window.console = window.console || function(t) {};
+</script>
+
+
+
+  <script>
+  if (document.location.search.match(/type=embed/gi)) {
+    window.parent.postMessage("resize", "*");
+  }
+</script>
+
+
+</head>
+
+<body>
+
+
+  <div id="invoice-POS">
+
+    <center id="top">
+      <img class="logo" src="{{ asset('storage/'.$showroom->logo) }}">
+      <div class="info">
+        <h2>{{ $showroom->name }}</h2>
+      </div><!--End Info-->
+    </center><!--End InvoiceTop-->
+
+    <div id="mid">
+      <div class="info custom__p__info">
+        <h4>Invoice ID: {{ $sale->invoice_no }}</h4>
+        <p>
+          Phone   : {{ $sale->phone }} <br/>
+        </p>
+
+
+      </div>
+    </div><!--End Invoice Mid-->
+
+    <div id="bot">
+
+                    <div id="table">
+                        <table>
+
+                            <tr class="table_heading">
+                              <td class="item"><h2>Item</h2></td>
+                              <td class="Hours"><h2>Size</h2></td>
+                              <td class="Hours"><h2>Qty</h2></td>
+                              <td ><h2>Amount</h2></td>
+                            </tr>
+
+                            @forelse ($beforeExchangedProducts as $item)
+                                <tr class="service">
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ str_replace('-',' ',$item->product->slug)   }}</p>
+                                </td>
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ $item->variant->name }} </p></td>
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ $item->qty }} </p></td>
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ $item->price * $item->qty }}</p></td>
+                              </tr>
+                            @empty
+
+                            @endforelse
+
+                            @forelse ($sale->sale_items as $item)
+                                <tr class="service">
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ str_replace('-',' ',$item->product->slug)   }}@if($sale->is_exchange == 1) (Ex.) @endif</p>
+                                </td>
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ $item->variant->name }} </p></td>
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ $item->qty }} </p></td>
+                                  <td class="tableitem custom__p__tableitem"><p class="itemtext">{{ $item->price * $item->qty }}</p></td>
+                              </tr>
+                            @empty
+
+                            @endforelse
+
+
+
+
+                            <tr class="tabletitle">
+                                <td colspan="2"></td>
+                                <td ><h2>Sub Total</h2></td>
+                                <td class="payment"><h2>{{ $sale->total }}</h2></td>
+                            </tr>
+
+                            <tr class="tabletitle">
+                                <td colspan="2"></td>
+                                <td ><h2>VAT({{ $showroom->vat }}%)</h2></td>
+                                <td class="payment"><h2>{{ $sale->vat }}</h2></td>
+                            </tr>
+  
+                          <tr class="tabletitle">
+                              <td colspan="2"></td>
+                              <td ><h2>Discount</h2></td>
+                              <td class="payment"><h2>{{ $sale->discount }}</h2></td>
+                          </tr>
+
+                      
+
+                          <tr class="tabletitle">
+                              <td colspan="2"></td>
+                              <td ><h2>Payble</h2></td>
+                              <td class="payment"><h2>{{ ($sale->total + $sale->vat) - $sale->discount   }}</h2></td>
+                          </tr>
+
+                          <tr class="tabletitle">
+                            <td colspan="2"></td>
+                            <td ><h2>Paid</h2></td>
+                            <td class="payment"><h2>{{ $sale->paid + $sale->partial_paid }}</h2></td>
+                        </tr>
+
+                        </table>
+                    </div><!--End Table-->
+
+                    <div id="legalcopy">
+                        <p class="legal"><strong>Thank you for your purchase!</strong> Location: {{ $showroom->address}}
+                        </p>
+                        <small>Note: keep this invoice if requrie exchange. Exchange possible from our any outlet </small>
+                    </div>
+
+    </div><!--End InvoiceBot-->
+  </div><!--End Invoice-->
+
+
+
+
+<script>
+
+window.print();
+
+</script>
+
+</body>
+
+</html>

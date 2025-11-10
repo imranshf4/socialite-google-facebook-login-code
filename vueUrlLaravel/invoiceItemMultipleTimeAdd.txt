@@ -1,0 +1,468 @@
+<template>
+    <div>
+        <navbar></navbar>
+        <div class="content-wrapper">
+            <section class="content-header">
+                <h1>
+                    <router-link :to="{ name: 'merchant_invoice_list' }" class="btn btn-primary">
+                        <i class="fa fa-arrow-left"></i>
+                    </router-link>
+                </h1>
+                <ol class="breadcrumb">
+                    <li>
+                        <a href="#"> <i class="fa fa-dashboard"></i>Dashboard </a>
+                    </li>
+                    <li class="active">add product</li>
+                </ol>
+            </section>
+            <section class="content">
+                <h1 v-if="loading" style="text-align: center;font-size: 50px;">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </h1>
+
+                <form v-else @submit.prevent="addInvoice" enctype="multipart/form-data">
+                    <div class="alert alert-danger alert-dismissible" v-if="error" role="alert">
+                        {{ error }}
+                        <span aria-hidden="true" class="close" data-dismiss="alert" style="color: #fff;"
+                            aria-label="Close">&times;</span>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12 box box-primary">
+                            <div class="">
+                                <div class="box-header with-border text-center">
+                                    <h3 class="box-title">Invoice Information</h3>
+                                </div>
+                                <div class="box-body">
+                                    <div class="row">
+                                        <div class="col-md-9">
+                                            <label>Product Name</label>
+                                            <input v-model="form.product_name" type="text" class="form-control"
+                                                placeholder="Enter product name" required />
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label>ATTN</label>
+                                            <input v-model="form.attn" type="text" class="form-control" />
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-md-4">
+                                            <label>Total CBM</label>
+                                            <input v-model.number="form.total_cbm" type="number" class="form-control"
+                                                step="0.001" placeholder="Total CBM" />
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label>Delivery Date</label>
+                                            <input v-model="form.delivery_date" type="date" class="form-control" />
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label>Product Image</label>
+                                            <input type="file" @change="onFileChange($event)" class="form-control" />
+                                            <div v-if="form.image" class="mt-2">
+                                                <img :src="form.image" alt="Preview"
+                                                    style="max-height: 100px; border-radius: 5px;" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="">
+                                <div v-for="(item, index) in form.items" :key="index">
+                                    <div class="box-header with-border text-center" v-if="index == 0">
+                                        <h3 class="box-title">Invoice Item</h3>
+                                    </div>
+                                    <div class="box-header with-border text-center" v-else>
+                                        <h3 class="box-title">Invoice Item {{ index + 1 }}</h3>
+                                    </div>
+
+                                    <div class="box-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <label>Variant Name</label>
+                                                <input v-model="item.variant_name" type="text" class="form-control"
+                                                    placeholder="Enter variant name" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Quantity Each Carton</label>
+                                                <input v-model.number="item.quantity_each_carton" type="number"
+                                                    class="form-control" placeholder="0" />
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label>Cartons Per Pallet</label>
+                                                <input v-model.number="item.cartons_per_pallet" type="number"
+                                                    class="form-control" placeholder="0" />
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-4">
+                                                <label>Price</label>
+                                                <input v-model.number="item.price" type="number" step="0.01"
+                                                    class="form-control" placeholder="0.00" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <label>Product Net Weight (kg)</label>
+                                                <input v-model.number="item.product_net_weight" type="number"
+                                                    step="0.01" class="form-control" placeholder="0.00" />
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label>Product Gross Weight (kg)</label>
+                                                <input v-model.number="item.product_gross_weight" type="number"
+                                                    step="0.01" class="form-control" placeholder="0.00" />
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-4">
+                                                <select v-model="item.pallet_id" class="form-control">
+                                                    <option value="" disabled>Select Pallet</option>
+                                                    <option v-for="pallet in pallets" :key="pallet.id"
+                                                        :value="pallet.id">
+                                                        {{ pallet.name }}
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-2 d-flex align-items-end">
+                                                <button type="button" class="btn btn-danger w-100" style="height: 40px;"
+                                                    @click="removeItem(index)" v-if="form.items.length > 1">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+
+
+                                        <!-- Add New Item Button -->
+                                        <div class="mt-3" v-if="index === form.items.length - 1">
+                                            <button type="button" class="btn btn-primary" @click="addNewItem">
+                                                + Add Another Item
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <hr v-if="index !== form.items.length - 1 " class="mt-4" style="margin-bottom: -5px" />
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group text-center">
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</template>
+
+<script>
+import Vue from 'vue';
+import navbar from '../Navbar';
+import { Form, HasError, AlertError } from 'vform';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { VueEditor } from 'vue2-editor';
+Vue.component(HasError.name, HasError);
+
+export default {
+    name: 'Add',
+    created() {
+        this.getPallets();
+    },
+    components: {
+        navbar,
+        VueEditor,
+    },
+    data() {
+        return {
+            form: new Form({
+                attn: '',
+                total_cbm: 0,
+                delivery_date: '',
+                image: '',
+                product_name: '',
+                items: [
+                    {
+                        variant_name: '',
+                        quantity_each_carton: 0,
+                        cartons_per_pallet: 0,
+                        price: 0.00,
+                        product_net_weight: 0.00,
+                        product_gross_weight: 0.00,
+                        pallet_id: '',
+                    },
+                ],
+            }),
+
+            pallets: [],
+            loading: false,
+            error: '',
+        };
+    },
+
+    methods: {
+        addNewItem() {
+            this.form.items.push({
+                variant_name: '',
+                quantity_each_carton: 0,
+                cartons_per_pallet: 0,
+                price: 0.00,
+                product_net_weight: 0.00,
+                product_gross_weight: 0.00,
+                pallet_id: '',
+            });
+        },
+        removeItem(index) {
+            this.form.items.splice(index, 1);
+        },
+        onFileChange(event) {
+            // const file = event.target.files[0];
+            // if (file) {
+            //     this.form.items[index].image = URL.createObjectURL(file);
+            // }
+
+            let file = event.target.files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = evt => {
+                let img = new Image();
+                img.onload = () => {
+                    this.form.image = evt.target.result;
+                };
+                img.src = evt.target.result;
+            };
+        },
+        addInvoice() {
+            this.$Progress.start();
+            console.log(this.form);
+            this.form
+                .post('/api/supplier/invoice/store')
+                .then(resp => {
+                    console.log(resp);
+                    if (resp.data.status) {
+                        this.$router.push({ name: 'merchant_invoice_list' });
+                        this.$toastr.s(resp.data.message);
+                    } else {
+                        this.$toastr.e(error.response.data.message);
+                    }
+                    this.$Progress.finish();
+                })
+                .catch(error => {
+                    this.$toastr.e(error.response.data.message);
+                });
+        },
+
+        getPallets() {
+            this.$Progress.start();
+            axios
+                .post('/api/pallet/list')
+                .then(resp => {
+                    if (resp.data.status) {
+                        this.pallets = resp.data.pallets;
+                    }
+                    this.$Progress.finish();
+                })
+                .catch(error => {
+                    this.$toastr.e(error.response.data.message);
+                });
+        },
+
+    },
+};
+</script>
+
+<style scoped>
+.p_img_upload_field {
+    display: none;
+}
+
+.img_caption {
+    margin-top: 5px;
+    margin-left: 52px;
+}
+
+.upload_img_container {
+    width: 150px;
+    height: 150px;
+    border: 2px dotted #259dab;
+    cursor: pointer;
+    position: relative;
+}
+
+.plus_img {
+    position: absolute;
+    width: 40px !important;
+    height: 40px !important;
+    /* margin: 18% !important; */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.upload_img_container>img {
+    width: 140px;
+    height: 140px;
+    margin: 2px;
+}
+
+.upload_img_container>p {
+    margin-bottom: 0px;
+}
+
+.mb-2 {
+    margin-bottom: 5px !important;
+}
+
+i.fa.fa-cloud-upload {
+    font-size: 85px;
+}
+
+#file {
+    opacity: 0;
+    z-index: -1;
+}
+
+.images-preview {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.mb-2 {
+    margin-bottom: 5px !important;
+}
+
+.height {
+    height: 360px !important;
+}
+
+i.fa.fa-cloud-upload {
+    font-size: 85px;
+}
+
+.form-check-input {
+    height: 12px !important;
+}
+
+label.v_check_label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.v_check {
+    min-width: 10%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.v_check_container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+input.form-control {
+    margin-bottom: 0px !important;
+}
+
+select.form-control {
+    margin-bottom: 0px !important;
+}
+
+
+.ck-editor__editable {
+    min-height: 120px !important;
+}
+
+@media screen and (max-width: 1400px) {
+    .plus_img {
+        /* position: absolute;
+        width: 40px !important;
+        height: 40px !important;
+        margin: 30% !important; */
+    }
+}
+
+@media screen and (max-width: 992px) {
+    input.form-control {
+        margin-bottom: 15px !important;
+    }
+
+    select.form-control {
+        margin-bottom: 15px !important;
+    }
+}
+</style>
+
+
+
+
+#####################################
+public function supplierInvoiceStore(Request $request)
+    {
+        // return $request->all();
+
+        DB::beginTransaction();
+
+        try {
+            $imagePath = null;
+            // if ($request->hasFile('image')) {
+            //     $imageFile = $request->file('image');
+            //     $imageName = hexdec(uniqid()) . '-' . $imageFile->getClientOriginalName();
+            //     $imagePath = $imageFile->storeAs('images/supplier_invoice/product_image', $imageName, 'public');
+            // }
+
+            $file = $request->image;
+            $storagePath = 'public/images/supplier_invoice/product_image/';
+
+            if (strlen($file) > 6 && preg_match('/^data:image\/(\w+);base64,/', $file)) {
+                $image_data = substr($file, strpos($file, ',') + 1);
+                $image_data = base64_decode($image_data);
+
+                if ($image_data === false) {
+                    throw new Exception('Base64 decode failed.');
+                }
+                $img_path = 'thumbnail_' . time() . '_' . rand(1111, 9999) . '.jpg';
+                Storage::put($storagePath . $img_path, $image_data);
+                $imagePath = 'images/supplier_invoice/product_image/' . $img_path;
+            }
+
+            $supplier_invoice = new SupplierInvoice();
+            $supplier_invoice->supplier_id = session()->get('merchant')['id'];
+            // $supplier_invoice->supplier_id = 5;
+            $supplier_invoice->attn = $request->attn;
+            $supplier_invoice->order_no = mt_rand(10000, 99999);
+            $supplier_invoice->total_cbm = $request->total_cbm;
+            $supplier_invoice->delivery_date = $request->delivery_date;
+            $supplier_invoice->product_name = $request->product_name;
+            $supplier_invoice->image = $imagePath;
+            $supplier_invoice->save();
+
+            foreach ($request->items as $item) {
+                SupplierInvoiceItem::create([
+                    'supplier_invoice_id' => $supplier_invoice->id,
+                    'variant_name' => $item['variant_name'],
+                    'quantity_each_carton' => $item['quantity_each_carton'],
+                    'cartons_per_pallet' => $item['cartons_per_pallet'],
+                    'price' => $item['price'],
+                    'product_net_weight' => $item['product_net_weight'],
+                    'product_gross_weight' => $item['product_gross_weight'],
+                    'total_quantity' => $item['quantity_each_carton'] * $item['cartons_per_pallet'],
+                    'pallet_id' => $item['pallet_id'],
+                ]);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Supplier Invoice created successfully',
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return $e->getMessage();
+        }
+    }

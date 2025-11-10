@@ -1,0 +1,30 @@
+<!-- social media start -->
+                        <div class="social_share">
+                            <h5>Share</h5>
+                            <ul>
+                                <li>
+                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}"
+                                        class="social_share_link facebook">
+                                        <i class="fa-brands fa-facebook-f facebook"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(url()->current()) }}"
+                                        class="social_share_link twitter">
+                                        <i class="fa-brands fa-twitter"></i>
+                                    </a>
+                                </li>
+                                {{-- <li>
+                                    <a href="https://www.instagram.com/?url={{ urlencode(url()->current()) }}" class="social_share_link instagram">
+                                        <i class="fa-brands fa-instagram"></i>
+                                    </a>
+                                </li> --}}
+                                <li>
+                                    <a href="https://wa.me/?text={{ urlencode(url()->current()) }}"
+                                        class="social_share_link whatsapp">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- social media end -->

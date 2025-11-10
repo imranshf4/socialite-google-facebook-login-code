@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <title>Print || Invoice</title>
+
+    <?php
+    $setting = App\Models\GeneralSetting::latest()->first();
+    ?>
+    <style>
+        /* .pull-right.moha_add_inv p {
+            line-height: .9;
+        } */
+        .pull-right.moha_add_inv {
+            text-align: left;
+            margin-right: 20px;
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 0rem;
+        }
+
+        body {
+            background: #ddd;
+        }
+
+
+        th {
+            background-color: #04AA6D !important;
+            color: #000 !important;
+        }
+
+        .print {
+            background: #fff;
+            padding: 28px;
+            display: block;
+        }
+
+        .page-break {
+            page-break-after: always;
+            background-color: #fff;
+            padding-bottom: 50px;
+            padding-top: 15px;
+            margin-bottom: 10px;
+            width: 70%;
+        }
+
+        .invoice_header_left_section {
+            text-align: left;
+            width: 55% !important;
+        }
+
+        .invoice_header_right_section {
+            text-align: center;
+            width: 35% !important;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media print {
+            #print {
+                display: none;
+            }
+
+        }
+
+        .btn-pr {
+            text-align: right;
+            display: block;
+            position: fixed;
+            right: 0;
+            top: 280px;
+        }
+
+        .btn-pr button {
+            height: 50px;
+        }
+
+        .customer_info_list {
+            border: 3px dashed #000;
+            margin-top: 30px;
+            margin-right: 100px;
+            margin-left: 10px;
+        }
+
+        .invoice_phone_number {
+            font-weight: 900;
+        }
+
+        .customer_info_list li {
+            list-style-type: square;
+            padding: 5px 0px;
+            text-align: left;
+        }
+
+        .current_date {
+            margin-right: 110px;
+        }
+
+        .company_logo {
+            max-width: 200px;
+            max-height: 80px;
+            margin-left: 20px;
+            margin-top: 20px;
+        }
+    </style>
+
+
+
+</head>
+
+<body>
+    <div class="btn-pr">
+        <button class="btn btn-success text-center print-button" onclick="allPrint()" id="print"><i
+                class="fa fa-print"></i></button>
+    </div>
+    <div class="container page-break">
+        <div class="row justify-content-center break">
+            <div class="invoice_header_left_section">
+                @if ($sale->sale_type == 1)
+
+                    <ul class="customer_info_list">
+                        <li> <strong> Name: {{ $sale->customer->name ?? '' }} </strong> </li>
+                        <li> <strong> Mobile: <span
+                                    class="invoice_phone_number">{{ $sale->customer_phone ?? '' }}</span>
+                            </strong>
+                        </li>
+                        <li> <strong> Address: </strong>
+                            @if (!empty($sale->customer->address))
+                                {{ $sale->customer->address . ',' }}
+                            @endif
+                            @if (!empty($sale->sub_city->name))
+                                {{ ',' . $sale->sub_city->name . ',' }}
+                            @endif
+                            <b> {{ $sale->city->name ?? '' }}</b>
+
+                        </li>
+                        <li> <strong> Invoice No: {{ $sale->invoice_no }} </strong> </li>
+
+                        @if (isset($sale->note) && !empty($sale->note))
+                            <li> <strong> Customer Note: {{ $sale->note }} </strong> </li>
+                        @endif
+                        @if (isset($sale->comment) && !empty($sale->comment))
+                            <li> <strong> Comment: {{ $sale->comment }} </strong> </li>
+                        @endif
+                        @if ($sale->courier)
+                            <li> <strong> Courier: {{ @$sale->courier->name ?? '' }} </strong> </li>
+                        @endif
+                    </ul>
+                @else
+                    <ul class="customer_info_list">
+                        <li> <strong> Name:</strong> {{ $sale->company->name ?? '' }} </li>
+                        <li> <strong> Mobile: </strong> {{ $sale->company->phone ?? '' }} </li>
+                        <li> <strong> Address: </strong>
+                            @if (!empty($sale->company->address))
+                                {{ $sale->company->address . ',' }}
+                            @endif
+                        </li>
+                        <li> <strong> Invoice No: </strong>{{ $sale->invoice_no }} </li>
+                    </ul>
+
+                @endif
+            </div>
+            <div class="invoice_header_right_section">
+                <img class="company_logo" src="{{ asset('storage/' . $setting->logo) }}" alt="logo">
+                <div class="pull-right moha_add_inv">
+                    <p> {!! $setting->invoice_address_details !!} </p>
+                    <p class="current_date" style="margin-top: 5px;">
+                        <strong> Date: <span style="border:1px solid #ddd"> <?php echo date('d/m/Y'); ?></span> </strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-11 col-md-11 col-lg-offset-1 col-md-offset-1">
+
+                <table class="table table-bordered moha_tbl_inv" style="margin-top: 5px;">
+                    <tbody>
+                        <tr>
+                            <th style="background-color: #ddd !important;" class="text-left">No</th>
+                            <th style="background-color: #ddd !important;" class="text-left">Product Details</th>
+                            <th style="background-color: #ddd !important;" class="text-center">Size</th>
+                            <th style="background-color: #ddd !important;" class="text-center">Qty</th>
+                            <th style="background-color: #ddd !important;" class="text-center">Price</th>
+                            <th style="background-color: #ddd !important;" class="text-center">Total</th>
+                        </tr>
+
+                        @php
+                            $groupedItems = $sale->saleItems->groupBy('product_child_id');
+                            $rowNumber = 1;
+                        @endphp
+
+                        @foreach ($groupedItems as $productId => $items)
+                            <tr>
+                                <td class="text-center" rowspan="{{ count($items) }}">{{ $rowNumber++ }}</td>
+                                <td rowspan="{{ count($items) }}">
+                                    {{ str_replace('-', ' ', $items->first()->product->slug) }}
+                                </td>
+
+                                @foreach ($items as $index => $item)
+                                    @if ($index > 0)
+                            <tr>
+                        @endif
+
+                        <td class="text-center">
+                            {{ $item->variant->name ?? '-' }} <br>
+                            @if ($item->is_exchanged == 1)
+                                <span style="color:red;">Exchange</span>
+                            @endif
+                        </td>
+
+                        <td class="text-center">
+                            <span style="border: 1px solid #ddd;">
+                                <b style="font-size: 16px; padding:5px;">{{ $item->qty }}</b>
+                            </span>
+                        </td>
+
+                        <td class="text-center">{{ $item->price }} Tk</td>
+                        <td class="text-center">{{ $item->qty * $item->price }} Tk</td>
+
+                        </tr>
+                                @endforeach
+                        @endforeach
+
+                        <tr>
+                            <td colspan="3" class="text-right">
+                                Total Quantity
+                            <td colspan="1" class="text-center">
+
+                                <strong> {{ $sale->totalQuantity }}</strong>
+                            </td>
+                            <td colspan="1" class="text-right"> Sub Total </td>
+                            <td colspan="2" class="text-center">
+                                <span
+                                    style="font-weight:bold;font-size:13px; text-align: center;">{{ floatval($sale->total) }}
+                                    TK</span>
+                            </td>
+                        </tr>
+
+                        @if ($sale->discount > 0)
+                            <tr>
+                                <td colspan="5" class="text-right">
+                                    Discount Amount ({{ number_format(($sale->discount / $sale->total) * 100, 2) }}%)
+                                    :
+
+                                </td>
+                                <td colspan="2" class="text-center">{{ $sale->discount }} Tk</td>
+                            </tr>
+                        @endif
+
+                        <tr>
+                            <td colspan="5" class="text-right">
+                                Payable amount with shipping charge ({{ intval($sale->shipping_cost) }} Tk) :
+                            </td>
+                            <td colspan="2" class="text-center">
+                                {{ floatval($sale->shipping_cost) + floatval($sale->total) - floatval($sale->discount) }}
+                                Tk
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right">Paid Amount</td>
+                            <td colspan="2" class="text-center">{{ $sale->paid + $sale->partial_paid }} Tk</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-right">Due Amount</td>
+                            <td colspan="2" class="text-center"
+                                style="font-weight:bold;color:#000;background-color: #04AA6D !important">
+                                {{ $sale->total + $sale->shipping_cost - ($sale->paid + $sale->partial_paid + $sale->discount) }}
+                                Tk
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <table style="width:100%;margin-top:8px;">
+                    <tr>
+                        <td style="margin-left: 115px;display: block;">
+                            <p>
+                                Created by<br>
+
+                                {{ $sale->createdBy->name ?? '' }}
+
+                            </p>
+                        </td>
+                        <td>
+                            <p style="margin-top:-8px;margin-left:100px;"> <b><i> Thanks for your order </i></b></p>
+                            <p style="margin-top:-8px;"> <b><i> **No replace will be accepted after 7 days</i></b></p>
+                        </td>
+                        <td>Accounts</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        function allPrint() {
+            window.print();
+        };
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            window.print();
+        });
+    </script>
+
+</body>
+
+</html>

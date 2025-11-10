@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add to Bag Animation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .product-card {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #f9fafb;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-image {
+            flex: 1;
+            min-width: 250px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .product-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .product-details {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .product-title {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4b6cb7;
+            margin-bottom: 15px;
+        }
+
+        .product-description {
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .product_btn {
+            position: relative;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        /* .product_btn_link {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background-color: #222;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            text-decoration: none;
+            border: none;
+            font-size: 1rem;
+            width: 100%;
+        } */
+
+        .product_btn_link {
+            color: #f5f7fa;
+            background-color: #222;
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 5px 15px;
+            -webkit-transition: 0.3s;
+            -o-transition: 0.3s;
+            transition: all 0.5s ease-in-out;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .product_btn_link:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* .product_btn_link i {
+            transition: transform 1s ease-in-out;
+            position: relative;
+            font-size: 1.1rem;
+        } */
+
+
+        .product_btn_link.animating i {
+            /* flex: 1;
+            position: relative; */
+            width: 100%;
+            animation: cartMove 3s ease-in-out forwards;
+        }
+
+        @keyframes cartMove {
+            0% {
+                transform: translate(-45%)
+            }
+
+            25% {
+                transform: translate(0%)
+            }
+
+            30% {
+                transform: translate(0%) translateY(10px)
+            }
+
+            35% {
+                transform: translate(0%) translateY(0%)
+            }
+
+            to {
+                transform: translate(100%)
+            }
+        }
+
+        .added_text {
+            display: none;
+            font-weight: 600;
+            color: #00d084;
+        }
+
+        .product_btn_link.show-added .added_text {
+            display: inline;
+        }
+
+        .product_btn_link.show-added .btn_text,
+        .product_btn_link.show-added i {
+            display: none;
+        }
+
+        .reset-btn {
+            background-color: #4b6cb7;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .reset-btn:hover {
+            background-color: #3a5ca9;
+        }
+
+        .instructions {
+            background-color: #f0f4f8;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .instructions h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .instructions ol {
+            padding-left: 20px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .code-container {
+            background-color: #2d3748;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .code-container h3 {
+            color: #e2e8f0;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        pre {
+            color: #cbd5e0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 600px) {
+            .product-card {
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Add to Bag Animation</h1>
+            <p class="subtitle">Click the button multiple times to see the animation</p>
+        </header>
+
+        <div class="content">
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                        alt="Wireless Headphones">
+                </div>
+                <div class="product-details">
+                    <h2 class="product-title">Premium Wireless Headphones</h2>
+                    <p class="product-price">$129.99</p>
+                    <p class="product-description">
+                        Experience crystal-clear sound with our premium wireless headphones.
+                        Featuring noise cancellation, 30-hour battery life, and comfortable
+                        over-ear design for extended listening sessions.
+                    </p>
+
+                    <div class="product_btn">
+                        <a onclick="addToCard(event, this.id, this.getAttribute('data-variant'))" id="991"
+                            class="product_btn_link" data-variant="default">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span class="btn_text">Add To Bag</span>
+                            <span class="added_text">Added to Bag</span>
+                        </a>
+                    </div>
+
+                    <button class="reset-btn" onclick="resetButton()">Reset Button</button>
+                </div>
+            </div>
+
+            <div class="instructions">
+                <h2>How It Works</h2>
+                <ol>
+                    <li>Click the "Add To Bag" button</li>
+                    <li>The text "Add To Bag" will hide immediately</li>
+                    <li>The cart icon will animate - moving from start to end and back to center</li>
+                    <li>After animation completes, the button shows "✅ Added to Bag"</li>
+                    <li>Click the "Reset Button" to start over</li>
+                </ol>
+
+                <div class="code-container">
+                    <h3>Animation CSS</h3>
+                    <pre>@keyframes cartMove {
+            0% {
+                transform: translate(0)
+            }
+
+            25% {
+                transform: translate(45%)
+            }
+
+            30% {
+                transform: translate(45%) translateY(10px)
+            }
+
+            35% {
+                transform: translate(45%) translateY(0)
+            }
+
+            to {
+                transform: translate(100%)
+            }
+        }</pre>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Add to Bag Animation Demo | Created with HTML, CSS & JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        function addToCard(event, id, variant) {
+            const btn = event.currentTarget;
+
+            // Prevent multiple clicks during animation
+            if (btn.classList.contains('animating') || btn.classList.contains('show-added')) {
+                return;
+            }
+
+            const icon = btn.querySelector('i');
+            const text = btn.querySelector('.btn_text');
+
+            text.style.display = 'none';
+            btn.classList.add('animating');
+
+            //After animation end
+            setTimeout(() => {
+                btn.classList.remove('animating');
+                btn.classList.add('show-added');
+            }, 3000);
+        }
+
+
+        function resetButton() {
+            const btn = document.querySelector('.product_btn_link');
+            const text = btn.querySelector('.btn_text');
+
+            btn.classList.remove('animating', 'show-added');
+            text.style.display = 'inline';
+        }
+    </script>
+</body>
+
+</html>

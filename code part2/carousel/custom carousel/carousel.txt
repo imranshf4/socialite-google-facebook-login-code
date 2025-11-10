@@ -1,0 +1,364 @@
+<div class="container section_top_space">
+                  <div class="row gy-2 gx-2 gy-lg-3 gx-lg-3">
+                      <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                          <div class="carousel_top_sell_content">
+                              <button class="carousel_top_sell_pre_btn">
+                                  <i class="fa-solid fa-arrow-left"></i>
+                              </button>
+                              <button class="carousel_top_sell_next_btn">
+                                  <i class="fa-solid fa-arrow-right"></i>
+                              </button>
+                              <div class="carousel_top_sell_table_cell">
+                                  @foreach ($category->products as $product)
+                                      <div class="carousel_top_sell_item">
+                                          @include("frontend.components.product_content.$template", [
+                                              'product' => $product,
+                                          ])
+                                      </div>
+                                  @endforeach
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+
+
+ /*
+==============================================================
+    Top Selling Carousel Card Modal Area Css
+==============================================================
+*/
+    .carousel_top_sell_content {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .carousel_top_sell_table_cell {
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        white-space: nowrap;
+        position: relative;
+    }
+
+    .carousel_top_sell_table_cell::-webkit-scrollbar {
+        display: none;
+    }
+
+    .carousel_top_sell_item {
+        display: inline-block;
+        /* Ensures items align horizontally */
+        width: auto;
+        /* Width set dynamically via JS */
+        margin-right: 10px;
+        /* Space between items */
+    }
+
+    .carousel_top_sell_item:last-child {
+        margin-right: 10px;
+    }
+
+    .carousel_top_sell_pre_btn,
+    .carousel_top_sell_next_btn {
+        border: none;
+        width: 35px;
+        height: 35px;
+        position: absolute;
+        border-radius: 50%;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #fff;
+        color: var(--primary_text_color);
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .carousel_top_sell_pre_btn i,
+    .carousel_top_sell_next_btn i {
+        color: var(--primary_color);
+        font-size: 16px;
+    }
+
+    .carousel_top_sell_pre_btn {
+        left: 0;
+        transform: rotate (180deg);
+    }
+
+    .carousel_top_sell_next_btn {
+        right: 0;
+    }
+
+    .carousel_top_sell_pre_btn:hover i,
+    .carousel_top_sell_next_btn:hover i {
+        opacity: 1;
+    }
+
+    .carousel_top_sell_table_cell {
+        cursor: grab;
+    }
+
+    .carousel_top_sell_table_cell:active {
+        cursor: grabbing;
+    }
+
+
+@section('scripts')
+
+    <script>
+        var isLoading = false;
+        //================load data========================
+        function loadData() {
+            console.log('loading....');
+            isLoading = true;
+            $('#spinner').show();
+
+            var data = {
+                page: 1,
+                limit: 2
+            };
+
+            $.ajax({
+                url: "{{ route('load.more.category.product') }}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    page: data.page,
+                    limit: data.limit
+                },
+                success: function(res) {
+                    $('#loadmore_category_product').append(res.data);
+
+                    // Initialize carousels for newly loaded content
+                    initializeCarousel('.carousel_top_sell_table_cell', '.carousel_top_sell_next_btn',
+                        '.carousel_top_sell_pre_btn', '.carousel_top_sell_item');
+
+                    isLoading = false;
+                    $('#spinner').hide();
+                },
+                error: function(xhr, status, error) {
+                    console.error(error);
+                    isLoading = false;
+                }
+            });
+        }
+
+
+
+        //==========================load more data===========================
+        $(function() {
+            loadData();
+
+            isLoading = true; // Set loading flag to true
+            $('#spinner').show();
+
+            var data = {
+                page: 2,
+                limit: 2
+            };
+
+            var obj = $(document).loadMore({
+                loadType: 'auto',
+                url: "{{ route('load.more.category.product') }}",
+                dataType: 'json',
+                type: 'post',
+                scrollBottom: 700,
+                data: {
+                    page: data.page,
+                    limit: data.limit
+                },
+                success: function(res) {
+                    if (res.category_length == 0) {
+                        this.ajaxSwitch = false;
+                    }
+                    data.page += 1;
+                    obj.updatePram('data', data);
+                    render(res.data);
+
+                    isLoading = false;
+                    $('#spinner').hide();
+                }
+            });
+
+            function render(data) {
+                $("#loadmore_category_product").append(data);
+                
+                initializeCarousel('.carousel_top_sell_table_cell', '.carousel_top_sell_next_btn',
+                    '.carousel_top_sell_pre_btn', '.carousel_top_sell_item');
+            }
+
+
+        });
+
+        function initializeCarousel(containerSelector, nextBtnSelector, preBtnSelector, itemSelector) {
+            const carousels = document.querySelectorAll(containerSelector);
+            const carouselNxtBtn = document.querySelectorAll(nextBtnSelector);
+            const carouselPreBtn = document.querySelectorAll(preBtnSelector);
+
+            function updateCarouselLayout() {
+                carousels.forEach(carousel => {
+                    const items = carousel.querySelectorAll(itemSelector);
+                    let itemsToShow = {{ $site_configurations->carousel_card_row }};
+
+                    if (window.innerWidth < 1500) {
+                        itemsToShow = {{ $site_configurations->carousel_card_row }};
+                    }
+                    if (window.innerWidth < 1400) {
+                        itemsToShow = 4;
+                    }
+                    if (window.innerWidth < 1200) {
+                        itemsToShow = 3;
+                    }
+                    if (window.innerWidth < 992) {
+                        itemsToShow = 3;
+                    }
+                    if (window.innerWidth < 768) {
+                        itemsToShow = 2;
+                    }
+                    if (window.innerWidth < 576) {
+                        itemsToShow = 2;
+                    }
+
+                    const itemWidth = carousel.offsetWidth / itemsToShow;
+                    items.forEach(item => {
+                        item.style.width = `${itemWidth}px`;
+                    });
+
+                    carousel.dataset.itemWidth = itemWidth;
+
+                    // Check if carousel has overflow
+                    const parentIndex = Array.from(carousels).indexOf(carousel);
+                    if (carousel.scrollWidth > carousel.clientWidth) {
+                        if (carouselNxtBtn[parentIndex]) carouselNxtBtn[parentIndex].style.display = "block";
+                        if (carouselPreBtn[parentIndex]) carouselPreBtn[parentIndex].style.display = "block";
+                    } else {
+                        if (carouselNxtBtn[parentIndex]) carouselNxtBtn[parentIndex].style.display = "none";
+                        if (carouselPreBtn[parentIndex]) carouselPreBtn[parentIndex].style.display = "none";
+                    }
+                });
+            }
+
+            carousels.forEach((carousel, i) => {
+                // Check if already initialized
+                if (carousel.dataset.initialized === 'true') {
+                    return;
+                }
+                carousel.dataset.initialized = 'true';
+
+                const items = [...carousel.querySelectorAll(itemSelector)];
+                if (items.length === 0) return;
+
+                const itemWidth = items[0].offsetWidth;
+
+                items.forEach(item => carousel.appendChild(item.cloneNode(true)));
+
+                const resetScrollPosition = () => {
+                    if (carousel.scrollLeft + itemWidth >= carousel.scrollWidth / 2) {
+                        carousel.scrollLeft = 0;
+                    }
+                };
+
+                if (carouselNxtBtn[i]) {
+                    carouselNxtBtn[i].addEventListener('click', () => {
+                        carousel.scrollLeft += itemWidth;
+                        resetScrollPosition();
+                    });
+                }
+
+                if (carouselPreBtn[i]) {
+                    carouselPreBtn[i].addEventListener('click', () => {
+                        if (carousel.scrollLeft <= 0) {
+                            carousel.scrollLeft = carousel.scrollWidth / 2;
+                        } else {
+                            carousel.scrollLeft -= itemWidth;
+                        }
+                    });
+                }
+
+                let isHovering = false;
+
+                carousel.addEventListener("mouseenter", () => {
+                    isHovering = true;
+                    clearInterval(carousel.autoplayInterval);
+                });
+
+                carousel.addEventListener("mouseleave", () => {
+                    isHovering = false;
+                    carousel.autoplayInterval = setInterval(() => {
+                        if (!isHovering) {
+                            carousel.scrollLeft += itemWidth;
+                            resetScrollPosition();
+                        }
+                    }, 3000);
+                });
+
+                // Start autoplay
+                carousel.autoplayInterval = setInterval(() => {
+                    if (!isHovering) {
+                        carousel.scrollLeft += itemWidth;
+                        resetScrollPosition();
+                    }
+                }, 3000);
+
+                // Mouse drag scrolling functionality
+                let isDragging = false;
+                let startX, scrollLeft;
+
+                carousel.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.pageX - carousel.offsetLeft;
+                    scrollLeft = carousel.scrollLeft;
+                    carousel.style.cursor = 'grabbing';
+                });
+
+                carousel.addEventListener('mouseleave', () => {
+                    isDragging = false;
+                    carousel.style.cursor = 'grab';
+                });
+
+                carousel.addEventListener('mouseup', () => {
+                    isDragging = false;
+                    carousel.style.cursor = 'grab';
+                });
+
+                carousel.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    e.preventDefault();
+                    const x = e.pageX - carousel.offsetLeft;
+                    const walk = (x - startX) * 1;
+                    carousel.scrollLeft = scrollLeft - walk;
+                });
+            });
+
+            window.removeEventListener("resize", updateCarouselLayout);
+            window.addEventListener("resize", updateCarouselLayout);
+            updateCarouselLayout();
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Initialize existing carousels
+            initializeCarousel('.carousel_new_arrival_table_cell', '.carousel_new_arrival_next_btn',
+                '.carousel_new_arrival_pre_btn', '.carousel_new_arrival_item');
+
+            initializeCarousel('.carousel_top_sell_table_cell', '.carousel_top_sell_next_btn',
+                '.carousel_top_sell_pre_btn', '.carousel_top_sell_item');
+
+        });
+    </script>
+@endsection
+
+<script>
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('product_add_to_order')) {
+                e.preventDefault();
+
+                // Change style and text
+                e.target.style.backgroundColor = 'red';
+                e.target.style.color = 'white';
+                e.target.innerHTML = 'In Cart';
+            }
+        });
+    </script>

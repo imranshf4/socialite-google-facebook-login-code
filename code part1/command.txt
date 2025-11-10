@@ -45,3 +45,20 @@ youtube_url field add general
 product_review
 country_region
 
+if ($request->query('search')) {
+    $search = $request->query('search');
+
+    // If it looks like a product code (e.g. 4–5 chars, alphanumeric)
+    if (strlen($search) == 4 || preg_match('/^[A-Za-z0-9]{4}$/', $search)) {
+        $product_child = ProductChild::where('code', $search)->first();
+
+        if ($product_child) {
+            $query->where('id', $product_child->product_id);
+        }
+    } else {
+        // Otherwise, search by name
+        $query->where('name', 'like', '%' . $search . '%');
+    }
+}
+
+

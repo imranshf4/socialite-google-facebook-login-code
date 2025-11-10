@@ -1,0 +1,29 @@
+Step 1: Get Country Name from IP Address
+
+You can use the geoip2/geoip2 package or torann/geoip package in Laravel. I’ll show the torann/geoip method because it’s simpler for Laravel projects.
+
+Install the package:
+
+composer require torann/geoip
+
+
+Publish the config (optional):
+
+php artisan vendor:publish --provider="Torann\GeoIP\GeoIPServiceProvider" --tag=config
+
+use GeoIP;
+
+public function showCountryInfo(Request $request)
+{
+    $ip = $request->ip(); // get user's IP
+    $location = geoip($ip);
+
+    $countryName = $location->country;
+    $countryCode = $location->iso_code;
+    $flagUrl = "https://flagcdn.com/w20/".strtolower($countryCode).".png";
+
+    return view('country-info', compact('countryName', 'countryCode', 'flagUrl'));
+}
+
+<h1>Country: {{ $countryName }}</h1>
+<img src="{{ $flagUrl }}" alt="{{ $countryName }} flag">

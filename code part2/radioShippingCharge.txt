@@ -1,0 +1,180 @@
+ $(document).ready(function() {
+            let lastShippingCharge = 0;
+
+            updateCartSection();
+            fetchCartContent();
+
+            const defaultChecked = $('input[name="shipping_charge_id"]:checked').val();
+            if (defaultChecked) {
+                applyShippingCharge(defaultChecked);
+            }
+
+            $('input[name="shipping_charge_id"]').change(function() {
+                const selectedOption = $(this).val();
+                applyShippingCharge(selectedOption);
+            });
+
+            function applyShippingCharge(selectedOption) {
+                const hasFreeDelivery = $('#free_delivery').val(); // Get the value from the hidden input
+
+                if (hasFreeDelivery == 1) {
+                    $('.shipping_charge').text('0 TK (free delivery applied)');
+                    $('#shipping_charge').val(0);
+                    updateCartTotalWithShipping(0);
+                } else {
+                    // Otherwise, proceed with normal shipping charge calculation
+                    $.ajax({
+                        url: '/get-delivery-charge',
+                        type: 'GET',
+                        data: {
+                            delivery_charge_id: selectedOption,
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                const deliveryCharge = parseFloat(response.delivery_charge);
+                                $('.shipping_charge').text(deliveryCharge + ' TK');
+                                $('#shipping_charge').val(deliveryCharge);
+                                updateCartTotalWithShipping(deliveryCharge);
+                            } else {
+                                console.error('Failed to fetch delivery charge.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching delivery charge:', error);
+                        }
+                    });
+                }
+            }
+
+            function updateCartTotalWithShipping(newShippingCharge) {
+                const cartTotal = parseFloat($('.total_amount').text().replace('TK', '').trim());
+                const newTotal = cartTotal - lastShippingCharge + newShippingCharge;
+
+                lastShippingCharge = newShippingCharge;
+
+                $('.total_amount').text(newTotal + ' TK');
+            }
+        });
+
+
+#######################################
+@foreach ($delivery_charges as $index => $delivery_charge)
+                                        <div class="shipping_option"
+                                            @if ($index == 0) style="border-bottom: none" @endif>
+                                            <div>
+                                                <input type="radio" value="{{ $delivery_charge->id }}"
+                                                    name="shipping_charge_id"
+                                                    id="select_area_{{ $delivery_charge->id }}"
+                                                    class="form-check-input me-2" @checked($index == 0) data-ignore />
+                                                <label for="{{ $delivery_charge->id }}"
+                                                    class="form-check-label me-4">
+                                                    {{ $delivery_charge->name }}
+                                                </label>
+                                            </div>
+                                            {{-- <span>{{ $delivery_charge->delivery_charge }}</span> --}}
+                                        </div>
+                                    @endforeach
+
+
+
+
+
+
+
+
+################# radio size####################
+function updateCartVariants() {
+            // Get the selected variant name from the dropdown
+            const selectedVariant = $('input[name="size"][data-ignore]:checked').val();
+           if (!selectedVariant) return;
+
+            // Get label text without the span
+            // let variantName = selectedVariant
+            //     .next('label')
+            //     .clone()
+            //     .children()
+            //     .remove()
+            //     .end()
+            //     .text()
+            //     .trim();
+
+
+            console.log(selectedVariant);
+
+            const variants = {
+                "Size": selectedVariant
+            };
+            console.log(variants);
+            $.ajax({
+                url: '/cart/update-variant',
+                method: 'POST',
+                data: {
+                    variants: variants,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success('Cart updated successfully.');
+                        // updateCartSection();
+                    } else {
+                        toastr.error('Failed to update cart:', response.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error updating cart:', error);
+                    toastr.error('Error updating cart. Please try again.');
+                }
+            });
+        }
+        $('input[name="size"][data-ignore]').on('change', updateCartVariants);
+
+
+
+@foreach ($uniqueVariants as $index => $variant)
+                                        <div class="size_option">
+                                            <input class="form-check-input" id="size_{{ $variant->id }}"
+                                                type="radio" name="size" value="{{ $variant->name }}"
+                                                @checked($index == 0) data-ignore />
+                                            <label class="form-check-label"
+                                                style="padding-left: 5px;">{{ $variant->name }} <span
+                                                    class="text-danger">*</span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+
+
+public function updateVariant(Request $request)
+    {
+        // return $request->all();
+        try {
+            $variants = $request->input('variants');
+
+            $cartItems = Cart::content();
+
+            // if ($cartItem) {
+            //     Cart::update($cartItem->rowId, [
+            //         'options' => array_merge($cartItem->options->toArray(), [
+            //             'variants' => $variants
+            //         ])
+            //     ]);
+
+            //     return response()->json(['success' => true, 'message' => 'Cart updated successfully.']);
+            // }
+
+            if ($cartItems->count() > 0) {
+                foreach ($cartItems as $item) {
+                    // Merge existing options with new variants
+                    Cart::update($item->rowId, [
+                        'options' => array_merge($item->options->toArray(), [
+                            'variants' => $variants
+                        ])
+                    ]);
+                }
+                return response()->json(['success' => true, 'message' => 'Cart updated successfully.']);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Product not found in cart.'], 404);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }

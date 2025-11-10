@@ -1,0 +1,157 @@
+@if ($product->size_chart)
+                                                            <div class="size_chart" data-bs-target="#sizeChart"
+                                                                onclick="showBanner()">
+                                                                <b>Size Chart</b>
+                                                            </div>
+                                                        @endif
+
+                                                        <div id="fixed_banner_container" style="display: none;"
+                                                            onclick="closeBanner(event)"">
+                                                            <div class="fixed_banner_img_with_closeIcon">
+                                                                <img src="{{ asset('storage/' . $product->size_chart) }}"
+                                                                    alt="fixed-banner" />
+                                                                <svg onclick="closeBanner(event)" viewBox="0 0 24 24"
+                                                                    width="28" height="28" stroke="currentColor"
+                                                                    stroke-width="2" fill="none"
+                                                                    stroke-linecap="round" stroke-linejoin="round"
+                                                                    class="css-i6dzq1">
+                                                                    <line x1="18" y1="6" x2="6"
+                                                                        y2="18"></line>
+                                                                    <line x1="6" y1="6" x2="18"
+                                                                        y2="18"></line>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+
+<script>
+        function showBanner() {
+            document.getElementById("fixed_banner_container").style.display = "flex";
+        }
+
+        function closeBanner() {
+            if (!event.target.closest(".fixed_banner_img_with_closeIcon img")) {
+                document.getElementById("fixed_banner_container").style.display =
+                    "none";
+            }
+        }
+    </script>
+
+################## css
+.size_chart {
+        font-size: 15px;
+        border: 1px solid #cccccc;
+        cursor: pointer;
+        padding: 4px 16px;
+        color: #979797;
+        -webkit-transition: all 200ms ease-in-out;
+        -o-transition: all 200ms ease-in-out;
+        transition: all 200ms ease-in-out;
+    }
+
+    .size_chart:hover {
+        border: 1px solid var(--primary_color)
+    }
+
+/* default-show-banner */
+    #fixed_banner_container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: #0000009c;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+    }
+
+    .fixed_banner_img_with_closeIcon {
+        position: relative;
+        margin: 12px;
+    }
+
+    .fixed_banner_img_with_closeIcon img {
+        max-width: 100%;
+        max-height: 85vh;
+    }
+
+    .fixed_banner_img_with_closeIcon svg {
+        color: #fff;
+        z-index: 999;
+        position: absolute;
+        bottom: calc(100% + 5px);
+        right: 0;
+        cursor: pointer;
+    }
+
+############## store #######################
+if ($data['size_chart']) {
+                $file = $data['size_chart'];
+                $storagePath = 'public/images/products/size_chart/';
+
+                if (strlen($file) > 6 && preg_match('/^data:image\/(\w+);base64,/', $file)) {
+                    $image_data = substr($file, strpos($file, ',') + 1);
+                    $image_data = base64_decode($image_data);
+
+                    if ($image_data === false) {
+                        throw new Exception('Base64 decode failed.');
+                    }
+                    $img_path = 'thumbnail_' . time() . '_' . rand(1111, 9999) . '.jpg';
+                    Storage::put($storagePath . $img_path, $image_data);
+                    // $image_resize = Image::make(Storage::path($storagePath . $img_path));
+                    // $image_resize->resize(400, 400, function ($constraint) {
+                    //     $constraint->upsize();
+                    // });
+                    // $image_resize->save(Storage::path($storagePath . $img_path));
+                    $data['size_chart'] = 'images/products/size_chart/' . $img_path;
+                }
+            };
+
+
+################ update #######################
+if ($data['size_chart']) {
+                $file = $data['size_chart'];
+                $storagePath = 'public/images/products/size_chart/';
+
+                if (strlen($file) > 6 && preg_match('/^data:image\/(\w+);base64,/', $file)) {
+                    $image_data = substr($file, strpos($file, ',') + 1);
+                    $image_data = base64_decode($image_data);
+                    if (file_exists(public_path('storage/' . $product->size_chart))) {
+                        @unlink(public_path('storage/' . $product->size_chart));
+                    };
+
+                    if ($image_data === false) {
+                        throw new Exception('Base64 decode failed.');
+                    }
+                    $img_path = 'thumbnail_' . time() . '_' . rand(1111, 9999) . '.jpg';
+                    Storage::put($storagePath . $img_path, $image_data);
+                    // $image_resize = Image::make(Storage::path($storagePath . $img_path));
+                    // $image_resize->resize(400, 400, function ($constraint) {
+                    //     $constraint->upsize();
+                    // });
+                    // $image_resize->save(Storage::path($storagePath . $img_path));
+                    $data['size_chart'] = 'images/products/size_chart/' . $img_path;
+                }
+            };
+
+
+
+############### vue ######################
+<div class="col-xl-4 col-lg-6 col-md-4 col-sm-4 col-12 info_basic_item">
+                                            <p>Size Chart</p>
+                                            <input placeholder="Size Chart" type="file" @change="uploadSizeChart"
+                                                class="form-control">
+                                        </div>
+uploadSizeChart(e) {
+            let file = e.target.files[0];
+            let reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = evt => {
+                let img = new Image();
+                img.onload = () => {
+                    this.form.size_chart = evt.target.result;
+                };
+                img.src = evt.target.result;
+            };
+        },

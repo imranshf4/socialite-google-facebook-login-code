@@ -1,0 +1,46 @@
+EAAgn6x9f3O8BP1h2fNdkaRbNnKPgruokSrQjMIzcNU6zAXOYE9BZB1XQvy9GhfmndpjXWki97BPZBXZBwKt0CAslZAebIFNe5bKHVHoVNMDcINfzgYmWfH99ZBLKBmS8yVbBLciRIzDN4alnAzX4ASKlsGf9eD6XlOluM26iWwzadSnEHPSzhI0OTjAMnBgZDZD
+
+
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '832595896059520');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=832595896059520&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+############# Facebook Pixel Id ################
+832595896059520
+
+############# Facebook Access Token ################
+EAAgn6x9f3O8BP1h2fNdkaRbNnKPgruokSrQjMIzcNU6zAXOYE9BZB1XQvy9GhfmndpjXWki97BPZBXZBwKt0CAslZAebIFNe5bKHVHoVNMDcINfzgYmWfH99ZBLKBmS8yVbBLciRIzDN4alnAzX4ASKlsGf9eD6XlOluM26iWwzadSnEHPSzhI0OTjAMnBgZDZD
+
+############# Test Event Code ################
+TEST43183
+
+utm_medium=paid&utm_source=fb&utm_id=120237176599330204&utm_content=120237176599350204&utm_term=120237176599340204&utm_campaign=120237176599330204&
+
+
+fbclid=IwY2xjawNq1rBleHRuA2FlbQEwAGFkaWQBqysTZOD_nGJyaWQRMWlidXV3aHZtS1NVUk83dnIBHscifBDusprgf5pa-oVNPQP8ADV0Bhr_Q6HtmSCtzUFlLZfkzHD_DUODI9Ma_aem_MG8sYUpFL2CDfA-5lAAB1g
+
+
+{
+    "status": true,
+    "fbc": "fb.1.1761474729.IwY2xjawNq1rBleHRuA2FlbQEwAGFkaWQBqysTZOD_nGJyaWQRMWlidXV3aHZtS1NVUk83dnIBHscifBDusprgf5pa-oVNPQP8ADV0Bhr_Q6HtmSCtzUFlLZfkzHD_DUODI9Ma_aem_MG8sYUpFL2CDfA-5lAAB1g",
+    "fbp": "fb.3.1753698436096.826543408249898914"
+}
+
+https://developers.facebook.com/docs/marketing-api/conversions-api/
+documentation
+

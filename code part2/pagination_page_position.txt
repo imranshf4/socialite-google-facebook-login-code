@@ -1,0 +1,165 @@
+<table>
+                                        <thead>
+                                            <tr>
+                                                <th width="10%">#</th>
+                                                <th width="30%">Name</th>
+                                                <th width="20%">Image</th>
+                                                <th width="10%">Position</th>
+                                                <th width="15%">Status</th>
+                                                <th width="15%">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <h1 v-if="loading" class="loading"><i class="fa fa-spin fa-spinner"></i>
+                                            </h1>
+                                            <tr v-for="(category, index) in categories.data" v-else :key="index">
+                                                <td>
+                                                    <div class="common_btn_group">
+                                                        <!-- <router-link
+                                                            :to="{ name: 'CategoryEdit', params: { categoryId: category.id }, query: { page: currentPage, highlight: $route.params.categoryId } }"
+                                                            class="common_edit_btn" title="Edit"><i
+                                                                class="fa fa-edit"></i></router-link> -->
+
+                                                        <!-- {{ (currentPage - 1) * 50 + index + 1 }} -->
+                                                        <button class="common_edit_btn" @click="editCategoryByPosition((currentPage - 1) * 50 + index + 1)">
+                                                            <i class="fa fa-edit"></i>
+                                                        </button>
+
+                                                        <a class="common_deactive_btn" title="De-active"
+                                                            @click="status(category)" v-if="category.status == 1"><i
+                                                                class="fa fa-ban"></i></a>
+                                                        <a class="common_active_btn" title="active"
+                                                            @click="status(category)" v-else><i class="fa fa-check"></i>
+                                                        </a>
+                                                        <a v-if="admin.is_super_admin == 1" class="common_delete_btn"
+                                                            @click="deleteCategory(category.id)" title="Delete">
+                                                            <i class="fa fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+<div class="box-footer">
+                                    <div class="row" style="margin-left:0;margin-right:0">
+                                        <div class="col-lg-6">
+                                            <pagination :data="categories" @pagination-change-page="getCategories"
+                                                :limit="3"></pagination>
+                                        </div>
+                                        <div class="col-lg-6 mt-1" style="margin-top: 25px;text-align:right;">
+                                            <p>Showing <strong>{{ categories.from }}</strong> to
+                                                <strong>{{ categories.to }}</strong> of total
+                                                <strong>{{ categories.total }}</strong> entries
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+data() {
+        return {
+            categories: {},
+            loading: true,
+            search: '',
+            currentPage: this.$route.query.page || 1,
+            basePath: this.$store.state.image_base_link,
+        }
+    },
+
+editCategoryByPosition(position) {
+            const perPage = 50;
+            const page = Math.ceil(position / perPage);
+            const indexInPage = (position - 1) % perPage;
+
+            axios.get('/api/list/category?page=' + page)
+                .then(resp => {
+                    if (resp.data.status) {
+                        const category = resp.data.categories.data[indexInPage];
+                        if (category) {
+                            this.$router.push({
+                                name: 'CategoryEdit',
+                                params: { categoryId: category.id },
+                                query: { page: page, pos: position }
+                            });
+                        }
+                    }
+                })
+                .catch(error => {
+                    this.$toastr.e('Category fetch failed!');
+                });
+        },
+
+
+getCategories(page = this.currentPage) {
+            this.loading = true;
+            axios.get('/api/list/category?page=' + page)
+                .then((resp) => {
+                    if (resp.data.status) {
+                        this.categories = resp.data.categories;
+                        this.loading = false;
+                        this.currentPage = page;
+
+                        this.$router.replace({
+                            path: this.$route.path,
+                            query: { ...this.$route.query, page },
+                        });
+
+                        // Scroll to specific position after DOM updates
+                        this.$nextTick(() => {
+                            const pos = parseInt(this.$route.query.pos);
+                            if (pos) {
+                                const perPage = 50;
+                                const indexInPage = (pos - 1) % perPage;
+                                const tableRows = document.querySelectorAll('tbody tr');
+
+                                if (tableRows[indexInPage]) {
+                                    tableRows[indexInPage].scrollIntoView({
+                                        behavior: 'smooth',
+                                        block: 'center'
+                                    });
+
+                                    // highlight the row briefly
+                                    tableRows[indexInPage].classList.add('highlight-row');
+                                    setTimeout(() => {
+                                        tableRows[indexInPage].classList.remove('highlight-row');
+                                    }, 2000);
+                                }
+                            }
+                        });
+                    }
+                })
+                .catch(error => {
+                    this.$toastr.e(error.response.data.message);
+                    this.loading = false;
+                });
+        },
+
+
+
+
+Edit.vue
+update() {
+            this.form.post('/update/category/' + this.$route.params.categoryId, {
+                transformRequest: [data => objectToFormData(data)],
+            })
+                .then(resp => {
+                    if (resp.data.status) {
+                        this.$toasted.show(resp.data.message, {
+                            type: "success",
+                            position: 'top-center',
+                            duration: 4000
+                        });
+
+                        const page = this.$route.query.page || 1;
+                        const pos = this.$route.query.pos;
+
+                        // Go back to category list with both page and pos
+                        this.$router.push({ name: 'category', query: { page, pos } });
+                    }
+                })
+                .catch(error => {
+                    this.$toastr.e(error.response.data.message);
+                });
+        },

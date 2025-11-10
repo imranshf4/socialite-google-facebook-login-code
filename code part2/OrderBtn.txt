@@ -1,0 +1,181 @@
+<script>
+        $('#order_form_submit').one('click', function() {
+            orderForm();
+        });
+
+
+        //------------order form submit------------
+        function orderForm() {
+            $('#order_form').submit(function(event) {
+                event.preventDefault();
+                // console.log('Order Form');
+                // return;
+                isFormSubmitted = true;
+                var formData = new FormData(this);
+                name = formData.get('name');
+                mobile_no = formData.get('mobile_no');
+                shipping_charge_id = formData.get('shipping_charge_id');
+                address = formData.get('address');
+                formData.append('status', 1);
+
+                //-----validation start----------------
+                if (!name) {
+                    toastr.info('Name is required');
+                    return;
+                }
+
+                if (!mobile_no) {
+                    toastr.info('Mobile is required');
+                    return;
+                }
+
+                if (!$.isNumeric(mobile_no)) {
+                    toastr.info('Please Type Number');
+                    return;
+                }
+
+                if (mobile_no.length != 11) {
+                    toastr.info('Your Mobile Number Must-be 11 Digit');
+                    return;
+                }
+
+                if (!shipping_charge_id) {
+                    toastr.info('Please Select Area');
+                    return;
+                }
+
+                if (!address) {
+                    toastr.info('Address is required');
+                    return;
+                }
+
+                const $btn = $('#order_form_submit');
+                const originalBtnHTML = $btn.html();
+                $btn.prop('disabled', true);
+                $btn.html(
+                    '<i class="common_btn_icon spinner"></i> <span class="common_btn_title">Loading...</span>');
+
+                //setup ajax
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+
+                // call ajax
+                $.ajax({
+                    url: '/checkout/order',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        $('.order_form').trigger("reset");
+                        if (res.status) {
+
+                            toastr.success('Order Successfull Add');
+                            console.log('call purchase event');
+                            location.href = "/order-success/" + res.invoice_no;
+
+                        } else {
+                            toastr.error(res.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        }
+        let saveOrderTimeout = null;
+        let isFormSubmitted = false;
+        let phone_number = ''
+        let eventListenersAdded = false;
+
+        function setPhoneNumber(val, incomplete_order_system) {
+            console.log('no: ', val);
+            phone_number = val;
+            if (incomplete_order_system == 1) {
+                if (window.location.pathname.includes('/pages') && phone_number) {
+                    storeIncompleteOrder();
+                }
+            }
+        }
+
+        function storeIncompleteOrder() {
+            console.log('Event Listeners Added:', eventListenersAdded);
+
+            if (!eventListenersAdded) {
+                eventListenersAdded = true; // Ensure this runs only once
+
+                window.addEventListener('beforeunload', handleBeforeUnload);
+                document.addEventListener("visibilitychange", handleVisibilityChange);
+                // window.addEventListener("popstate", handlePopState);
+            }
+
+
+        }
+
+        function handleBeforeUnload() {
+            console.log('beforeunload - numberB:', phone_number);
+            if (!isFormSubmitted) {
+                saveIncompleteOrder();
+            }
+        }
+
+        function handleVisibilityChange() {
+            console.log('visibilitychange - numberV:', phone_number);
+            if (document.hidden && !isFormSubmitted) {
+                saveOrderTimeout = setTimeout(saveIncompleteOrder, 20000); // 20 sec delay
+            } else {
+                clearTimeout(saveOrderTimeout);
+                console.log('cleared');
+            }
+        }
+
+        function handlePopState() {
+            console.log('popstate - numberS:', phone_number);
+            if (!isFormSubmitted) {
+                saveIncompleteOrder();
+            }
+        }
+
+        function saveIncompleteOrder() {
+            if (!phone_number) return; // Prevent saving if no number is entered
+
+            var formData = new FormData($('#order_form')[0]);
+            formData.append('status', 12);
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                url: '/checkout/order',
+                type: 'POST',
+                dataType: 'json',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    isFormSubmitted = true;
+                    console.log("Incomplete order saved.");
+                    removeEventListeners();
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        function removeEventListeners() {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("popstate", handlePopState);
+        }
+    </script>

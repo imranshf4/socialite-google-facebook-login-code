@@ -1,0 +1,10 @@
+$uniqueVariants = $products
+            ->flatMap(function ($product) {
+                return $product->variants
+                    ->sortBy(function ($variant) {
+                        return $variant->variant->id;
+                    })
+                    ->pluck('variant');
+            })
+            ->unique('id')
+            ->values();

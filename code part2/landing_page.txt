@@ -1,0 +1,2892 @@
+<!DOCTYPE html>
+<html lang="en">
+<?php
+$setting = DB::table('general_settings')->latest()->first();
+$site_configuration = DB::table('site_configurations')->select('incomplete_order_system')->first();
+?>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $setting->meta_title }}</title>
+    {{-- <link rel="stylesheet" href="style.css" /> --}}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <link rel="shortcut icon" href="{{ asset('storage/' . $general_settings->icon) }}" type="image/x-icon" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+
+    {{-- Css Animation Link --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Facebook Domain Verification --->
+    @if (!empty($setting->facebook_domain_verification))
+        {!! $setting->facebook_domain_verification !!}
+    @endif
+    <!-- Facebook Domain Verification End --->
+
+
+    <!-- Facebook Pixel Code -->
+    @if (!empty($setting->facebook_pixel))
+        {!! $setting->facebook_pixel !!}
+    @endif
+    <!-- End Facebook Pixel Code -->
+
+
+    <!---------------------facebook open graph------------------------------>
+    @stack('facebook_open_graph')
+
+    <!-- Google Domain Verification --->
+    @if (!empty($setting->google_domain_verification))
+        {!! $setting->google_domain_verification !!}
+    @endif
+    <!-- Google Domain Verification End --->
+
+    <!--================= Google tag (gtag.js) ===========================-->
+    @if (isset($general_settings->google_analytics) && !empty($general_settings->google_analytics))
+        {!! $general_settings->google_analytics !!}
+    @else
+        <!-- Google Tag Manager -->
+        <script>
+            (function(w, d, s, l, i) {
+                w[l] = w[l] || [];
+                w[l].push({
+                    'gtm.start': new Date().getTime(),
+                    event: 'gtm.js'
+                });
+                var f = d.getElementsByTagName(s)[0],
+                    j = d.createElement(s),
+                    dl = l != 'dataLayer' ? '&l=' + l : '';
+                j.async = true;
+                j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-MPT28Cfg');
+        </script>
+        <!-- End Google Tag Manager -->
+    @endif
+</head>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap');
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    :root {
+        --primary_color: #037768;
+        --white: #ffffff;
+        --font_family: Sans-serif;
+        --animate-delay: 1s;
+    }
+
+    body {
+        font-family: var(--font_family);
+    }
+
+
+    a {
+        text-decoration: none !important;
+    }
+
+    .section_padding {
+        padding: 20px 0px;
+        padding-bottom: 30px;
+    }
+
+    .section_padding_bottom {
+        padding-bottom: 40px;
+    }
+
+    /* .landing_page_logo_banner_area {
+        width: 100%;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: 69%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        height: 50vw;
+        max-height: 700px;
+        min-height: 300px;
+        padding-bottom: 10px;
+        background-position: center;
+    } */
+
+    .landing_page_logo {
+        margin: 14px 0px;
+    }
+
+    .product_description_area {
+        padding: 0px 0px;
+        padding-bottom: 10px;
+        padding-top: 30px;
+    }
+
+    .landing_page_banner_imags {
+        /* max-width: 540px; */
+        /* aspect-ratio: 1 / 1; */
+        border-radius: 10px;
+        border: 1px solid var(--primary_color);
+        overflow: hidden;
+        margin: 0 auto;
+    }
+
+    .landing_page_banner_imags img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .landing_page_common_btn {
+        margin-top: 20px;
+    }
+
+
+    .landing_page_logo img {
+        max-width: 100%;
+        max-height: 100%;
+        height: 55px;
+    }
+
+    .landing_page_banner_title h1 {
+        color: #000;
+        font-weight: 500;
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    .landing_page_banner_title p {
+        border-bottom-style: double;
+        border-bottom-color: var(--primary_color);
+        border-bottom-width: 3px;
+        line-height: 40px;
+        width: 131px;
+        margin: 0px auto;
+        margin-bottom: 30px;
+    }
+
+    /* ================================== Common Button section start ======================= */
+
+    .common_btn {
+        /* text-align: center; */
+        line-height: 0px;
+    }
+
+
+    /* From uiverse.io by @Ali-Tahmazi99 */
+    .common_btn_link {
+        height: 50px;
+        border-radius: 6px;
+        border: 1px solid var(--primary_color);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.5s ease-in;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 240px;
+        margin: 0 auto;
+        background-color: var(--primary_color);
+    }
+
+    .common_btn_link::before,
+    .common_btn_link::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 100%;
+        transform: skew(15deg);
+        transition: all 0.5s;
+        overflow: hidden;
+        z-index: -1;
+    }
+
+    .common_btn_link::before {
+        left: -10px;
+        background: #ffffff;
+    }
+
+    .common_btn_link::after {
+        right: -10px;
+        background: #ffffff;
+    }
+
+    .common_btn_link:hover::before,
+    .common_btn_link:hover::after {
+        width: 58%;
+    }
+
+    .common_btn_link:hover span {
+        color: #000000;
+        transition: 0.3s;
+    }
+
+    .common_btn_link:hover i {
+        color: #000000;
+        transition: 0.3s;
+    }
+
+    .common_btn_link span {
+        color: #ffffff;
+        font-size: 18px;
+        transition: all 0.3s ease-in;
+
+    }
+
+    .common_btn_link i {
+        color: #ffffff;
+        font-size: 18px;
+        transition: all 0.3s ease-in;
+        margin-right: 4px;
+    }
+
+    .common_btn_title i {
+        margin-right: 6px;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--primary_color) !important;
+        color: white;
+    }
+
+    .landing_page_cart_area {
+        overflow: hidden;
+    }
+
+    /* ================================== Common Button section end ======================= */
+
+    /* ================================== Second Section Banner Start ======================= */
+    .landing_page_emergency_call {
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        /* flex-direction: column; */
+        /* background: linear-gradient(90deg, #b2babf 0%, #205c38 100%); */
+        /* background: linear-gradient(45deg, rgba(5,118,255,1) 0%, rgba(36,248,255,1) 100%); */
+        /* background: linear-gradient(90deg, rgba(204,113,255,1) 0%, rgba(106,255,171,1) 94%); */
+        /* background: linear-gradient(90deg, #845ec2, #d65db1, #ff6f91, #ff9671, #ffc75f, #f9f871); */
+        /* background:linear-gradient(90deg, rgba(131,58,180,1) 0%, rgba(253,29,29,1) 50%, rgba(252,176,69,1) 100%); */
+        /* background:linear-gradient(to right, #fbc2eb, #a6c1ee); */
+        /* background:linear-gradient(90deg, rgba(255,225,113,1) 0%, rgba(217,110,139,1) 45%, rgba(151,106,255,1) 94%); */
+        background: linear-gradient(90deg, rgba(66, 31, 115, 1) 0%, rgba(4, 191, 191, 1) 100%);
+        /* padding: 20px 0px; */
+    }
+
+    .desktop_show_qty {
+        display: block;
+    }
+
+    .mobile_qty_show {
+        display: none;
+    }
+
+    .landing_page_emergency_call h3 {
+        font-size: 22px;
+        line-height: 30px;
+        font-weight: 600;
+        color: #000000;
+        /* padding: 7px 0px; */
+        color: var(--white);
+        max-width: 650px;
+        border-radius: 5px;
+        margin: 0 auto;
+        /* border: 1px solid #d6d6d6; */
+        display: inline-block;
+    }
+
+    .landing_page_emergency_call_link i {
+        font-size: 15px;
+        transform: rotate(18deg);
+        margin-right: 8px;
+    }
+
+    .landing_page_emergency_call_link i:hover {
+        color: black;
+    }
+
+    .landing_page_order_now_btn_area {
+        text-align: center;
+    }
+
+    .second_banner_title_icon {
+        color: red;
+    }
+
+    .landing_page_banner_title {
+        /* width: 800px; */
+        width: 100%;
+    }
+
+
+    /* ================================== Second Section Banner End ======================= */
+
+    /* Landing Page Product Imags  */
+    .product-image-area {
+        background-color: #ffffff;
+        padding: 10px 0px;
+        overflow: hidden;
+    }
+
+    .product-image-container {
+        margin-bottom: 30px
+    }
+
+    .product-slider-img {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 2 / 3;
+    }
+
+    .product-slider-img img {
+        width: 100%;
+        height: 100%;
+        border-radius: 5px;
+    }
+
+    .product-slider-active .icon {
+        background-color: var(--primary_color);
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+    }
+
+    .customer_review_slider .icon {
+        background-color: var(--primary_color);
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        color: #fff;
+        cursor: pointer;
+    }
+
+
+    /* ================================== First Youtube Section Start ======================= */
+    .landing_page_section_title {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .landing_page_section_title h2 {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 600;
+        color: #000000;
+        border: 1px solid red;
+        max-width: 450px;
+        padding: 9px 0px;
+        border-radius: 5px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .landing_page_section_titles {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .landing_page_section_titles h2 {
+        text-align: center;
+        font-size: 22px;
+        font-weight: 600;
+        color: #000000;
+        max-width: 450px;
+        padding: 9px 0px;
+        border-radius: 5px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .owl-dots {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10px;
+        gap: 8px;
+    }
+
+    .owl-dots .owl-dot {
+        background: #ced4da !important;
+        width: 8px !important;
+        height: 8px !important;
+        border-radius: 50% !important;
+    }
+
+    .owl-dots .owl-dot.active {
+        background: var(--primary_color) !important;
+    }
+
+    .landing_page_video_iframe iframe {
+        width: 100%;
+        height: 550px;
+        border-radius: 5px;
+    }
+
+    /* ================================== First Youtube Section End ======================= */
+
+    /* ================================== Product Selected  ======================= */
+
+    .landing_page_product_form_check {
+        display: inherit !important;
+        min-height: inherit !important;
+    }
+
+    .landing_page_product_form_check {
+        position: relative;
+    }
+
+    .landing_page_product_form_check .form-check-input {
+        float: left;
+        margin-left: -1.5em;
+        position: absolute;
+        top: 50%;
+        left: 48px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50% !important;
+        transform: translate(-50%, -50%);
+        margin-top: 0px;
+    }
+
+    ._single_product_modal_form_item2 .form-check-input[type="radio"] {
+        width: 1.25em;
+        height: 1.25em;
+        border-radius: 50% !important;
+        margin-top: 5px;
+    }
+
+    .landing_page_product_form_check label {
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        padding: 3px;
+        padding-left: 50px;
+        border-radius: 3px;
+        width: 100%;
+        cursor: pointer;
+        padding-top: 15px;
+        padding-bottom: 15px;
+    }
+
+    .form-check-input:focus {
+        box-shadow: inherit !important;
+    }
+
+    .landing_page_product-image {
+        margin-right: 10px;
+        float: left;
+        display: block;
+        overflow: hidden;
+        width: 60px;
+        height: 60px;
+        /* aspect-ratio: 1 / 1; */
+    }
+
+    .landing_page_product-image img {
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        background-repeat: no-repeat;
+        border-radius: 5px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        -ms-border-radius: 5px;
+        -o-border-radius: 5px;
+    }
+
+    .landing_page_product_details {
+        display: block;
+        overflow: hidden;
+    }
+
+    .landing_page_product_qty {
+        width: 120px;
+        display: block;
+        overflow: hidden;
+        float: left;
+    }
+
+    .landing_page_product_qty_minus {
+        border: none;
+        /* background-color: var(--primary_color); */
+        /* color: var(--primary_color); */
+        width: 28px;
+        height: 28px;
+        text-align: center;
+        line-height: 28px;
+        font-size: 13px;
+        float: left;
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+        transition: 0.5s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .landing_page_product_qty_minus:hover {
+        background-color: var(--primary_color);
+        color: #ffffff;
+    }
+
+    .landing_page_product_qty input {
+        width: 60px;
+        height: 28px;
+        line-height: 25px;
+        font-size: 14px;
+        text-align: center;
+        border: 1px solid #ced4da;
+        border-left: 0px;
+        border-right: 0px;
+        float: left;
+        outline: none;
+    }
+
+    .landing_page_product_qty_plus {
+        border: none;
+        /* background-color: var(--primary_color); */
+        /* color: var(--primary_color); */
+        width: 28px;
+        height: 28px;
+        line-height: 28px;
+        font-size: 13px;
+        float: left;
+        border-top-right-radius: 2px;
+        border-bottom-right-radius: 2px;
+        transition: 0.5s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .landing_page_product_qty_plus:hover {
+        background-color: var(--primary_color);
+        color: #ffffff;
+    }
+
+
+    .form-check {
+        padding-left: 0px !important;
+        margin-bottom: 0px !important;
+    }
+
+    .form-check-input:focus {
+        box-shadow: none;
+    }
+
+    .form-check-input {
+        width: 1.25em;
+        height: 1.25em;
+    }
+
+    .landing_page_product_card_list ul li {
+        list-style: none;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .landing_page_product_card_list ul {
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .landing_page_product_price {
+        display: block;
+        overflow: hidden;
+        padding-left: 6px;
+        height: 30px;
+    }
+
+    .landing_page_product_price span {
+        font-weight: 500;
+        font-size: 16px;
+    }
+
+    .landing_page_logo_banner_area {
+        overflow: hidden;
+        background-color: #F6F7FF;
+        padding-bottom: 30px;
+        padding-top: 30px;
+    }
+
+    /* Bling Bibor Start section  */
+
+    .landing_page_shipping {
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        border-radius: 3px;
+        margin-bottom: 14px;
+    }
+
+    .landing_page_shipping_title {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .landing_page_shipping_title h5 {
+        font-size: 22px;
+        font-weight: 600;
+    }
+
+    ._single_product_modal_form_item,
+    ._single_product_modal_form_item2 {
+        margin-top: 15px;
+    }
+
+    .landing_page_product_name h5 {
+        font-size: 17px;
+    }
+
+    .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        width: 100%;
+    }
+
+    ._single_product_modal_form_item span {
+        width: 40px;
+    }
+
+    .input-group-text {
+        display: flex;
+        align-items: center;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        text-align: center;
+        white-space: nowrap;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    ._single_product_modal_form_item input {
+        border-radius: 3px;
+    }
+
+    label {
+        display: inline-block;
+        font-family: sans-serif;
+    }
+
+    option {
+        font-family: sans-serif;
+    }
+
+    ._single_product_modal_form_item input {
+        padding: 10px 10px;
+    }
+
+    ._single_product_modal_form_item select {
+        padding: 10px 10px;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        -webkit-appearance: auto;
+        -moz-appearance: auto;
+        appearance: auto;
+        border-radius: 0.375rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .landing_page_cart {
+        padding: 20px;
+        background-color: #ffffff;
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+        border-radius: 3px;
+    }
+
+    .landing_page_cart_title h5 {
+        text-align: center;
+        margin-bottom: 25px;
+        font-size: 22px;
+        font-weight: 600;
+
+        text-align: center;
+    }
+
+    .landing_page_cart_list ul {
+        margin: 0px;
+        padding: 0px;
+        overflow-x: auto;
+    }
+
+    .list-items-container {
+        padding-left: 0rem !important;
+    }
+
+    ol,
+    ul {
+        padding-left: 0rem !important;
+    }
+
+    .landing_page_cart_list ul::-webkit-scrollbar {
+        height: 3px;
+    }
+
+    /* Track */
+    .landing_page_cart_list ul::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .landing_page_cart_list ul::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+    .landing_page_cart_price_table_cell {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #ced4da;
+        padding: 10px 0px;
+    }
+
+    .landing_page_cart_size_table_cell {
+        padding-top: 7px;
+    }
+
+    .landing_page_cart_size_table_cell p {
+        margin-bottom: 5px;
+        margin-top: 12px;
+    }
+
+    .landing_page_cart_size_table_cell .size_option {
+        margin: 2px 2px;
+    }
+
+    .landing_page_cart_list ul li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #ced4da;
+        padding: 5px 0px;
+    }
+
+    .landing_page_cart_image {
+        line-height: 0px;
+    }
+
+    .landing_page_cart_image img {
+        width: 80px;
+        height: 80px;
+        border-radius: 3px;
+    }
+
+    .landing_page_name_img_container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .landing_page_cart_name {
+        width: 250px;
+        margin-left: 10px;
+        margin-right: 5px;
+    }
+
+    .landing_page_cart_name p {
+        font-size: 16px;
+        line-height: 18px;
+        font-weight: 400;
+    }
+
+    .landing_page_size_name {
+        width: 116px;
+    }
+
+    .landing_page_size_name select {
+        font-size: 14px;
+    }
+
+    .landing_page_cart_qty {
+        width: 136px;
+        white-space: nowrap;
+        margin-left: 14px;
+        text-align: center;
+        margin-right: 14px;
+    }
+
+    .landing_page_cart_qty_count {
+        margin: 0px;
+        float: left;
+        height: 25px;
+        line-height: 25px;
+        text-align: center;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .landing_page_cart_delete_btn {
+        line-height: 0;
+        width: 50px;
+        text-align: center;
+    }
+
+    .landing_page_cart_delete_btn_link {
+        border: none;
+        font-size: 18px;
+        background-color: transparent;
+        color: red;
+        cursor: pointer;
+    }
+
+    .landing_page_shipping_item {
+        margin-bottom: 15px;
+    }
+
+    .cash_bkash_section {
+        text-align: center;
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 10px;
+    }
+
+    .payment__method button.active {
+        border: 2px solid #f3f;
+    }
+
+    .cash_bkash_section img {
+        max-width: 100%;
+        max-height: 60px;
+    }
+
+    .landing_page_cart_submit_btn {
+        margin-top: 30px;
+        text-align: center;
+    }
+
+    .customer_review_img {
+        width: 100%;
+        height: 100%;
+        /* aspect-ratio: 1 / 1; */
+    }
+
+    .no_product_found_img {
+        width: 100%;
+    }
+
+    .customer_review_img img {
+        width: 100%;
+        height: 100%;
+        border-radius: 3px;
+    }
+
+    ._customer_review_head {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    ._customer_review_head h3 {
+        color: #000;
+        font-weight: 500;
+        font-size: 26px;
+        line-height: 32px;
+        margin-bottom: 30px;
+    }
+
+    .list-item .list_items_text {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .list-items-container {
+        /* text-align: center; */
+        display: flex;
+        justify-content: start;
+        align-items: start;
+        flex-direction: column;
+        /* margin-bottom: 20px; */
+    }
+
+    .list-items-container ul {
+        margin-bottom: 0px;
+        margin: auto;
+    }
+
+
+    .list-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        /* margin: 8px 0; */
+        font-size: 20px;
+        margin-bottom: 10px;
+        line-height: 26px;
+    }
+
+    .list-item i {
+        color: var(--primary_color);
+        /* margin-right: 10px; */
+    }
+
+    .owl-carousel .owl-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+    }
+
+    .owl-carousel .owl-nav .owl-prev {
+        left: -4px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .owl-carousel .owl-nav .owl-next {
+        right: -4px;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+
+
+    .customer_review_area {
+        padding: 30px 8px;
+        overflow: hidden;
+    }
+
+
+    .form-control:focus {
+        box-shadow: inherit !important;
+    }
+
+    .checkout_form_btn_link {
+        -webkit-animation: 1.40s both rsiShaker1 infinite;
+        animation: 1.40s both rsiShaker1 infinite
+    }
+
+    .landing_page_cart_submit_btn button {
+        width: 100%;
+    }
+
+    .communication_social_media {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 15px
+    }
+
+    .landing_page_emergency_call_area {
+        margin-bottom: 60px;
+    }
+
+    .communication_social_media a:nth-child(1) {
+        background-color: #ff9930;
+    }
+
+    .communication_social_media a:nth-child(2) {
+        background-color: #1daadf;
+    }
+
+    .communication_social_media a:nth-child(3) {
+        background-color: #ab36f0;
+    }
+
+    .communication_social_media a {
+        padding: 10px 20px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .communication_social_media a span {
+        color: #fff;
+    }
+
+    .communication_social_media a i {
+        color: #fff;
+        font-size: 20px;
+    }
+
+    @-webkit-keyframes rsiShaker1 {
+
+        0%,
+        to {
+            -webkit-transform: scaleX(1);
+            transform: scaleX(1)
+        }
+
+        10%,
+        20% {
+            -webkit-transform: scale3d(.97, .97, .97) rotate(-1deg);
+            transform: scale3d(.97, .97, .97) rotate(-1deg)
+        }
+
+        30%,
+        50%,
+        70%,
+        90% {
+            -webkit-transform: scale3d(1.03, 1.03, 1.03) rotate(1deg);
+            transform: scale3d(1.03, 1.03, 1.03) rotate(1deg)
+        }
+
+        40%,
+        60%,
+        80% {
+            -webkit-transform: scale3d(1.03, 1.03, 1.03) rotate(-1deg);
+            transform: scale3d(1.03, 1.03, 1.03) rotate(-1deg)
+        }
+    }
+
+    @keyframes rsiShaker1 {
+
+        0%,
+        to {
+            -webkit-transform: scaleX(1);
+            transform: scaleX(1)
+        }
+
+        10%,
+        20% {
+            -webkit-transform: scale3d(.97, .97, .97) rotate(-1deg);
+            transform: scale3d(.97, .97, .97) rotate(-1deg)
+        }
+
+        30%,
+        50%,
+        70%,
+        90% {
+            -webkit-transform: scale3d(1.03, 1.03, 1.03) rotate(1deg);
+            transform: scale3d(1.03, 1.03, 1.03) rotate(1deg)
+        }
+
+        40%,
+        60%,
+        80% {
+            -webkit-transform: scale3d(1.03, 1.03, 1.03) rotate(-1deg);
+            transform: scale3d(1.03, 1.03, 1.03) rotate(-1deg)
+        }
+    }
+
+
+
+    @media only screen and (min-width: 1200px) {}
+
+    @media only screen and (min-width: 1450px) {
+        .container {
+            max-width: 85%;
+        }
+
+
+
+        .landing_page_cart_list ul li {
+            width: 100%;
+        }
+    }
+
+    @media only screen and (max-width: 1500px) {
+        .landing_page_cart_name {
+            width: 200px;
+            margin-right: 5px;
+        }
+    }
+
+
+    @media only screen and (max-width: 992px) {
+        .landing_page_product_card_list ul {
+            flex-direction: column;
+        }
+
+        .section_padding_bottom {
+            padding-bottom: 30px;
+        }
+
+        .landing_page_product_card_list ul li {
+            width: 100%;
+        }
+
+        .landing_page_video_iframe iframe {
+            height: 300px;
+            border-radius: 5px;
+        }
+
+        .landing_page_cart_name {
+            margin-left: 0px;
+        }
+
+        .landing_page_name_img_container {
+            display: flex;
+            align-items: start;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        /* .landing_page_banner_title {
+  margin-top: 70px;
+} */
+
+        .landing_page_product_form_check label {
+            padding-bottom: 4px;
+        }
+
+        .landing_page_product_name h5 {
+            font-size: 16px;
+        }
+
+        .landing_page_banner_title h1 {
+            font-size: 33px;
+            line-height: 32px;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .landing_page_section_titles {
+            margin-bottom: 15px;
+        }
+
+        .landing_page_shipping {
+            padding: 10px;
+        }
+
+        .product-image-area {
+            padding: 25px 0px;
+        }
+
+        .landing_page_product_card_list ul {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .landing_page_cart_qty_count {
+            /* white-space: normal !important; */
+            margin-top: 10px;
+        }
+
+        .desktop_show_qty {
+            display: none;
+        }
+
+        .mobile_qty_show {
+            display: block;
+        }
+
+        .landing_page_cart_area {
+            margin-top: 26px;
+        }
+
+        .landing_page_cart_qty {
+            margin-left: 0px;
+        }
+
+        .landing_page_cart_delete_btn {
+            text-align: right;
+        }
+
+        .landing_page_cart {
+            padding: 12px;
+        }
+
+
+        .landing_page_emergency_call_area {
+            margin-top: 20px;
+        }
+
+        .landing_page_section_title h2 {
+            font-size: 18px;
+        }
+
+        .section_padding {
+            padding: 0px 0px;
+            padding-bottom: 30px;
+        }
+
+        .landing_page_emergency_call h3 {
+            font-size: 20px;
+            line-height: 28px;
+        }
+
+        .landing_page_logo_banner_area {
+            height: auto;
+        }
+
+        .landing_page_section_title h2 {
+            font-size: 20px;
+            line-height: 35px;
+        }
+
+        .landing_page_banner_title h1 {
+            font-size: 22px;
+            line-height: 28px;
+        }
+
+        ._customer_review_head {
+            margin-top: 20px;
+        }
+
+        /* .landing_page_banner_title {
+  margin-top: 40px;
+  margin-bottom: 40px;
+} */
+
+
+
+        .landing_page_banner_title {
+            width: 100%;
+        }
+
+
+
+        .landing_page_cart_name p {
+            font-size: 14px;
+            line-height: 18px;
+        }
+
+        .landing_page_cart_name {
+            width: 122px;
+        }
+
+        .landing_page_size_name select {
+            width: 112px;
+        }
+
+        .landing_page_name_img_container {
+            align-items: start;
+            justify-content: start;
+            flex-direction: column;
+            margin-right: 14px;
+        }
+
+        .landing_page_cart_image img {
+            width: 60px;
+            height: 60px;
+            border-radius: 3px;
+        }
+
+        .landing_page_cart_list ul li {
+            width: 100%;
+        }
+
+        .common_btn_link {
+            height: 45px;
+            width: 210px;
+        }
+    }
+
+    @media screen and (max-width: 576px) {
+        .communication_social_media {
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .communication_social_media a {
+            padding: 8px 10px;
+            gap: 5px;
+        }
+
+        .communication_social_media a i {
+            font-size: 18px;
+        }
+    }
+
+    @media screen and (max-width: 450px) {}
+
+    @media screen and (max-width: 380px) {}
+
+    /* Centered product cards for 2 or fewer products */
+    .product-cards-centered {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 30px;
+        flex-wrap: wrap;
+        padding: 10px 0;
+    }
+
+    .product-card-item {
+        text-align: center;
+        max-width: 300px;
+        /* padding: 5px; */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .product-card-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .product-card-item .product-slider-img {
+        width: 100%;
+        height: 250px;
+        aspect-ratio: 1 / 1;
+        /* margin-bottom: 15px; */
+    }
+
+    .product-card-item .product-slider-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .product-card-item .product-info h5 {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #333;
+        line-height: 1.4;
+    }
+
+    .product-card-item .product-info .product-price {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--primary_color);
+        margin: 0;
+    }
+
+    .product_compo_price {
+        color: var(--primary_color);
+    }
+
+    /* h5.shipping_option_title {
+        margin-top: 25px;
+    } */
+
+    .shipping_option {
+        border: 1px solid #ced4da;
+        width: 100%;
+        padding: 0.375rem 0.75rem;
+        font-size: 1rem;
+        font-weight: 400;
+        color: #212529;
+        background-color: #fff;
+    }
+
+    .landing_page_video_area {
+        padding-top: 30px;
+        background-color: #F6F7FF;
+    }
+
+    /* Responsive adjustments for centered cards */
+    @media screen and (max-width: 768px) {
+        .product-cards-centered {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .product-card-item {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .product-card-item .product-slider-img {
+            height: 200px;
+        }
+
+        .product-card-item .product-info h5 {
+            font-size: 16px;
+        }
+
+        .product-card-item .product-info .product-price {
+            font-size: 15px;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .product-cards-centered {
+            padding: 15px 0;
+            gap: 15px;
+        }
+
+        .product-card-item {
+            padding: 12px;
+        }
+
+        .product-card-item .product-slider-img {
+            height: 180px;
+        }
+    }
+</style>
+
+<body>
+    <!-- Your Chat Plugin code -->
+    @if (!empty($setting->facebook_chat_plugin))
+        {!! $setting->facebook_chat_plugin !!}
+    @endif
+
+
+    <!-- Your google tag body -->
+    @if (!empty($setting->google_body_tag))
+        {!! $setting->google_body_tag !!}
+    @endif
+
+    <!--========= Product Image Section Area Start =============-->
+    <section class="product-image-area">
+        <div class="container">
+            <div class="product-image-container wow animate__animated animate__fadeInUp" id="animatedBox">
+                <div class="row">
+                    <div class="col-xxl-10 col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12 mx-auto">
+
+                        {{-- Show as carousel when more than 2 products --}}
+                        <div class="product-slider-active owl-carousel">
+                            @foreach ($productImages as $image)
+                                <div class="product-slider-items">
+                                    <div class="product-slider-img">
+                                        <img src="{{ asset('storage/' . $image->thumbnail_img) }}" alt="Product Image">
+                                    </div>
+                                    {{-- <div class="product-info">
+                                            <p class="product-price">{{ $product->sale_price }} TK</p>
+                                        </div> --}}
+                                </div>
+                            @endforeach
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--=================== product price Section Start ====================-->
+        <section>
+            <div class="landing_page_logo_banner_area">
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-xxl-8 col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 mx-auto">
+                            <div class="landing_page_logo_with_banner ">
+                                <div class="landing_page_banner_table_cell">
+                                    <div class="landing_page_banner_content">
+                                        <div class="wow animate__animated animate__fadeInUp" id="animatedBox">
+                                            @foreach ($products as $product)
+                                                @if ($loop->first)
+                                                    <div class="product_previous_price">
+                                                        <h5>আগের মূল্য <span
+                                                                class="text-danger text-decoration-line-through"
+                                                                style="text-decoration-thickness: 1px !important;">{{ en2bn($product->price) }}
+                                                                টাকা</span></h5>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+
+                                            <div class="landing_page_banner_title  wow animate__animated animate__fadeInDown"
+                                                id="animatedBox">
+                                                <h1>{{ $page->product_combo_title }}</h1>
+                                            </div>
+
+                                            @foreach ($products as $product)
+                                                @if ($loop->first)
+                                                    <div class="product_compo_price">
+                                                        <h5>বর্তমান মূল্য {{ en2bn($product->sale_price) }} টাকা</h5>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+
+                                            <div class="landing_page_common_btn">
+                                                <div class="common_btn">
+                                                    <a href="#product_list" class="common_btn_link"><i
+                                                            class="common_btn_icon"></i>
+                                                        <span class="common_btn_title"><i
+                                                                class="fa-solid fa-cart-shopping"></i>
+                                                            অর্ডার করতে চাই
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+
+        @if ($page->description_title)
+            <section class="product_description_area">
+                <div class="container wow animate__animated animate__fadeInUp" id="animatedBox">
+                    <div class="row">
+                        <div class="col-xxl-10 col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12 mx-auto">
+                            <div class="_customer_review_head">
+                                <h3>{{ $page->description_title }}</h3>
+                            </div>
+
+                            <div class="list-items-container">
+                                <ul class="list_description">
+                                    @forelse ($descriptions as $description)
+                                        <li class="list-item">
+                                            {{-- <span> <i class="fas fa-check-circle"></i></span> --}}
+                                            <span class="list_items_text">{{ $description->title }}</span>
+                                        </li>
+                                    @empty
+                                        <li class="list-item">
+                                            <span><i class="fas fa-check-circle"></i></span>No Description added
+                                            yet
+                                        </li>
+                                    @endforelse
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        @endif
+        <!--===================  Common Button area Start ====================-->
+        {{-- <div class="landing-page-order-now-btn-area wow animate__animated animate__fadeInUp" id="animatedBox">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xxl-10 col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12 mx-auto">
+                        <div class="common-btn">
+                            <a href="#product_list" class="common_btn_link"><i class="common-btn-icon"></i>
+                                <span class="common-btn-title"><i class="fa-solid fa-cart-shopping"></i> অর্ডার করতে
+                                    ক্লিক করুন </span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> --}}
+        <!--===================  Common Button area End ====================-->
+    </section>
+    <!--========= Product Image Section Area End  ==============-->
+    <!--=================== Header Section Start ====================-->
+    @if (!empty($page->main_banner) && $page->main_banner !== 'null')
+        <section>
+            {{-- style="background-image: url({{ asset('storage/' . $page->main_banner) }});" --}}
+            <div class="landing_page_logo_banner_area">
+                <div class="container">
+                    <div class="row text-center">
+                        <div class="col-xxl-8 col-xl-8 col-lg-8 col-md-12 col-sm-12 col-xs-12 mx-auto">
+                            <div class="landing_page_logo_with_banner ">
+                                {{-- <div class="landing_page_logo  wow animate__animated animate__fadeInDown" id="animatedBox">
+                                <a href="">
+                                    <img src="{{ asset('storage/' . $general_setting->logo) }}" alt="logo" />
+                                </a>
+                            </div> --}}
+                                <div class="landing_page_banner_table_cell">
+                                    <div class="landing_page_banner_content">
+                                        <div class="landing_page_banner_title  wow animate__animated animate__fadeInDown"
+                                            id="animatedBox">
+                                            <h1>সাইজ গাইড</h1>
+                                            <p></p>
+                                        </div>
+                                        <div class="wow animate__animated animate__fadeInUp" id="animatedBox">
+                                            <div class="landing_page_banner_imags">
+                                                <img src="{{ asset('storage/' . $page->main_banner) }}"
+                                                    alt="Landing Page" class="w-100 img-fluid">
+                                            </div>
+
+                                            <div class="landing_page_common_btn">
+                                                <div class="common_btn">
+                                                    <a href="#product_list" class="common_btn_link"><i
+                                                            class="common_btn_icon"></i>
+                                                        <span class="common_btn_title"><i
+                                                                class="fa-solid fa-cart-shopping"></i>
+                                                            অর্ডার করতে চাই
+                                                        </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </section>
+    @endif
+    <!--=================== Header Section End ====================-->
+    @if (!empty($page->product_description) && trim(strip_tags($page->product_description)) !== 'null')
+        <section class="product_description_area">
+            <div class="container wow animate__animated animate__fadeInUp" id="animatedBox">
+                <div class="row">
+                    <div class="col-xxl-10 col-xl-10 col-lg-10 col-md-12 col-sm-12 col-xs-12 mx-auto text-center">
+                        {!! $page->product_description !!}
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+    <!--===================  Order korte click korun start ====================-->
+    {{-- <div class="landing_page_order_now_btn_area section_padding_bottom wow animate__animated animate__fadeInUp"
+        id="animatedBox">
+        <div class="container">
+            <div class="row">
+                <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="common_btn">
+                        <a href="#product_list" class="common_btn_link"><i class="common_btn_icon"></i>
+                            <span class="common_btn_title"><i class="fa-solid fa-cart-shopping"></i> অর্ডার করতে ক্লিক
+                                করুন </span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> --}}
+    <!--===================  Order korte click korun End ====================-->
+    @if ($page->video_title)
+        <!--===================  First Youtube Section start End ====================-->
+        <section class="landing_page_video_area section_padding_bottom wow animate__animated animate__fadeInUp"
+            id="animatedBox">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="landing_page_section_titles">
+                            <h2>{{ $page->video_title }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container section_top_space">
+                <div class="row">
+                    <div class="col-xxl-9 col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 m-auto">
+                        <div class="landing_page_video_iframe">
+                            <iframe src="{{ $page->video_url }}" allow="accelerometer; autoplay;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--===================  First Youtube Section End ====================-->
+    @endif
+    @if ($page->video_title_two)
+        <!--===================  2nd Youtube Section start End ====================-->
+        <section class="landing_page_video_area section_padding_bottom wow animate__animated animate__fadeInUp"
+            id="animatedBox">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="landing_page_section_titles">
+                            <h2>{{ $page->video_title_two }}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="container section_top_space">
+                <div class="row">
+                    <div class="col-xxl-9 col-xl-9 col-lg-9 col-md-9 col-sm-12 col-12 m-auto">
+                        <div class="landing_page_video_iframe">
+                            <iframe src="{{ $page->video_url_two }}" allow="accelerometer; autoplay;"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--===================  2nd Youtube Section End ====================-->
+    @endif
+    @if ($reviews->count() > 0)
+        {{-- @if (count($reviews) > 0) --}}
+        <section class="customer_review_area overflow-hidden wow animate__animated animate__fadeInUp"
+            id="animatedBox">
+            <div class="_customer_review_head">
+                <h3>Customer Reviews</h3>
+            </div>
+
+            <div class="container">
+                <!-- Owl Carousel HTML Structure -->
+                <div class="customer_review_slider owl-carousel">
+                    @foreach ($reviews as $review)
+                        <div class="item">
+                            <div class="customer_review_img">
+                                <img src="{{ asset('storage/' . $review->thumbnail_img) }}"
+                                    alt="customer_review_img" />
+
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <!--===================  Second Banner Start ====================-->
+    @if ($page->hotline_title !== 'null' && !empty($page->hotline_title))
+        <section class="landing_page_emergency_call_area section_padding wow animate__animated animate__fadeInUp"
+            id="animatedBox">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 mx-auto">
+                        <div class="landing_page_emergency_call ">
+                            <h3>
+                                <!-- <span class="second_banner_title_icon"><i class="fa-solid fa-angles-right"></i></span> -->
+                                {{ $page->hotline_title }}
+                                <!-- <span class="second_banner_title_icon"><i class="fa-solid fa-angles-right"></i></span> -->
+                            </h3>
+                            {{-- <a href="tel:{{ $page->hotline_phone }}"
+                                class="landing_page_emergency_call_link common_btn_link"><i
+                                    class="fa-solid fa-phone"></i>
+                                <span>{{ $page->hotline_phone }}</span>
+                            </a> --}}
+                        </div>
+                        <div class="communication_social_media">
+                            <a href="https://wa.me/+{{ $page->whatsapp_number }}" target="_blank">
+                                <i class="fa-brands fa-whatsapp"></i>
+                                <span>Whatsapp</span>
+                            </a>
+
+                            <a href="tel:{{ $page->hotline_phone }}">
+                                <i class="fa-solid fa-phone"></i>
+                                <span>Call</span>
+                            </a>
+
+                            <a href="https://m.me/{{ $page->messenger_id }}" target="_blank">
+                                <i class="fa-brands fa-facebook-messenger"></i>
+                                <span>Messenger</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
+    <!--===================  Product Selected Start  ====================-->
+    <section class="landing_page_cart_area section_padding wow animate__animated animate__fadeInUp" id="animatedBox">
+        <div class="container">
+            <div class="row">
+                <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="landing_page_section_titles">
+                        <h2>প্রোডাক্ট সিলেক্ট করুন</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container section_top_space">
+            <div class="row">
+                <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 m-auto">
+                    <div class="landing_page_product_content">
+                        <div class="row">
+                            <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <div id="product_list" class="landing_page_product_card_list">
+                                    <ul>
+                                        @forelse ($products as $product)
+                                            <li class="cart-item" data-product-id="{{ $product->id }}">
+                                                <div class="form-check landing_page_product_form_check">
+                                                    <input type="checkbox" id="checkbox_6" class="form-check-input"
+                                                        data-ignore
+                                                        onclick="addToCartWithCheckbox('{{ $product->id }}', this)"
+                                                        @if (in_array($product->id, $cartItems)) checked @endif />
+                                                    <label for="6" class="form-check-label">
+                                                        <div class="landing_page_product_content">
+                                                            <div class="landing_page_product-image">
+                                                                <img src="{{ asset('storage/' . $product->thumbnail_img) }}"
+                                                                    alt="product_image" />
+                                                            </div>
+                                                            <div class="landing_page_product_details">
+                                                                <div class="landing_page_product_name">
+                                                                    <h5>{{ $product->name }}</h5>
+                                                                </div>
+                                                                {{-- <div class="landing_page_product_qty">
+                                                                    <button class="landing_page_product_qty_minus"
+                                                                        onclick="decrementQuantity(this)" data-ignore>
+                                                                        <i class="fa-solid fa-minus"></i>
+                                                                    </button>
+                                                                    <input type="number" value="1"
+                                                                        min="1" class="product-qty" data-ignore
+                                                                        data-product-id="{{ $product->id }}" />
+                                                                    <button class="landing_page_product_qty_plus"
+                                                                        onclick="incrementQuantity(this)" data-ignore>
+                                                                        <i class="fa-solid fa-plus"></i>
+                                                                    </button>
+                                                                </div> --}}
+                                                                <div class="landing_page_product_price">
+                                                                    <span
+                                                                        class="landing_page_product_new_price">{{ $product->sale_price }}TK</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </li>
+
+                                        @empty
+                                            <div class="mb-3 text-center">
+                                                <img class="no_product_found_img"
+                                                    src="{{ asset('frontend') }}/images/nproduct_img.png"
+                                                    alt="No Product Found">
+                                            </div>
+                                        @endforelse
+
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--===================  Second Banner end ====================-->
+
+        <div id="checkout_section" class="container section_top_space">
+            <form id="order_form">
+                <div class="row">
+                    <div class="col-xxl-6 col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12 wow animate__animated animate__fadeInUp"
+                        id="animatedBox">
+                        <div class="landing_page_shipping">
+                            <div class="landing_page_shipping_title">
+                                <h5>বিলিং বিবরণ</h5>
+                            </div>
+                            <div class="_single_product_modal_form">
+                                <div class="_single_product_modal_form_item">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-phone"></i></span>
+                                        <input type="number"
+                                            onkeyup="setPhoneNumber(this.value , {{ $site_configuration->incomplete_order_system }})"
+                                            oninput="if(this.value.length > 11) this.value = this.value.slice(0, 11);"
+                                            name="mobile_no" value="{{ old('mobile_no') }}"
+                                            placeholder="মোবাইল নাম্বার দিন" class="form-control" />
+                                        <!---->
+                                    </div>
+                                </div>
+                                <div class="_single_product_modal_form_item">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-regular fa-user"></i></span>
+                                        <input type="text" name="name" value="{{ old('name') }}""
+                                            placeholder=" আপনার নাম" class="form-control" />
+                                        <!---->
+                                    </div>
+                                </div>
+                                <div class="_single_product_modal_form_item">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-location-dot"></i></span>
+                                        <input type="text" name="address" placeholder="আপনার সম্পূর্ণ ঠিকানা"
+                                            class="form-control" />
+                                        <!---->
+                                    </div>
+                                </div>
+                                <input type="hidden" id="free_delivery" value="{{ $has_free_delivery }}"
+                                    name="free_delivery">
+
+                                <div class="_single_product_modal_form_item">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-truck"></i></span>
+                                        <select id="select_area" name="shipping_charge_id" class="form-control">
+                                            <option disabled selected value="">ডেলিভারি এরিয়া</option>
+                                            @foreach ($delivery_charges as $delivery_charge)
+                                                <option value="{{ $delivery_charge->id }}"
+                                                    id="{{ $delivery_charge->id }}">{{ $delivery_charge->name }}
+                                                </option>
+                                            @endforeach
+                                            {{-- <option value="1">ঢাকার বাহিরে</option>
+                                            <option value="2">ঢাকার ভিতরে</option> --}}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="_single_product_modal_form_item">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i
+                                                class="fa-solid fa-up-right-and-down-left-from-center"></i></span>
+                                        <select id="select_size" name="product_size" class="form-control">
+                                            <option style="font-weight: 600;" disabled selected value="">সাইজ
+                                                সিলেক্ট করুন <span class="text-danger">*</option>
+                                            @foreach ($uniqueVariants as $index => $variant)
+                                                <option value="{{ $variant->name }}" id="{{ $variant->id }}">
+                                                    {{ $variant->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {{-- //radio buttons for size selection --}}
+                                {{-- <div class="landing_page_cart_size_table_cell">
+                                    <p style="font-weight: 600;">সাইজ সিলেক্ট করুন <span class="text-danger">*</span>
+                                    </p>
+                                    @foreach ($uniqueVariants as $index => $variant)
+                                        <div class="size_option">
+                                            <input class="form-check-input" id="size_{{ $variant->id }}"
+                                                type="radio" name="size" value="{{ $variant->name }}"
+                                                @checked($index == 0) data-ignore />
+                                            <label class="form-check-label"
+                                                style="padding-left: 5px;">{{ $variant->name }} <span
+                                                    class="text-danger">*</span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div> --}}
+
+                                {{-- <div class="_single_product_modal_form_item2">
+                                    <h5 class="shipping_option_title">ডেলিভারি এরিয়া</h5>
+                                    @foreach ($delivery_charges as $index => $delivery_charge)
+                                        <div class="shipping_option"
+                                            @if ($index == 0) style="border-bottom: none" @endif>
+                                            <div>
+                                                <input type="radio" value="{{ $delivery_charge->id }}"
+                                                    name="shipping_charge_id"
+                                                    id="select_area_{{ $delivery_charge->id }}"
+                                                    class="form-check-input me-2" data-ignore />
+                                                <label for="{{ $delivery_charge->id }}"
+                                                    class="form-check-label me-4">
+                                                    {{ $delivery_charge->name }}
+                                                </label>
+                                            </div>
+                            </div>
+                            @endforeach
+                        </div> --}}
+
+                                <!-- <div class="_single_product_modal_form_item">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-regular fa-comment"></i></span>
+                                        <input type="text" name="note" value="{{ old('note') }}"
+                                            placeholder="কোনো মন্তব্য থাকলে লিখুন..." class="form-control" />
+                                    </div>
+                                </div> -->
+                                <input type="hidden" value="landing_page" name="order_source">
+                                <input type="hidden" value="" name="shipping_charge" id="shipping_charge">
+                                <input type="hidden" value="" name="cartCount" id="cartCount">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xxl-6 col-xl-6 col-lg-12 col-md-12 col-sm-12 col-12 wow animate__animated animate__fadeInUp"
+                        id="animatedBox">
+                        <div class="landing_page_cart">
+                            <div class="landing_page_cart_title">
+                                <h5>আপনার অর্ডার আইটেম</h5>
+                            </div>
+                            <div class="landing_page_cart_list">
+                                <ul>
+
+                                </ul>
+                                <div class="landing_page_cart_price_content">
+                                    <div class="landing_page_cart_price_table_cell">
+                                        <strong>Subtotal</strong> <strong class="subTotal">TK 0</strong>
+                                    </div>
+
+                                    <div class="landing_page_cart_price_table_cell">
+                                        <strong>Shipping Charge</strong>
+                                        <strong class="shipping_charge">0 TK</strong>
+                                    </div>
+                                    <div class="landing_page_cart_price_table_cell">
+                                        <strong>Payable Amount</strong> <strong class="total_amount"> TK 0</strong>
+                                    </div>
+                                </div>
+
+                                <div class="landing_page_cart_submit_btn">
+                                    <div class="common_btn">
+                                        <button class="common_btn_link checkout_form_btn_link" id="order_form_submit">
+                                            <i class="common_btn_icon"></i>
+                                            <span class="common_btn_title">অর্ডার কনফার্ম করুন</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+    <!--===================  Product Selected End  ====================-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+
+
+    <!-- WOW.js for triggering animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wow/1.1.2/wow.min.js"></script>
+    <!-- Initialize WOW.js -->
+    <script>
+        new WOW().init();
+    </script>
+
+
+    <script>
+        let cartItems = {};
+        let qtyItems = {};
+        $(document).ready(function() {
+            let lastShippingCharge = 0;
+
+            updateCartSection();
+            fetchCartContent();
+
+            $('input[name="shipping_charge_id"]').change(function() {
+                const selectedOption = $(this).val();
+                const hasFreeDelivery = $('#free_delivery').val(); // Get the value from the hidden input
+
+                if (hasFreeDelivery == 1) {
+                    // If any product has free delivery, set shipping charge to 0
+                    $('.shipping_charge').text('0 TK (free delivery applied)');
+                    $('#shipping_charge').val(0);
+                    updateCartTotalWithShipping(0);
+                } else {
+                    // Otherwise, proceed with normal shipping charge calculation
+                    $.ajax({
+                        url: '/get-delivery-charge',
+                        type: 'GET',
+                        data: {
+                            delivery_charge_id: selectedOption,
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                const deliveryCharge = parseFloat(response.delivery_charge);
+                                $('.shipping_charge').text(deliveryCharge + ' TK');
+                                $('#shipping_charge').val(deliveryCharge);
+                                updateCartTotalWithShipping(deliveryCharge);
+                            } else {
+                                console.error('Failed to fetch delivery charge.');
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching delivery charge:', error);
+                        }
+                    });
+                }
+            });
+
+
+
+
+            $('#select_area').change(function() {
+                const selectedOption = $(this).val();
+                $.ajax({
+                    url: '/get-delivery-charge',
+                    type: 'GET',
+                    data: {
+                        delivery_charge_id: selectedOption,
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const deliveryCharge = parseFloat(response.delivery_charge);
+                            $('.shipping_charge').text(deliveryCharge + ' TK');
+                            $('#shipping_charge').val(deliveryCharge);
+                            updateCartTotalWithShipping(deliveryCharge);
+                        } else {
+                            console.error('Failed to fetch delivery charge.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching delivery charge:', error);
+                    }
+                });
+            });
+
+            function updateCartTotalWithShipping(newShippingCharge) {
+                const cartTotal = parseFloat($('.total_amount').text().replace('TK', '').trim());
+                const newTotal = cartTotal - lastShippingCharge + newShippingCharge;
+
+                lastShippingCharge = newShippingCharge;
+
+                $('.total_amount').text(newTotal + ' TK');
+            }
+        });
+
+        // $(document).ready(function() {
+        //     let lastShippingCharge = 0;
+
+        //     updateCartSection();
+        //     fetchCartContent();
+
+        //     const defaultChecked = $('input[name="shipping_charge_id"]:checked').val();
+        //     if (defaultChecked) {
+        //         applyShippingCharge(defaultChecked);
+        //     }
+
+        //     $('input[name="shipping_charge_id"]').change(function() {
+        //         const selectedOption = $(this).val();
+        //         applyShippingCharge(selectedOption);
+        //     });
+
+        //     let cartCount = $('#cartCount').val();
+
+        //     function applyShippingCharge(selectedOption) {
+        //         const hasFreeDelivery = $('#free_delivery').val(); // Get the value from the hidden input
+
+        //         if (hasFreeDelivery == 1) {
+        //             $('.shipping_charge').text('0 TK (free delivery applied)');
+        //             $('#shipping_charge').val(0);
+        //             updateCartTotalWithShipping(0);
+        //         } else {
+        //             // Otherwise, proceed with normal shipping charge calculation
+        //             $.ajax({
+        //                 url: '/get-delivery-charge',
+        //                 type: 'GET',
+        //                 data: {
+        //                     delivery_charge_id: selectedOption,
+        //                 },
+        //                 success: function(response) {
+        //                     if (response.success) {
+        //                         const deliveryCharge = parseFloat(response.delivery_charge);
+        //                         $('.shipping_charge').text(deliveryCharge + ' TK');
+        //                         $('#shipping_charge').val(deliveryCharge);
+        //                         updateCartTotalWithShipping(deliveryCharge);
+        //                     } else {
+        //                         console.error('Failed to fetch delivery charge.');
+        //                     }
+        //                 },
+        //                 error: function(xhr, status, error) {
+        //                     console.error('Error fetching delivery charge:', error);
+        //                 }
+        //             });
+        //         }
+        //     }
+
+        //     function updateCartTotalWithShipping(newShippingCharge) {
+        //         const cartTotal = parseFloat($('.total_amount').text().replace('TK', '').trim());
+        //         const newTotal = cartTotal - lastShippingCharge + newShippingCharge;
+
+        //         lastShippingCharge = newShippingCharge;
+
+        //         $('.total_amount').text(newTotal + ' TK');
+        //     }
+        // });
+
+
+        $(document).ready(function() {
+
+            //  click handler to the cart items
+            $('.cart-item').click(function(event) {
+                const productId = $(this).data('product-id');
+
+                const checkbox = $(this).find('input[type="checkbox"]');
+                addToCart(productId);
+                checkbox.prop('checked', true);
+
+            });
+            $('[data-ignore]').click(function(event) {
+                event.stopPropagation();
+            });
+        });
+
+        function addToCartWithCheckbox(productId, checkboxElement) {
+            fetchCartContent();
+            const checkbox = $(checkboxElement);
+            if (checkbox.is(':checked')) {
+                addToCart(productId);
+            }
+
+        }
+
+        function addToCart(id) {
+            console.log('Adding to cart');
+
+            $.ajax({
+                url: '/add/cart',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    id: id,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response.status) {
+                        console.log('Product added to cart');
+                        updateCartSection();
+                        fetchCartContent();
+                        toastr.success('Added Successfully');
+                    } else {
+                        console.error('Error adding product to cart:', response.message);
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error('Error adding product to cart:', error);
+                }
+            });
+        }
+
+        function updateCartSection() {
+            $.ajax({
+                url: '/cart/index',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+
+                    if (response.success) {
+                        renderCartItems(response.carts);
+                        const cartSubTotal = Math.floor(response.cart_sub_total);
+                        const cartTotal = Math.floor(response.cart_total);
+                        $('.subTotal').text(cartSubTotal + ' TK');
+                        $('.total_amount').text(cartTotal + ' TK');
+                        const cartLength = parseInt(response.carts.length);
+                        // console.log('cartLength:', cartLength);
+                        $('#cartCount').val(cartLength);
+                    } else {
+                        toastr.error('Error fetching cart items:', response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    toastr.error('Error fetching cart items:', error);
+                }
+            });
+        }
+
+        // function renderCartItems(carts) {
+        //     const cartList = $('.landing_page_cart_list ul');
+        //     cartList.empty(); // Clear the current cart items
+
+        //     // <div class="landing_page_size_name">
+        //     //             <select name="size" class="form-control size-select" onchange="updateCartVariants(this.value, ${cartItem.id})" data-product-id="${cartItem.id}">
+        //     //                 <option disabled selected value="">Select size</option>
+        //     //             </select>
+        //     if (Array.isArray(carts)) {
+        //         carts.forEach(cartItem => {
+        //             var total = cartItem.qty * cartItem.price;
+        //             const itemHtml = `
+    //         <li>
+    //             <div class="landing_page_name_img_container">
+
+    //             <div class="landing_page_cart_image">
+    //                 <img src="{{ asset('storage/') }}/${cartItem.options.image}" alt="product_image"/>
+    //             </div>
+    //             <div class="landing_page_cart_name">
+    //                 <p>${cartItem.name}</p>
+    //             </div>
+
+    //             </div>
+    //             <div class="landing_page_size_name">
+    //                 <div class="mobile_qty_show">
+    //                 <div class="landing_page_cart_qty">
+    //                     <p class="landing_page_cart_qty_count">${cartItem.qty} x ${cartItem.price} = ${total} TK</p>
+    //                 </div>
+    //                 </div>
+    //             </div>
+    //             <div class="landing_page_cart_qty desktop_show_qty">
+    //                 <p class="landing_page_cart_qty_count">${cartItem.qty} x ${cartItem.price} = ${total} TK</p>
+    //             </div>
+    //             <div class="landing_page_cart_delete_btn">
+    //                 <button style="color: red" class="landing_page_cart_delete_btn_link" onclick="removeFromCart('${cartItem.rowId}')">
+    //                     <i class="fa-solid fa-trash"></i>
+    //                 </button>
+    //             </div>
+    //         </li>
+    //     `;
+        //             cartList.append(itemHtml);
+
+        //             // Fetch the variants for each product and populate the select options
+        //             fetchProductVariants(cartItem.id);
+        //         });
+        //     } else {
+        //         console.error('Cart content is not an array:', carts);
+        //     }
+        // }
+
+        function renderCartItems(carts) {
+            const cartList = $('.landing_page_cart_list ul');
+            cartList.empty(); // Clear the current cart items
+
+            if (Array.isArray(carts)) {
+                carts.forEach(cartItem => {
+                    const total = cartItem.qty * cartItem.price;
+                    const itemHtml = `
+                <li data-product-id="${cartItem.id}">
+                    <div class="landing_page_name_img_container">
+                        <div class="landing_page_cart_image">
+                            <img src="{{ asset('storage/') }}/${cartItem.options.image}" alt="product_image"/>
+                        </div>
+                        <div class="landing_page_cart_name">
+                            <p>${cartItem.name}</p>
+                        </div>
+                        <div class="landing_page_product_qty">
+                            <button class="landing_page_product_qty_minus" data-action="decrement">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <input type="number" value="${cartItem.qty}" min="1" class="product-qty" data-product-id="${cartItem.id}" />
+                            <button class="landing_page_product_qty_plus" data-action="increment">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="landing_page_size_name">
+                        <div class="mobile_qty_show">
+                            <div class="landing_page_cart_qty">
+                                <p class="landing_page_cart_qty_count">${cartItem.qty} x ${cartItem.price} = ${total} TK</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="landing_page_cart_qty desktop_show_qty">
+                        <p class="landing_page_cart_qty_count">${cartItem.qty} x ${cartItem.price} = ${total} TK</p>
+                    </div>
+                    <div class="landing_page_cart_delete_btn">
+                        <button style="color: red" class="landing_page_cart_delete_btn_link" data-action="remove" data-row-id="${cartItem.rowId}">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </li>
+            `;
+                    cartList.append(itemHtml);
+                });
+
+                cartList.off('click', '[data-action]');
+                cartList.on('click', '[data-action]', function(event) {
+                    event.preventDefault();
+                    const action = $(this).data('action');
+                    const li = $(this).closest('li');
+                    const productId = li.data('product-id');
+                    const input = li.find('input.product-qty');
+                    let currentValue = parseInt(input.val());
+
+                    if (action === 'decrement') {
+                        if (currentValue > 1) {
+                            input.val(currentValue - 1);
+                            updateCartQuantity(productId, currentValue - 1);
+                        }
+                    } else if (action === 'increment') {
+                        input.val(currentValue + 1);
+                        updateCartQuantity(productId, currentValue + 1);
+                    } else if (action === 'remove') {
+                        const rowId = $(this).data('row-id');
+                        removeFromCart(rowId);
+                    }
+                });
+
+            } else {
+                console.error('Cart content is not an array:', carts);
+            }
+        }
+
+
+        function fetchProductVariants(productId) {
+            $.ajax({
+                url: `/product/variants/${productId}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        const sizeSelect = $(`.size-select[data-product-id="${productId}"]`);
+                        sizeSelect.empty().append('<option disabled value="">Select size</option>');
+
+                        const selectedVariant = response.selected_variant_name;
+
+                        let variantFound = false;
+
+                        response.variants.forEach(variant => {
+                            // Check if the variant name matches the one stored in the cart
+                            const isSelected = variant.variant.name === selectedVariant ? 'selected' :
+                                '';
+                            if (isSelected) {
+                                variantFound = true;
+                            }
+
+                            sizeSelect.append(
+                                `<option value="${variant.variant_id}" ${isSelected}>${variant.variant.name}</option>`
+                            );
+                        });
+
+                        if (!variantFound) {
+                            sizeSelect.val('');
+
+                        }
+                    } else {
+                        console.error('Failed to fetch variants:', response.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error fetching variants:', error);
+                }
+            });
+        }
+
+
+
+        // function updateCartVariants(productId) {
+        //     // Get the selected variant name from the dropdown
+        //     const variantName = $(`.size-select[data-product-id="${productId}"] option:selected`).text().trim();
+
+        //     console.log(variantName);
+
+        //     const variants = {
+        //         "Size": variantName
+        //     };
+        //     console.log(variants);
+        //     $.ajax({
+        //         url: '/cart/update-variant',
+        //         method: 'POST',
+        //         data: {
+        //             product_id: productId,
+        //             variants: variants,
+        //             _token: $('meta[name="csrf-token"]').attr('content')
+        //         },
+        //         success: function(response) {
+        //             if (response.success) {
+        //                 toastr.success('Cart updated successfully.');
+        //                 // updateCartSection();
+        //             } else {
+        //                 toastr.error('Failed to update cart:', response.message);
+        //             }
+        //         },
+        //         error: function(error) {
+        //             console.error('Error updating cart:', error);
+        //             toastr.error('Error updating cart. Please try again.');
+        //         }
+        //     });
+        // }
+
+        function updateCartVariants() {
+            // Get the selected variant name from the dropdown
+            const selectedVariant = $('#select_size').val();
+            if (!selectedVariant) return;
+
+            console.log(selectedVariant);
+
+            const variants = {
+                "Size": selectedVariant
+            };
+            console.log(variants);
+            $.ajax({
+                url: '/cart/update-variant',
+                method: 'POST',
+                data: {
+                    variants: variants,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.success) {
+                        toastr.success('Cart updated successfully.');
+                        // updateCartSection();
+                    } else {
+                        toastr.error('Failed to update cart:', response.message);
+                    }
+                },
+                error: function(error) {
+                    console.error('Error updating cart:', error);
+                    toastr.error('Error updating cart. Please try again.');
+                }
+            });
+        }
+        $('#select_size').on('change', updateCartVariants);
+
+        function removeFromCart(rowId) {
+            event.preventDefault();
+            $.ajax({
+                url: '/cart/remove',
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    rowId: rowId,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    if (response) {
+                        updateCartSection();
+                        toastr.success('Removed from cart');
+                    } else {
+
+                        toastr.error('Error removing product from cart');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error removing product from cart:', error);
+                }
+            });
+        }
+
+
+        function fetchCartContent() {
+            $.ajax({
+                type: 'GET',
+                url: '/cart/index',
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        cartItems = {};
+                        qtyItems = {};
+
+                        response.carts.forEach(function(item) {
+                            cartItems[item.id] = item
+                                .rowId;
+                        });
+
+                        response.carts.forEach(function(item) {
+
+                            qtyItems[item.id] = item.qty;
+                        });
+                        updateQuantityInputs();
+                    } else {
+                        console.error('Failed to fetch cart content');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching cart content:', error);
+                }
+            });
+        }
+
+        function updateQuantityInputs() {
+
+            $('input.product-qty').each(function() {
+                const productId = $(this).data('product-id');
+
+                if (qtyItems[productId]) {
+                    $(this).val(qtyItems[productId]);
+                }
+            });
+        }
+
+
+        function decrementQuantity(button) {
+
+            const li = $(button).closest('.cart-item');
+            const productId = li.data('product-id');
+            const input = li.find('input.product-qty');
+            let currentValue = parseInt(input.val());
+
+            if (currentValue > 1) {
+                input.val(currentValue - 1);
+                updateCartQuantity(productId, currentValue - 1);
+            }
+        }
+
+        function incrementQuantity(button) {
+
+            const li = $(button).closest('.cart-item');
+            const productId = li.data('product-id');
+            const input = li.find('input.product-qty');
+            let currentValue = parseInt(input.val());
+
+            input.val(currentValue + 1);
+            updateCartQuantity(productId, currentValue + 1);
+        }
+
+        function updateCartQuantity(productId, qty) {
+            // Find the rowId for the productId
+            const rowId = cartItems[productId];
+            console.log(rowId, cartItems);
+            if (rowId) {
+                $.ajax({
+                    type: 'POST',
+                    url: '/cart/update/with/productid',
+                    dataType: 'json',
+                    data: {
+                        productId: productId,
+                        qty: qty,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            updateCartSection();
+                            fetchCartContent();
+                            toastr.success('Cart updated successfully');
+                        } else {
+                            toastr.error('Failed to update cart');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error updating cart:', error);
+                        toastr.error('Error updating cart');
+                    }
+                });
+            } else {
+
+                toastr.error('Add product to cart first');
+            }
+        }
+
+
+        $(document).on('change', 'input[type="number"]', function() {
+            if (parseInt($(this).val()) < 1) {
+                $(this).val(1);
+            }
+        });
+    </script>
+
+
+    <script>
+        $('#order_form_submit').one('click', function() {
+            orderForm();
+        });
+
+        //------------order form submit------------
+        function orderForm() {
+            $('#order_form').submit(function(event) {
+                event.preventDefault();
+                // console.log('Order Form');
+                // return;
+                isFormSubmitted = true;
+                var formData = new FormData(this);
+                name = formData.get('name');
+                mobile_no = formData.get('mobile_no');
+                shipping_charge_id = formData.get('shipping_charge_id');
+                product_size = formData.get('product_size');
+                address = formData.get('address');
+                formData.append('status', 1);
+
+                //-----validation start----------------
+                if (!name) {
+                    toastr.info('Name is required');
+                    return;
+                }
+
+                if (!shipping_charge_id) {
+                    toastr.info('Please Select delivery area');
+                    return;
+                }
+
+                if (!mobile_no) {
+                    toastr.info('Mobile is required');
+                    return;
+                }
+
+                if (!$.isNumeric(mobile_no)) {
+                    toastr.info('Please Type Number');
+                    return;
+                }
+
+                if (mobile_no.length != 11) {
+                    toastr.info('Your Mobile Number Must-be 11 Digit');
+                    return;
+                }
+
+                if (!product_size) {
+                    toastr.info('Please Select Size');
+                    return;
+                }
+
+                if (!address) {
+                    toastr.info('Address is required');
+                    return;
+                }
+
+                const $btn = $('#order_form_submit');
+                const originalBtnHTML = $btn.html();
+                $btn.prop('disabled', true);
+                $btn.html(
+                    '<i class="common_btn_icon spinner"></i> <span class="common_btn_title">Loading...</span>');
+
+                //setup ajax
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+
+
+                // call ajax
+                $.ajax({
+                    url: '/checkout/order',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        $('.order_form').trigger("reset");
+                        if (res.status) {
+
+                            toastr.success('Order Successfull Add');
+                            console.log('call purchase event');
+                            location.href = "/order-success/" + res.invoice_no;
+
+                        } else {
+                            toastr.error(res.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error(xhr.responseText);
+                    }
+                });
+            });
+        }
+        let saveOrderTimeout = null;
+        let isFormSubmitted = false;
+        let phone_number = ''
+        let eventListenersAdded = false;
+
+        function setPhoneNumber(val, incomplete_order_system) {
+            console.log('no: ', val);
+            phone_number = val;
+            if (incomplete_order_system == 1) {
+                if (window.location.pathname.includes('/pages') && phone_number) {
+                    storeIncompleteOrder();
+                }
+            }
+        }
+
+        function storeIncompleteOrder() {
+            console.log('Event Listeners Added:', eventListenersAdded);
+
+            if (!eventListenersAdded) {
+                eventListenersAdded = true; // Ensure this runs only once
+
+                window.addEventListener('beforeunload', handleBeforeUnload);
+                document.addEventListener("visibilitychange", handleVisibilityChange);
+                // window.addEventListener("popstate", handlePopState);
+            }
+
+
+        }
+
+        function handleBeforeUnload() {
+            console.log('beforeunload - numberB:', phone_number);
+            if (!isFormSubmitted) {
+                saveIncompleteOrder();
+            }
+        }
+
+        function handleVisibilityChange() {
+            console.log('visibilitychange - numberV:', phone_number);
+            if (document.hidden && !isFormSubmitted) {
+                saveOrderTimeout = setTimeout(saveIncompleteOrder, 20000); // 20 sec delay
+            } else {
+                clearTimeout(saveOrderTimeout);
+                console.log('cleared');
+            }
+        }
+
+        function handlePopState() {
+            console.log('popstate - numberS:', phone_number);
+            if (!isFormSubmitted) {
+                saveIncompleteOrder();
+            }
+        }
+
+        function saveIncompleteOrder() {
+            if (!phone_number) return; // Prevent saving if no number is entered
+
+            var formData = new FormData($('#order_form')[0]);
+            formData.append('status', 12);
+
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            $.ajax({
+                url: '/checkout/order',
+                type: 'POST',
+                dataType: 'json',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    isFormSubmitted = true;
+                    console.log("Incomplete order saved.");
+                    removeEventListeners();
+                },
+                error: function(xhr) {
+                    console.error(xhr.responseText);
+                }
+            });
+        }
+
+        function removeEventListeners() {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+            window.removeEventListener("popstate", handlePopState);
+        }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Only initialize carousel if there are more than 2 products
+
+            $(".product-slider-active").owlCarousel({
+                loop: true,
+                // animateOut: "fadeOut",
+                // animateIn: "fadeIn",
+                margin: 10,
+                dots: true,
+                nav: true,
+                smartSpeed: 500,
+                autoplay: true,
+                autoplayTimeout: 2000,
+                navText: [
+                    '<i class="icon fa fa-angle-left"></i>',
+                    '<i class="icon fa fa-angle-right"></i>',
+                ],
+                responsive: {
+                    0: {
+                        items: 1,
+                    },
+                    576: {
+                        items: 1,
+                    },
+                    768: {
+                        items: 1,
+                    },
+                    992: {
+                        items: 1,
+                    },
+                    1200: {
+                        items: 1,
+                    },
+                    1400: {
+                        items: 1,
+                    },
+                    1500: {
+                        items: 1,
+                    },
+                },
+            });
+
+        });
+
+        $(document).ready(function() {
+            $(".customer_review_slider").owlCarousel({
+                loop: true,
+                margin: 10,
+                dots: false,
+                nav: true,
+                navText: [
+                    '<i class="fas fa-chevron-left icon"></i>',
+                    '<i class="fas fa-chevron-right icon"></i>',
+                ],
+                autoplay: true,
+                autoplayTimeout: 2000,
+                autoplayHoverPause: true,
+                responsive: {
+                    0: {
+                        items: 1,
+                    },
+                    600: {
+                        items: 3,
+                    },
+                    1000: {
+                        items: 5,
+                    },
+                },
+            });
+        });
+    </script>
+
+
+
+</body>
+
+</html>
