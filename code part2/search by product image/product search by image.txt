@@ -1,0 +1,371 @@
+admin master.blade.php
+<!-- Add the CKEditor script link -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
+    <script>
+        let tagModel = null;
+
+        async function loadTagModel() {
+            if (!tagModel) {
+                tagModel = await mobilenet.load();
+            }
+        }
+        loadTagModel();
+    </script>
+
+###########################
+frontend app.blade.php
+###############################
+
+async function handleImageSearch(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Image size should be less than 5MB');
+                    return;
+                }
+
+                // Ensure model is loaded
+                if (!model) {
+                    $('#product_search').html('<div class="text-center p-3">Loading AI model... Please wait.</div>')
+                        .show();
+                    await loadModel();
+                }
+
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    // Show preview
+                    $('#previewImg').attr('src', e.target.result);
+                    $('#imagePreview').show();
+                    $('#analysisText').text('Analyzing...');
+
+                    $('#product_search').html(
+                        '<div class="text-center p-3"><i class="fa fa-spinner fa-spin"></i> Analyzing image...</div>'
+                    ).show();
+
+                    try {
+                        // Create image element for TensorFlow
+                        const img = new Image();
+                        img.src = e.target.result;
+
+                        img.onload = async function() {
+                            try {
+                                // 1. Get AI predictions (tags)
+                                const predictions = await model.classify(img);
+                                console.log('TensorFlow Predictions:', predictions);
+
+                                const tags = predictions.slice(0, 5).flatMap(p => {
+                                    return p.className.split(',').map(term => term.trim()
+                                        .toLowerCase());
+                                });
+                                const uniqueTags = [...new Set(tags)];
+
+                                // 2. Extract color palette
+                                const colorPalette = extractDetailedColorPalette(img);
+                                const dominantColors = colorPalette.map(c => c.name);
+
+                                // 3. Extract visual features
+                                const visualFeatures = extractVisualFeatures(img);
+
+                                // 4. Extract pattern
+                                const patternType = detectPattern(img);
+
+                                console.log('Search Data:', {
+                                    tags: uniqueTags,
+                                    colors: colorPalette,
+                                    features: visualFeatures,
+                                    pattern: patternType
+                                });
+
+                                $('#analysisText').text(
+                                    `Found: ${uniqueTags.slice(0, 2).join(', ')} (${dominantColors[0]})`
+                                    );
+
+                                // Create FormData with all extracted data
+                                const formData = new FormData();
+                                formData.append('image', file);
+                                formData.append('tags', JSON.stringify(uniqueTags));
+                                formData.append('colors', JSON.stringify(colorPalette));
+                                formData.append('visual_features', JSON.stringify(visualFeatures));
+                                formData.append('pattern_type', patternType);
+                                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+                                $('#suggestProduct').empty();
+
+                                $.ajax({
+                                    url: '/image/search/v3',
+                                    type: 'POST',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function(res) {
+                                        if (res.status === true && res.redirect) {
+                                            window.location.href = res.redirect;
+                                        } else {
+                                            $('#suggestProduct').html(
+                                                '<div class="text-center p-3">No matching products found. Try another image.</div>'
+                                            );
+                                        }
+                                    },
+                                    error: function(xhr) {
+                                        console.error('Search error:', xhr);
+                                        $('#suggestProduct').html(
+                                            '<div class="text-center p-3 text-danger">Error searching. Please try again.</div>'
+                                        );
+                                    }
+                                });
+
+                            } catch (error) {
+                                console.error('Classification error:', error);
+                                $('#suggestProduct').html(
+                                    '<div class="text-center p-3 text-danger">Error analyzing image. Please try again.</div>'
+                                );
+                            }
+                        };
+
+                        img.onerror = function() {
+                            $('#suggestProduct').html(
+                                '<div class="text-center p-3 text-danger">Error loading image. Please try another image.</div>'
+                            );
+                        };
+
+                    } catch (error) {
+                        console.error('Image search error:', error);
+                        $('#suggestProduct').html(
+                            '<div class="text-center p-3 text-danger">Error processing image. Please try again.</div>'
+                        );
+                    }
+                };
+
+                reader.onerror = function() {
+                    $('#product_search').html(
+                        '<div class="text-center p-3 text-danger">Error reading image file.</div>');
+                };
+
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Extract detailed color palette
+        function extractDetailedColorPalette(img) {
+            try {
+                if (!window.colorThief) window.colorThief = new ColorThief();
+
+                const palette = window.colorThief.getPalette(img, 5);
+
+                return palette.map((rgb, index) => {
+                    const colorName = getColorName(rgb[0], rgb[1], rgb[2]);
+                    return {
+                        name: colorName,
+                        rgb: `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`,
+                        hex: rgbToHex(rgb[0], rgb[1], rgb[2]),
+                        percentage: Math.round(((5 - index) / 15) * 100),
+                        rank: index + 1
+                    };
+                });
+            } catch (error) {
+                console.error("Color palette extraction error:", error);
+                return [];
+            }
+        }
+
+        // Extract visual features
+        function extractVisualFeatures(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 200;
+            canvas.height = 200;
+            ctx.drawImage(img, 0, 0, 200, 200);
+
+            const imageData = ctx.getImageData(0, 0, 200, 200);
+            const pixels = imageData.data;
+
+            let totalBrightness = 0;
+            let totalSaturation = 0;
+            let colorVariance = 0;
+            let edgeCount = 0;
+            let pixelCount = 0;
+
+            for (let i = 0; i < pixels.length; i += 16) {
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                const a = pixels[i + 3];
+
+                if (a < 125) continue;
+
+                const brightness = (r + g + b) / 3;
+                totalBrightness += brightness;
+
+                const max = Math.max(r, g, b);
+                const min = Math.min(r, g, b);
+                const saturation = max === 0 ? 0 : (max - min) / max;
+                totalSaturation += saturation;
+
+                const avg = brightness;
+                const variance = Math.abs(r - avg) + Math.abs(g - avg) + Math.abs(b - avg);
+                colorVariance += variance;
+
+                if (i > 0 && i < pixels.length - 4) {
+                    const prevBrightness = (pixels[i - 4] + pixels[i - 3] + pixels[i - 2]) / 3;
+                    if (Math.abs(brightness - prevBrightness) > 30) edgeCount++;
+                }
+
+                pixelCount++;
+            }
+
+            const avgBrightness = totalBrightness / pixelCount;
+            const avgSaturation = totalSaturation / pixelCount;
+            const avgComplexity = colorVariance / pixelCount;
+            const edgeDensity = edgeCount / pixelCount;
+
+            return {
+                brightness: avgBrightness > 180 ? 'light' : avgBrightness > 100 ? 'medium' : 'dark',
+                brightness_score: Math.round(avgBrightness),
+                saturation: avgSaturation > 0.5 ? 'vibrant' : avgSaturation > 0.2 ? 'moderate' : 'muted',
+                saturation_score: Math.round(avgSaturation * 100),
+                complexity: avgComplexity > 50 ? 'complex' : avgComplexity > 25 ? 'moderate' : 'simple',
+                texture: edgeDensity > 0.3 ? 'detailed' : edgeDensity > 0.15 ? 'normal' : 'smooth'
+            };
+        }
+
+        // Detect pattern type
+        function detectPattern(img) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 100;
+            canvas.height = 100;
+            ctx.drawImage(img, 0, 0, 100, 100);
+
+            const imageData = ctx.getImageData(0, 0, 100, 100);
+            const pixels = imageData.data;
+
+            let horizontalPatterns = 0;
+            let verticalPatterns = 0;
+
+            // Check horizontal patterns
+            for (let y = 0; y < 100; y += 10) {
+                let prevColor = null;
+                let changes = 0;
+                for (let x = 0; x < 100; x += 5) {
+                    const i = (y * 100 + x) * 4;
+                    const color = `${pixels[i]},${pixels[i+1]},${pixels[i+2]}`;
+                    if (prevColor && prevColor !== color) changes++;
+                    prevColor = color;
+                }
+                if (changes > 3 && changes < 8) horizontalPatterns++;
+            }
+
+            // Check vertical patterns
+            for (let x = 0; x < 100; x += 10) {
+                let prevColor = null;
+                let changes = 0;
+                for (let y = 0; y < 100; y += 5) {
+                    const i = (y * 100 + x) * 4;
+                    const color = `${pixels[i]},${pixels[i+1]},${pixels[i+2]}`;
+                    if (prevColor && prevColor !== color) changes++;
+                    prevColor = color;
+                }
+                if (changes > 3 && changes < 8) verticalPatterns++;
+            }
+
+            if (horizontalPatterns > 5) return 'striped-horizontal';
+            if (verticalPatterns > 5) return 'striped-vertical';
+            if (horizontalPatterns > 3 && verticalPatterns > 3) return 'checkered';
+            if (horizontalPatterns < 2 && verticalPatterns < 2) return 'solid';
+            return 'mixed';
+        }
+
+        // RGB to Hex converter
+        function rgbToHex(r, g, b) {
+            return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        }
+
+        // Get color name from RGB
+        function getColorName(r, g, b) {
+            const brightness = (r + g + b) / 3;
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const saturation = max === 0 ? 0 : (max - min) / max;
+
+            const rNorm = r / 255;
+            const gNorm = g / 255;
+            const bNorm = b / 255;
+
+            const maxNorm = Math.max(rNorm, gNorm, bNorm);
+            const minNorm = Math.min(rNorm, gNorm, bNorm);
+            const delta = maxNorm - minNorm;
+
+            let hue = 0;
+            if (delta !== 0) {
+                if (maxNorm === rNorm) {
+                    hue = 60 * (((gNorm - bNorm) / delta) % 6);
+                } else if (maxNorm === gNorm) {
+                    hue = 60 * ((bNorm - rNorm) / delta + 2);
+                } else {
+                    hue = 60 * ((rNorm - gNorm) / delta + 4);
+                }
+            }
+            if (hue < 0) hue += 360;
+
+            // BROWN DETECTION
+            if (hue >= 10 && hue <= 50) {
+                if (brightness < 130 && saturation > 0.15) return 'brown';
+                if (brightness < 100) return 'brown';
+            }
+
+            // TAN/BEIGE
+            if (hue >= 20 && hue <= 60 && saturation >= 0.1 && saturation < 0.35 && brightness > 130) {
+                return 'tan';
+            }
+
+            // ACHROMATIC COLORS
+            if (saturation < 0.1) {
+                if (brightness > 220) return 'white';
+                if (brightness < 40) return 'black';
+                if (brightness > 170) return 'light-gray';
+                if (brightness > 100) return 'gray';
+                return 'dark-gray';
+            }
+
+            // CHROMATIC COLORS
+            if ((hue >= 0 && hue < 15) || hue >= 345) {
+                if (brightness < 80) return 'maroon';
+                return 'red';
+            }
+            if (hue >= 15 && hue < 35) return 'orange';
+            if (hue >= 35 && hue < 70) {
+                if (saturation < 0.4 && brightness < 150) return 'olive';
+                return 'yellow';
+            }
+            if (hue >= 70 && hue < 150) {
+                if (brightness < 80) return 'dark-green';
+                return 'green';
+            }
+            if (hue >= 150 && hue < 200) return 'cyan';
+            if (hue >= 200 && hue < 260) {
+                if (brightness < 80) return 'navy';
+                return 'blue';
+            }
+            if (hue >= 260 && hue < 300) return 'purple';
+            if (hue >= 300 && hue < 330) return 'magenta';
+            if (hue >= 330 && hue < 345) {
+                if (brightness > 200) return 'pink';
+                return 'rose';
+            }
+
+            return 'unknown';
+        }
+
+######################################
+header.blade.php
+#####################################
+<div class="choice_image_for_search"
+                        onclick="document.getElementById('imageSearchInput').click();">
+                        <img src="https://i.postimg.cc/FKMZHXyJ/camera.webp" alt="camera-img">
+                        <input type="file" id="imageSearchInput" accept="image/*"
+                            onchange="handleImageSearch(this)" style="display:none;">
+                    </div>

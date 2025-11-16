@@ -1,0 +1,36 @@
+ Schema::create('product_visual_features', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('image_type')->default('main'); 
+            $table->integer('image_index')->default(0); 
+            $table->string('brightness')->nullable(); 
+            $table->integer('brightness_score')->nullable();
+            $table->string('saturation')->nullable(); 
+            $table->integer('saturation_score')->nullable(); 
+            $table->string('complexity')->nullable(); 
+            $table->string('texture')->nullable(); 
+            $table->string('pattern_type')->nullable();
+
+            $table->timestamps();
+
+            $table->index(['product_id', 'image_type']);
+        });
+
+
+ protected $fillable = [
+        'product_id',
+        'image_type',
+        'image_index',
+        'brightness',
+        'brightness_score',
+        'saturation',
+        'saturation_score',
+        'complexity',
+        'texture',
+        'pattern_type',
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }

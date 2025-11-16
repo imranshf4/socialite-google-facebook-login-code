@@ -1,0 +1,310 @@
+<div class="single_product_tab_area section_padding_bottom">
+        <div class="container">
+            <div class="row">
+                <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="single_product_tab">
+                        <ul class="nav nav-tabs single_product_tab_nav" id="myTab" role="tablist">
+                            <li class="nav-item single_product_tab_nav_item" role="presentation">
+                                <button class="nav-link single_product_tab_nav_link active" id="home-tab"
+                                    data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
+                                    aria-controls="home" aria-selected="true">
+                                    Description
+                                </button>
+                            </li>
+                            {{-- <li class="nav-item single_product_tab_nav_item" role="presentation">
+                                <button class="nav-link single_product_tab_nav_link" id="profile-tab"
+                                    data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab"
+                                    aria-controls="profile" aria-selected="false">
+                                    DELIVERY OPTIONS
+                                </button>
+                            </li> --}}
+                            <li class="nav-item single_product_tab_nav_item" role="presentation">
+                                <button class="nav-link single_product_tab_nav_link" id="contact-tab"
+                                    data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab"
+                                    aria-controls="contact" aria-selected="false">
+                                    Reviews
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="home" role="tabpanel"
+                                aria-labelledby="home-tab">
+                                <div class="single_product_tab_content">
+                                    {{-- {!! $product->details !!} --}}
+                                </div>
+                            </div>
+                            {{-- <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                <div class="single_product_tab_content">
+                                    <div class="single_product_tab_list">
+                                        <ul>
+                                            <li>
+                                                Select number of product you want to buy.
+                                            </li>
+                                            <li>
+                                                Click <strong>Add To Cart</strong> Button
+                                            </li>
+                                            <li>
+                                                Then go to checkout page
+                                            </li>
+                                            <li>
+                                                If you are a new customer, please click on Sign Up.provide us your valid
+                                                information information.
+                                            </li>
+                                            <li>
+                                                Complete your checkout, we received your order, and for order confirmation
+                                                or customer service contact with you
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div> --}}
+                            <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                <div class="single_product_tab_content">
+                                    <div class="customer_comment_area section_padding_bottom">
+                                        <div class="row">
+                                            <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                <div class="section_title text-center">
+                                                    <h2>Reviews</h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="section_top_space">
+                                            <div class="row gy-4 gx-4">
+
+                                                <div class="col-xxl-3 col-xl-4 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                    <div class="customer_comment_title">
+                                                        <span
+                                                            class="customer_comment_avarage_rating">{{ $product->avg_review ?? 0 }}</span>
+                                                        <span class="customer_comment_rating_name">
+                                                            {{-- <i class="fa-solid fa-star"></i> --}}
+                                                            Reviews
+                                                        </span>
+                                                    </div>
+                                                    @php
+                                                        $fullStars = floor($product->avg_review); // Full stars
+                                                        $halfStar =
+                                                            $product->avg_review - $fullStars >= 0.5 ? true : false; // Half star check
+                                                    @endphp
+
+                                                    <div class="customer_comment_rating">
+                                                        @for ($i = 1; $i <= $fullStars; $i++)
+                                                            <span>
+                                                                <i class="fa-solid fa-star"></i>
+                                                            </span>
+                                                        @endfor
+
+                                                        @if ($halfStar)
+                                                            <span>
+                                                                <i class="fa-solid fa-star-half-stroke"></i>
+                                                            </span>
+                                                        @endif
+
+                                                        {{-- Fill remaining stars (if needed, e.g., for a 5-star rating system) --}}
+                                                        {{-- @for ($i = $fullStars + ($halfStar ? 1 : 0); $i < 5; $i++)
+                                                            <span>
+                                                                <i class="fa-regular fa-star"></i>
+                                                            </span>
+                                                        @endfor --}}
+                                                    </div>
+
+                                                    <div class="customer_comment_rating_count">
+                                                        <span>{{ number_format($total_product_review) }} reviews</span>
+                                                    </div>
+                                                </div>
+
+                                                @php
+                                                    $ratings = [
+                                                        'five_star' => 5,
+                                                        'four_star' => 4,
+                                                        'three_star' => 3,
+                                                        'two_star' => 2,
+                                                        'one_star' => 1,
+                                                    ];
+                                                @endphp
+
+                                                <div class="col-xxl-5 col-xl-5 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                    @foreach ($ratings as $ratingKey => $starCount)
+                                                        <div class="customer_comment_item">
+                                                            <div class="customer_comment_item_star">
+                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                    <span>
+                                                                        <i
+                                                                            class="fa-{{ $i <= $starCount ? 'solid' : 'regular' }} fa-star"></i>
+                                                                    </span>
+                                                                @endfor
+                                                            </div>
+                                                            <div class="customer_comment_item_percentage_segment">
+                                                                <span
+                                                                    style="width: {{ number_format(($product->rating_stars[$ratingKey] / $total_review) * 100, 2) }}%;"></span>
+                                                            </div>
+                                                            <div class="customer_comment_item_percentage">
+                                                                <span>{{ number_format(($product->rating_stars[$ratingKey] / $total_review) * 100, 2) }}%</span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+
+                                                <div class="col-xxl-3 col-xl-3 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                    <div class="customer_comment_btn">
+                                                        <button class="customer_comment_btn_link" data-bs-toggle="modal"
+                                                            data-product_slug="{{ $product->slug }}"
+                                                            data-bs-target="#staticBackdrop">
+                                                            <i class="fa-regular fa-pen-to-square"></i>
+                                                            Write a Review
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-xxl-12 col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                                    <div class="customer_comment_review_content">
+                                                        <div class="customer_comment_list">
+                                                            <ul>
+                                                                @foreach ($product_reviews as $review)
+                                                                    <li>
+                                                                        <div class="comment_customer_content">
+                                                                            <div class="comment_customer_name">
+                                                                                <h5>{{ $review->customer_name }}</h5>
+                                                                            </div>
+                                                                            <div class="comment_customer_rating">
+                                                                                @for ($i = 1; $i <= 5; $i++)
+                                                                                    <span>
+                                                                                        <i
+                                                                                            class="fa-{{ $i <= $review->rating_stars ? 'solid' : 'regular' }} fa-star"></i>
+                                                                                    </span>
+                                                                                @endfor
+                                                                            </div>
+                                                                            <div class="customer_comment_details">
+                                                                                <p>{{ $review->review }}</p>
+                                                                            </div>
+                                                                            @if ($review->image)
+                                                                                <div class="customer_comment_image">
+                                                                                    <img src="{{ asset('storage/' . $review->image) }}"
+                                                                                        alt="{{ $review->image }}">
+                                                                                </div>
+                                                                            @endif
+                                                                        </div>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                        <div class="comments_pagination">
+                                                            {{ $product_reviews->links() }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="modal fade" id="customerReview">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content modal_content">
+                            <div class="single_product_size_chart_icon" data-bs-dismiss="modal" aria-label="Close">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+                            <div class="modal_deader">
+                                <div class="modal_star">
+                                    <div class="modal_star_title">
+                                        <h5>write your review</h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal_body">
+                                <div class="modal_comment_group">
+                                    <form action="{{ route('review.store') }}" method="POST"
+                                        enctype="multipart/form-data">
+                                        @csrf
+                                        <input type="hidden" value="{{ $product->id }}" name="product_id">
+                                        <div class="modal_rating">
+                                            <input type="radio" id="star1" name="rating_stars" value="5">
+                                            <label for="star1"></label>
+                                            <input type="radio" id="star2" name="rating_stars" value="4">
+                                            <label for="star2"></label>
+                                            <input type="radio" id="star3" name="rating_stars" value="3">
+                                            <label for="star3"></label>
+                                            <input type="radio" id="star4" name="rating_stars" value="2">
+                                            <label for="star4"></label>
+                                            <input type="radio" id="star5" name="rating_stars" value="1">
+                                            <label for="star5"></label>
+                                            <br>
+                                            @error('rating_stars')
+                                                <span class=" text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="modal_comment_item">
+                                            <input type="text" name="customer_name" required
+                                                value="{{ old('customer_name') }}" autofocus placeholder="name">
+                                            @error('customer_name')
+                                                <span class=" text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="modal_comment_item_textarea">
+                                            <textarea name="review" required placeholder="write comment" autofocus>{{ old('review') }}</textarea>
+                                            @error('review')
+                                                <span class=" text-danger">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div class="modal_comment_item">
+                                            <input type="file" name="image">
+                                        </div>
+                                        <div class="modal_comment_item_btn">
+                                            <button type="submit" class="modal_comment_item_btn_link">Submit</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+.single_product_tab_area {
+    margin-top: -25px;
+}
+.single_product_tab_nav {
+    background-color: #dddddd;
+    margin-bottom: 20px;
+}
+.single_product_tab_nav .single_product_tab_nav_link.active {
+    color: var(--primary_text_color);
+    background-color: var(--primary_color);
+    border-color: #dee2e6 #dee2e6 #fff;
+}
+.single_product_tab_nav .single_product_tab_nav_link {
+    border-radius: 0px;
+    border: none;
+    color: var(--black);
+    font-weight: 500;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.customer_comment_btn_link {
+    border: 1px solid var(--border);
+    padding: 10px 20px;
+    border-radius: 3px;
+    -webkit-transition: 0.3s;
+    -o-transition: 0.3s;
+    transition: 0.3s;
+}
+.customer_comment_btn_link:hover {
+    color: var(--primary_color);
+}
+    @media screen and (max-width: 767.98px) {
+            .single_product_tab_nav .single_product_tab_nav_link {
+                font-size: 12px;
+                padding: 5px 10px;
+            }
+            .single_product_tab_area {
+                margin-top: 10px;
+            }
+}

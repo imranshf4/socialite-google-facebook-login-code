@@ -1,0 +1,29 @@
+do {
+                if (strlen($order->id) == 6) {
+                    $invoiceNo = 'M' . rand(1000, 9999);
+                } else if (strlen($order->id) == 7) {
+                    $invoiceNo = 'M' . rand(10000, 99999);
+                } else if (strlen($order->id) == 8) {
+                    $invoiceNo = 'M' . rand(100000, 999999);
+                } else {
+                    $invoiceNo = 'M' . rand(1000000, 9999999);
+                }
+            } while (Order::where('invoice_no', $invoiceNo)->first());
+            $order->invoice_no = $invoiceNo;
+
+
+           do {
+                if (strlen($order->id) > 3) {
+                    $invoice_no = rand(1, 9) . $order->id . rand(1, 9);
+                } else if (strlen($order->id) > 2) {
+                    $invoice_no = rand(11, 99) . $order->id . rand(1, 9);
+                } else if (strlen($order->id) > 1) {
+                    $invoice_no = rand(11, 99) . $order->id . rand(11, 99);
+                } else {
+                    $invoice_no = rand(111, 999) . $order->id . rand(11, 99);
+                }
+
+                // Check if invoice number already exists
+                $exists = \App\Models\Order::where('invoice_no', $invoice_no)->first();
+            } while ($exists);
+            $order->invoice_no = $invoice_no;

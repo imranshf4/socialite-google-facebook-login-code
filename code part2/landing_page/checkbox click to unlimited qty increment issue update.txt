@@ -1,0 +1,52 @@
+const addedProducts = new Set();
+$(document).ready(function() {
+
+            //  click handler to the cart items
+            $('.cart-item').click(function(event) {
+                const productId = $(this).data('product-id');
+
+                const checkbox = $(this).find('input[type="checkbox"]');
+                if (!addedProducts.has(productId)) {
+                    addedProducts.add(productId);
+                    addToCart(productId);
+                }
+
+                checkbox.prop('checked', true);
+
+            });
+            $('[data-ignore]').click(function(event) {
+                event.stopPropagation();
+            });
+
+            $('input[type="checkbox"]').one('click', function() {
+                const productId = $(this).closest('.cart-item').data('product-id');
+                addToCartWithCheckbox(productId, this);
+            });
+
+        });
+
+        function addToCartWithCheckbox(productId, checkboxElement) {
+            fetchCartContent();
+            const checkbox = $(checkboxElement);
+            if (checkbox.is(':checked')) {
+                if (!addedProducts.has(productId)) {
+                    addToCart(productId);
+                    addedProducts.add(productId);
+                }
+            } else {
+                removeFromCart(productId);
+                checkbox.prop('checked', false);
+                addedProducts.delete(productId);
+            }
+
+        }
+
+<li class="cart-item" data-product-id="{{ $product->id }}">
+                                                <div class="form-check landing_page_product_form_check">
+                                                    {{-- <input type="checkbox" id="checkbox_6" class="form-check-input"
+                                                        data-ignore
+                                                        onclick="addToCartWithCheckbox('{{ $product->id }}', this)"
+                                                        @if (in_array($product->id, $cartItems)) checked @endif /> --}}
+                                                    <input type="checkbox" id="checkbox_6" class="form-check-input"
+                                                        data-ignore
+                                                        @if (in_array($product->id, $cartItems)) checked @endif />

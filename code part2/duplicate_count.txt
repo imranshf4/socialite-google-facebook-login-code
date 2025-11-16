@@ -1,0 +1,9 @@
+SELECT 
+    invoice_no,
+    COUNT(*) AS duplicate_count
+FROM 
+    orders
+GROUP BY 
+    invoice_no
+HAVING 
+    COUNT(*) > 1;

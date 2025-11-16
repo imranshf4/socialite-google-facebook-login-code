@@ -1,0 +1,13 @@
+Schema::create('product_tags', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('name');
+            $table->string('type')->default('main');
+            $table->timestamps();
+        });
+
+protected $fillable = ['product_id', 'name', 'type'];
+    public function variant()
+    {
+        return $this->belongsTo(Product::class);
+    }

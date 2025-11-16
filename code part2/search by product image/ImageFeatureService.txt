@@ -1,0 +1,87 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\ProductTag;
+use App\Models\ProductColor;
+use App\Models\ProductVisualFeature;
+
+class ImageFeatureService
+{
+    public function storeChildImageFeatures($productChildId, $data)
+    {
+        if (!empty($data['tags'])) {
+            $this->storeTags($productChildId, $data, 'main');
+        }
+        if (!empty($data['visual_features'])) {
+            $this->storeVisualFeature($productChildId, $data, 'main', 0);
+        }
+
+        if (!empty($data['color_palette'])) {
+            $this->storeColorPalette($productChildId, $data, 'main', 0);
+        }
+
+        if (!empty($data['sub_images_data'])) {
+            foreach ($data['sub_images_data'] as $subImageData) {
+                $imageIndex = $subImageData['image_index'];
+                if (!empty($subImageData['tags'])) {
+                    $this->storeTags($productChildId, $subImageData, 'sub');
+                }
+                if (!empty($subImageData['visual_features'])) {
+                    $this->storeVisualFeature($productChildId, $subImageData, 'sub', $imageIndex);
+                }
+
+                if (!empty($subImageData['color_palette'])) {
+                    $this->storeColorPalette($productChildId, $subImageData, 'sub', $imageIndex);
+                }
+            }
+        }
+        return true;
+    }
+
+    private function storeTags($productChildId, $data, $type = 'main'): void
+    {
+        foreach ($data['tags'] as $tag) {
+            ProductTag::firstOrCreate(
+                [
+                    'product_child_id' => $productChildId,
+                    'name' => $tag,
+                ],
+                [
+                    'type' => $type,
+                ]
+            );
+        }
+    }
+
+    private function storeVisualFeature($productChildId, $data, $type = 'main', $imageIndex = 0): Void
+    {
+        ProductVisualFeature::create([
+            'product_child_id' => $productChildId,
+            'image_type' => $type,
+            'image_index' => $imageIndex,
+            'brightness' => $data['visual_features']['brightness'] ?? null,
+            'brightness_score' => $data['visual_features']['brightness_score'] ?? null,
+            'saturation' => $data['visual_features']['saturation'] ?? null,
+            'saturation_score' => $data['visual_features']['saturation_score'] ?? null,
+            'complexity' => $data['visual_features']['complexity'] ?? null,
+            'texture' => $data['visual_features']['texture'] ?? null,
+            'pattern_type' => $data['pattern_type'] ?? 'solid',
+        ]);
+    }
+    private function storeColorPalette($productChildId, $data, $type = 'main', $imageIndex = 0): Void
+    {
+        foreach ($data['color_palette'] as $index => $color) {
+            ProductColor::create([
+                'product_child_id' => $productChildId,
+                'image_type' => $type,
+                'image_index' => $imageIndex,
+                'name' => $color['name'],
+                'rgb' => $color['rgb'],
+                'hex' => $color['hex'],
+                'percentage' => $color['percentage'] ?? 0,
+                'dominance_rank' => $index + 1,
+            ]);
+        }
+    }
+}

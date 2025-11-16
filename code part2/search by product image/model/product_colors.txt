@@ -1,0 +1,33 @@
+ Schema::create('product_colors', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->string('image_type')->default('main'); 
+            $table->integer('image_index')->default(0);
+            $table->string('name');
+            $table->string('rgb');
+            $table->string('hex'); 
+            $table->integer('percentage')->default(0); 
+            $table->integer('dominance_rank')->default(0); 
+
+            $table->timestamps();
+
+            $table->index(['product_child_id', 'name']);
+            $table->index(['name', 'dominance_rank']);
+        });
+
+
+protected $fillable = [
+        'product_id',
+        'image_type',
+        'image_index',
+        'name',
+        'rgb',
+        'hex',
+        'percentage',
+        'dominance_rank',
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
