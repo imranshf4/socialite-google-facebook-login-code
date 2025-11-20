@@ -1,0 +1,19 @@
+Install the package:
+
+composer require propaganistas/laravel-phone
+
+
+Then update your validation like this:
+
+use Propaganistas\LaravelPhone\Rules\PhoneNumber;
+
+$data = $request->validate([
+    'name' => ['required', 'string', 'max:255'],
+    'email' => ['nullable', 'string', 'email', 'max:255', 'unique:' . Customer::class],
+    'phone' => [
+        'required',
+        'unique:' . Customer::class,
+        new PhoneNumber, // Valid for all countries
+    ],
+    'password' => ['required', 'min:4'],
+]);

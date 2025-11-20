@@ -1,0 +1,74 @@
+public function return($id)
+    {
+        $order = Order::findOrFail($id);
+        DB::beginTransaction();
+        try {
+            $setting = SiteConfiguration::select('is_pre_stock', 'variant_wise_stock')->first();
+
+            $order_items = OrderItem::where('order_id', $order->id)->get();
+            foreach ($order_items as $order_item) {
+                if ($order_item->status == 1) {
+                    $product = Product::where('id', $order_item->product_id)->firstOrFail();
+                    //if combo campaign products
+                    if ($product->is_combo == 1) {
+                        $combo_products_id  = ComboProduct::where('combo_product_id', $product->id)->select('general_product_id')->pluck('general_product_id');
+                        $combo_products     = Product::whereIn('id', $combo_products_id)->select('id', 'stock', 'product_code')->get();
+                        foreach ($combo_products as $item) {
+                            if ($setting->variant_wise_stock != 1) {
+                                $this->productStockIncrease($item, $order_item);
+                            } else {
+                                $this->comboVariantStockIncrease($item, $order_item);
+                            }
+
+                            // $item->stock = $item->stock + $order_item->quantity;
+                            // $item->save();
+                        }
+                    } else {
+                        if ($setting->variant_wise_stock != 1) {
+                            $this->productStockIncrease($product, $order_item);
+                        } else {
+                            $this->variantStockIncrease($order_item);
+                        }
+                    }
+                }
+            }
+
+            $order->status = 7;
+            $order->return_admin_id = session()->get('admin')['id'];
+            $order->is_profit_paid = 0;
+            $order->return_date = Carbon::now();
+            $order->save();
+
+            if (!empty($order->reseller_id) && $order->order_type == 4) {
+                //expense from reseller wallet
+                HelperService::resellerCashbookStore($order->id, $order->reseller_id, $order->regular_shipping_cost, 0,  'order shipping cost BDT ' . $order->regular_shipping_cost);
+            }
+
+            //if order is reseller order. and order has paid amount then delete previous reseller cashbook
+            if ($order->paid > 0 && !empty($order->reseller_id) && $order->order_type == 4) {
+                //checking if order is paid by admin
+                $credit_check = Credit::where('order_id', $order->id)->first();
+                if (!$credit_check) {
+
+                    $order = Order::findOrFail($order->id);
+                    $order->paid = 0;
+                    $order->advance_paid = 0;
+                    $order->save();
+                    $reseller_cashbook = ResellerCashbook::where('order_id', $order->id)->where('reseller_id', $order->reseller_id)->firstOrFail();
+                    $reseller_cashbook->delete();
+                }
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => 'SUCCESS',
+                'message' => 'Order returned successfully',
+            ]);
+        } catch (Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }

@@ -308,3 +308,40 @@
                 margin-top: 10px;
             }
 }
+
+
+
+
+
+############## new code ################
+.half-star {
+        position: relative;
+        display: inline-block;
+        color: rgb(234, 234, 234) !important;
+    }
+
+    .half-star::before {
+        content: '★';
+        position: absolute;
+        left: 0;
+        width: 50%;
+        overflow: hidden;
+        color: var(--primary_color)
+    }
+
+ @for ($i = 1; $i <= $fullStars; $i++)
+                <span>
+                    <span>★</span>
+                </span>
+            @endfor
+
+            @if ($halfStar)
+                <span>
+                    <span class="half-star">★</span>
+                </span>
+            @endif
+
+            {{-- Empty Stars --}}
+            @for ($i = 0; $i < $emptyStars; $i++)
+                <span class="half-star">★</span>
+            @endfor
