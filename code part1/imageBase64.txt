@@ -33,3 +33,25 @@ if ($data['size_chart']) {
                     $data['size_chart'] = 'images/products/size_chart/' . $img_path;
                 }
             };
+
+
+
+if (!empty($manager->image)) {
+                        $old_path = 'public/' . $manager->image;
+                        if (Storage::exists($old_path)) {
+                              Storage::delete($old_path);
+                        }
+                  }
+
+public function driverAndCarDelete($id)
+      {
+            $data = DriverCarProfile::findOrFail($id);
+            if (!empty($data->driver_image) && Storage::disk('public')->exists($data->driver_image)) {
+                  Storage::disk('public')->delete($data->driver_image);
+            }
+            $data->delete();
+            return response()->json([
+                  'success' => true,
+                  'message' => 'Driver and car deleted successfully'
+            ]);
+      }

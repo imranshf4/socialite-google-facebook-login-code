@@ -1,0 +1,176 @@
+1️⃣ AuditLog Table (Final Structure)
+Schema::create('audit_logs', function (Blueprint $table) {
+    $table->id();
+
+    // Who did the action
+    $table->unsignedBigInteger('actor_id')->nullable();
+    $table->string('actor_type')->nullable();
+
+    // What was affected
+    $table->unsignedBigInteger('auditable_id')->nullable();
+    $table->string('auditable_type')->nullable();
+
+    $table->string('action');
+    $table->json('old_values')->nullable();
+    $table->json('new_values')->nullable();
+
+    $table->timestamps();
+});
+
+2️⃣ AuditLog Model
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class AuditLog extends Model
+{
+    protected $fillable = [
+        'actor_id',
+        'actor_type',
+        'auditable_id',
+        'auditable_type',
+        'action',
+        'old_values',
+        'new_values',
+    ];
+
+    protected $casts = [
+        'old_values' => 'array',
+        'new_values' => 'array',
+    ];
+
+    // 🔹 Admin / User / System
+    public function actor()
+    {
+        return $this->morphTo();
+    }
+
+    // 🔹 Order / Product / User
+   // Order / Product / User
+    public function auditable()
+    {
+        return $this->morphTo()->constrain([
+            Order::class => function ($query) {
+                $query->select('id', 'invoice_no', 'status');
+            },
+        ]);
+    }
+}
+
+3️⃣ Admin & User Model এ Relation
+Admin Model
+class Admin extends Model
+{
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'actor');
+    }
+}
+
+User Model
+class User extends Model
+{
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'actor');
+    }
+}
+
+
+➡ এখন:
+
+$admin->auditLogs;
+$user->auditLogs;
+
+4️⃣ Order / Product Model এ Relation
+Order Model
+class Order extends Model
+{
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+}
+
+Product Model
+class Product extends Model
+{
+    public function auditLogs()
+    {
+        return $this->morphMany(AuditLog::class, 'auditable');
+    }
+}
+
+
+➡ এখন:
+
+$order->auditLogs;
+$product->auditLogs;
+
+5️⃣ Audit Log Create করার সঠিক উপায়
+Admin Order Update করলে
+AuditLog::create([
+    'actor_id' => auth('admin')->id(),
+    'actor_type' => Admin::class,
+
+    'auditable_id' => $order->id,
+    'auditable_type' => Order::class,
+
+    'action' => 'order_status_updated',
+    'old_values' => ['status' => 'pending'],
+    'new_values' => ['status' => 'shipped'],
+]);
+
+User Profile Update করলে
+AuditLog::create([
+    'actor_id' => auth()->id(),
+    'actor_type' => User::class,
+
+    'auditable_id' => auth()->id(),
+    'auditable_type' => User::class,
+
+    'action' => 'profile_updated',
+]);
+
+6️⃣ Relation ব্যবহার করে Data পড়া
+Audit Log → Actor
+$log = AuditLog::first();
+
+$log->actor;      // Admin / User object
+$log->auditable;  // Order / Product object
+
+Order → Audit Logs
+$order = Order::find(5);
+$order->auditLogs;
+
+Admin → Audit Logs
+$admin = Admin::find(1);
+$admin->auditLogs;
+
+7️⃣ Important Best Practice ⚠️
+❌ এটা করো না
+actor_type = "admin"
+
+✅ এটা করো
+actor_type = Admin::class
+auditable_type = Order::class
+
+
+➡ Laravel automatically resolve করবে।
+
+
+
+######################
+system 2
+###########################
+$newValue = [
+                'status' => $order->invoice_no
+            ];
+            AuditLogService::log(
+                session()->get('admin')['id'],
+'order'
+                $order,
+                'Order created',
+                null,
+                $newValue
+            );

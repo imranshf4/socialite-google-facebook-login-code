@@ -1,0 +1,24 @@
+mounted() {
+    this.productPageUrl = window.location.origin + '/product/view/' + this.$route.params.slug;
+  },
+
+productPageUrl: '',
+
+<a :href="'https://wa.me/'
+                  + general_setting.header_contact_number
+                  + '?text='
+                  + encodeURIComponent('Hello! I am interested in your services: ' + productPageUrl)" target="_blank"
+                  class="call_contact_us call_whats">
+
+                  <div class="whats_up">
+                    <i class="fa-brands fa-whatsapp"></i>
+                  </div>
+                  <div class="contact_des">
+                    <h5>Message Now</h5>
+                    <h6>
+                      {{ general_setting.whatsapp_number }}
+                    </h6>
+                  </div>
+
+                  <div class="status-badge whats_badge"></div>
+                </a>

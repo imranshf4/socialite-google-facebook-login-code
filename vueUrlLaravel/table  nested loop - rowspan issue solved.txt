@@ -1,0 +1,54 @@
+<tbody>
+                                                                        <!-- Loading state -->
+                                                                        <tr v-if="loading">
+                                                                            <td colspan="8" class="text-center">
+                                                                                <i class="fa fa-spin fa-spinner"></i>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                        <!-- Sale records -->
+                                                                        <template v-else
+                                                                            v-for="(item, itemIndex) in saleRecordsDetails">
+                                                                            <tr v-for="(item2, vIndex) in item.sale_items"
+                                                                                :key="vIndex">
+
+                                                                                <!-- Product Name -->
+                                                                                <td>{{ item2.product ?
+                                                                                    item2.product.name : '-' }}</td>
+
+                                                                                <!-- Barcode -->
+                                                                                <td
+                                                                                    v-html="item2.product?.barcode || '-'">
+                                                                                </td>
+
+                                                                                <!-- Variant -->
+                                                                                <td>{{ item2.variant ?
+                                                                                    item2.variant.name : '-' }}</td>
+
+                                                                                <!-- Qty -->
+                                                                                <td>{{ item2.qty }}</td>
+
+                                                                                <!-- Total (show only in first row of the group) -->
+                                                                                <td v-if="vIndex === 0"
+                                                                                    :rowspan="item.sale_items.length"
+                                                                                    class="center-cell">
+                                                                                    BDT {{ item.total }}
+                                                                                </td>
+
+                                                                                <!-- Paid -->
+                                                                                <td v-if="vIndex === 0"
+                                                                                    :rowspan="item.sale_items.length"
+                                                                                    class="center-cell">
+                                                                                    BDT {{ item.paid }}
+                                                                                </td>
+
+                                                                                <!-- Due -->
+                                                                                <td v-if="vIndex === 0"
+                                                                                    :rowspan="item.sale_items.length"
+                                                                                    class="center-cell">
+                                                                                    BDT {{ item.due }}
+                                                                                </td>
+
+                                                                            </tr>
+                                                                        </template>
+                                                                    </tbody>

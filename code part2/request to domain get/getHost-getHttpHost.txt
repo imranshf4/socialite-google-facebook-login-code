@@ -1,0 +1,23 @@
+<?php
+
+namespace App\Traits;
+
+trait DomainFetchTrait
+{
+  public function domain()
+  {
+    $domain = request()->getHost();
+    return str_starts_with($domain, 'www.') ? substr($domain, 4) : $domain;
+  }
+  public static function staticMethodDomain()
+  {
+    $domain = request()->getHost();
+    return str_starts_with($domain, 'www.') ? substr($domain, 4) : $domain;
+  }
+}
+
+
+$site = $request->getHttpHost();
+        if (substr($site, 0, 4) !== 'www.') {
+            $site = 'www.' . $site;
+        }

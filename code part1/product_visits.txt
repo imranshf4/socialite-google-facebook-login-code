@@ -1,0 +1,83 @@
+public function storeProductVisit($request, $product)
+    {
+        $timeThreshold = Carbon::now()->subMinutes(30);
+        $sessionId = session()->getId();
+        $ipAddress = request()->ip();
+
+        // Check for a visit by session or IP, regardless of the time threshold
+        $visit = ProductVisit::where('product_id', $product->id)
+            ->where(function ($query) use ($sessionId, $ipAddress) {
+                $query->orWhere('session_id', $sessionId)
+                    ->orWhere('ip', $ipAddress);
+            })
+            ->first();
+        if (!empty($visit)) {
+
+            //  if the visit is older than the 30-minute
+            if ($visit->visit_time <= $timeThreshold) {
+                $visit->increment('qty');
+                $visit->update(['visit_time' => Carbon::now()]);
+            }
+           
+        } else {
+            ProductVisit::create([
+                'ip' => $ipAddress,
+                'product_id' => $product->id,
+                'qty' => 1,
+                'session_id' => $sessionId,
+                'visit_time' => Carbon::now(),
+            ]);
+        }
+    }
+
+
+
+public function productViewReport(Request $request)
+    {
+        $query = Product::select('id', 'name', 'product_code', 'thumbnail_img', 'slug')
+            ->withCount([
+                'visits as visits_count' => function ($q) use ($request) {
+                    if (!empty($request->start_date) && empty($request->end_date)) {
+                        $q->whereDate('updated_at', '=', $request->start_date);
+                    } elseif (!empty($request->start_date) && !empty($request->end_date)) {
+                        $q->whereDate('updated_at', '>=', $request->start_date)
+                            ->whereDate('updated_at', '<=', $request->end_date);
+                    }
+                }
+            ])
+            ->having('visits_count', '>', 0)
+            ->orderByDesc('visits_count')
+            ->addSelect([
+                'last_visit_updated_at' => ProductVisit::select('updated_at')
+                    ->whereColumn('product_id', 'products.id')
+                    ->orderByDesc('updated_at')
+                    ->limit(1)
+            ])
+            ->addSelect([
+                'visit_qty' => ProductVisit::selectRaw('SUM(qty)')
+                    ->whereColumn('product_id', 'products.id')
+            ]);
+
+        // Apply search filter
+        if (!empty($request->search)) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('product_code', 'like', "%{$search}%");
+            });
+        }
+
+        $view_list = $query->paginate($request->item);
+
+        return response()->json([
+            'status' => true,
+            'view_list' => $view_list,
+        ]);
+    }
+
+
+
+ProductVisit  model add
+protected $casts = [
+        'visit_time' => 'datetime',
+    ];

@@ -1,0 +1,185 @@
+$monthlySales = collect();
+            for ($i = 4; $i >= 0; $i--) {
+                  $month = Carbon::now()->subMonths($i)->format('Y-m');
+                  $startOfMonth = Carbon::now()->subMonths($i)->startOfMonth()->toDateString();
+                  $endOfMonth = Carbon::now()->subMonths($i)->endOfMonth()->toDateString();
+
+                  $total = ShowroomSale::where('showroom_id', $showroom_id)
+                        ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                        ->sum('total');
+
+                  $monthlySales[$month] = $total;
+            }
+            $monthlySales = $monthlySales->toArray();
+
+
+loadCharts() {
+            // -------- Chart 1 (Bar) --------
+            new Chart(document.getElementById('chart1'), {
+                type: 'bar',
+                data: {
+                    labels: this.chart1Labels,
+                    datasets: [
+                        {
+                            data: this.chart1Values,
+                            backgroundColor: [
+                                '#ff5959',
+                                '#59ff8a',
+                                '#599bff',
+                                '#ffc159',
+                                '#a659ff',
+                            ],
+                        },
+                    ],
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Monthly Sales Chart' },
+                    },
+                },
+            });
+
+            // -------- Chart 2 (Line) --------
+            new Chart(document.getElementById('chart2'), {
+                type: 'line',
+                data: {
+                    labels: this.chart2Labels,
+                    datasets: [
+                        {
+                            data: this.chart2Values,
+                            borderWidth: 2,
+                        },
+                    ],
+                },
+                options: {
+                    plugins: {
+                        legend: { display: false },
+                        title: { display: true, text: 'Monthly Sales Chart' },
+                    },
+                },
+            });
+
+            // -------- Chart 3 (Doughnut) --------
+            new Chart(document.getElementById('chart3'), {
+                type: 'doughnut',
+                data: {
+                    labels: this.chart3Labels,
+                    datasets: [
+                        {
+                            data: this.chart3Values,
+                            backgroundColor: this.chart3Colors,
+                        },
+                    ],
+                },
+                options: {
+                    plugins: {
+                        legend: { display: true },
+                        title: { display: true, text: 'World Wine Production 2018' },
+                    },
+                },
+            });
+
+            // -------- Chart 4 (Pie) --------
+            new Chart(document.getElementById('chart4'), {
+                type: 'pie',
+                data: {
+                    labels: this.chart4Labels,
+                    datasets: [
+                        {
+                            data: this.chart4Values,
+                            backgroundColor: this.chart4Colors,
+                        },
+                    ],
+                },
+                options: {
+                    plugins: {
+                        legend: { display: true },
+                        title: { display: true, text: 'Custom Pie Chart' },
+                    },
+                },
+            });
+        },
+
+        // =============================
+        // Dashboard API
+        // =============================
+        DashboardData() {
+            axios.get('/api/showroom/dashboard/data').then(resp => {
+                console.log('Dashboard data', resp);
+                this.products = resp.data.products;
+                this.sales = resp.data.sales;
+                this.balance = resp.data.balance;
+                this.sale_revenue = resp.data.sale_revenue;
+                this.net_profit = resp.data.net_profit;
+                this.deals_completed = resp.data.deals_completed;
+                let monthlySales = resp.data.monthlySales;
+
+                // Transform monthlySales for chart1
+                const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                this.chart1Labels = Object.keys(monthlySales).map(key => {
+                    const monthIndex = parseInt(key.split('-')[1], 10) - 1;
+                    return monthNames[monthIndex];
+                });
+
+                this.chart1Values = Object.values(monthlySales).map(v => Number(v));
+
+                // Re-render chart1 after updating data
+                this.loadCharts();
+            });
+        },
+
+        formatRevenue(value) {
+            let num = Number(value)
+
+            if (num >= 1e9) {
+                return (num / 1e9).toFixed(1) + 'B'
+            } else if (num >= 1e6) {
+                return (num / 1e6).toFixed(1) + 'M'
+            } else if (num >= 1e3) {
+                return (num / 1e3).toFixed(1) + 'K'
+            } else {
+                return num
+            }
+        },
+
+
+    data() {
+        return {
+            // Dashboard data
+            products: '',
+            sales: '',
+            balance: '',
+
+            // Chart 1 (Bar)
+            chart1Labels: [],
+            chart1Values: [],
+
+            // Chart 2 (Line)
+            chart2Labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+            chart2Values: [10, 34, 22, 50, 40],
+
+            // Chart 3 (Doughnut)
+            chart3Labels: ['Italy', 'France', 'Spain', 'USA', 'Argentina'],
+            chart3Values: [55, 49, 44, 24, 15],
+            chart3Colors: ['#b91d47', '#00aba9', '#2b5797', '#e8c3b9', '#1e7145'],
+
+            // Chart 4 (Pie)
+            chart4Labels: ['A', 'B', 'C', 'D'],
+            chart4Values: [30, 20, 40, 10],
+            chart4Colors: ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6'],
+
+            // Other modals
+            account_name: '',
+            account_today_credit_history: '',
+            account_credit_history: '',
+            account_today_debit_history: '',
+            account_debit_history: '',
+            sale_revenue: 0,
+            net_profit: 0,
+            deals_completed: 0,
+            base_url: this.$store.state.image_base_link,
+        };
+    },
+
+https://www.w3schools.com/js/tryit.asp?filename=trychartjs_bars_colors_more
