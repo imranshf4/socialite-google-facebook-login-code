@@ -1,0 +1,115 @@
+after body
+<div id="google_translate_element" style="display:none;"></div>
+.skiptranslate {
+display: none !important;
+}
+@php
+$languages = [
+'en' => ['name' => 'English', 'flag' => 'https://flagcdn.com/w20/us.png'],
+'bn' => ['name' => 'Bangla', 'flag' => 'https://flagcdn.com/w20/bd.png'],
+'zh-CN' => ['name' => 'Chinese', 'flag' => 'https://flagcdn.com/w20/cn.png'],
+'ja' => ['name' => 'Japanese', 'flag' => 'https://flagcdn.com/w20/jp.png'],
+];
+$currentLocale = Session::get('locale', 'en');
+@endphp
+<div class="select_language">
+    <div class="dropdown">
+        <button class="dropdown-toggle" onclick="toggleDropdown()">
+            <img id="current_flag" src="{{ $languages[$currentLocale]['flag'] }}"
+                alt="{{ $languages[$currentLocale]['name'] }}">
+            <span id="current_lang">{{ $languages[$currentLocale]['name'] }}</span>
+            <span class="arrow">
+                <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </span>
+        </button>
+
+        <div class="dropdown-menu" id="languageMenu">
+            @foreach ($languages as $code => $lang)
+            <a href="javascript:void(0)"
+                onclick="changeLanguage('{{ $code }}', '{{ $lang['flag'] }}', '{{ $lang['name'] }}')">
+                <img src="{{ $lang['flag'] }}" alt="{{ $lang['name'] }}">
+                {{ $lang['name'] }}
+            </a>
+            @endforeach
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const DEFAULT_LANG = {
+        code: 'en',
+        name: 'English',
+        flag: 'https://flagcdn.com/w20/us.png'
+    };
+
+    function toggleDropdownNew() {
+        const menu = document.querySelector('#languageMenu');
+        if (menu) {
+            menu.classList.toggle('active');
+        }
+    }
+    function changeLanguage(langCode, flagUrl, langName) {
+        // 1️⃣ Change website language via Google Translate
+        let interval = setInterval(() => {
+            let select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = langCode;
+                select.dispatchEvent(new Event('change'));
+                clearInterval(interval);
+            }
+        }, 300);
+
+        // 2️⃣ Change the current flag & language name in dropdown
+        document.getElementById('current_flag').src = flagUrl;
+        document.getElementById('current_flag').alt = langName;
+        document.getElementById('current_lang').innerText = langName;
+
+        // 3️⃣ Save selected language in localStorage
+        localStorage.setItem('selectedLangCode', langCode);
+        localStorage.setItem('selectedLangFlag', flagUrl);
+        localStorage.setItem('selectedLangName', langName);
+        toggleDropdownNew();
+    }
+
+    // 4️⃣ On page load, restore the saved language
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedCode = localStorage.getItem('selectedLangCode') || DEFAULT_LANG.code;
+        const savedFlag = localStorage.getItem('selectedLangFlag') || DEFAULT_LANG.flag;
+        const savedName = localStorage.getItem('selectedLangName') || DEFAULT_LANG.name;
+
+        if (savedCode && savedFlag && savedName) {
+            document.getElementById('current_flag').src = savedFlag;
+            document.getElementById('current_flag').alt = savedName;
+            document.getElementById('current_lang').innerText = savedName;
+
+            // Optionally, also set Google Translate dropdown
+            let interval = setInterval(() => {
+                let select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    select.value = savedCode;
+                    select.dispatchEvent(new Event('change'));
+                    clearInterval(interval);
+                }
+            }, 300);
+        }
+    });
+</script>
+
+
+
+
+
+<script>
+    function googleTranslateElementInit() {
+        new google.translate.TranslateElement({
+            pageLanguage: 'en',
+            autoDisplay: false
+        }, 'google_translate_element');
+    }
+</script>
+
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

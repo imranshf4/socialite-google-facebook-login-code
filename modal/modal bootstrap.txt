@@ -1,0 +1,308 @@
+const modal = bootstrap.Modal.getInstance(
+                document.getElementById('customerSaleDetailsModal')
+            );
+            modal.hide();
+
+
+<button class="btn btn-xs btn-info" data-bs-toggle="modal"
+                                                            data-bs-target="#customerSaleDetailsModal"
+                                                            @click="customerSaleDetails(item.customer.phone)">
+                                                            view
+                                                        </button>
+
+<div class="modal fade" id="customerSaleDetailsModal" tabindex="-1">
+                                            <div class="modal-dialog modal-dialog-centered modal-xl">
+                                                <div class="modal-content custom-modal">
+
+                                                    <div class="modal-body p-4">
+                                                        <!-- Header -->
+                                                        <div class="text-center mb-4">
+                                                            <h5 class="fw-bold mb-1">Customer sale records Details</h5>
+                                                        </div>
+                                                        <div class="box-body">
+                                                            <div class="table-responsive">
+                                                                <table class="table m-0">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th width="5%">#</th>
+                                                                            <th width="25%">Product</th>
+                                                                            <th width="10%">Barcode</th>
+                                                                            <th width="10%" class="center-cell">Size</th>
+                                                                            <th width="10%" class="center-cell">Quantity</th>
+                                                                            <th width="20%" class="center-cell">Total Amount</th>
+                                                                            <th width="20%" class="center-cell">Total Paid</th>
+                                                                            <th width="20%" class="center-cell">Total Due</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <!-- Loading state -->
+                                                                        <tr v-if="loading">
+                                                                            <td colspan="8" class="text-center">
+                                                                                <i class="fa fa-spin fa-spinner"></i>
+                                                                            </td>
+                                                                        </tr>
+
+                                                                        <!-- Sale records -->
+                                                                        <template v-else
+                                                                            v-for="(item, itemIndex) in saleRecordsDetails">
+                                                                            <tr v-for="(item2, vIndex) in item.sale_items"
+                                                                                :key="vIndex">
+
+                                                                                <!-- Row number -->
+                                                                                <td>{{ vIndex + 1 }}</td>
+                                                                                <!-- Product Name -->
+                                                                                <td>{{ item2.product ?
+                                                                                    item2.product.name.slice(0, 20) +
+                                                                                    '...' + '-' : '-' }}{{ item2.product
+                                                                                    ? item2.product.product_code : '-'
+                                                                                    }}</td>
+
+                                                                                <!-- Barcode -->
+                                                                                <td
+                                                                                    v-html="item2.product?.barcode || '-'">
+                                                                                </td>
+
+                                                                                <!-- Variant -->
+                                                                                <td class="center-cell">{{ item2.variant ?
+                                                                                    item2.variant.name : '-' }}</td>
+
+                                                                                <!-- Qty -->
+                                                                                <td class="center-cell">{{ item2.qty }}</td>
+
+                                                                                <!-- Total (show only in first row of the group) -->
+                                                                                <td v-if="vIndex === 0"
+                                                                                    :rowspan="item.sale_items.length"
+                                                                                    class="center-cell">
+                                                                                    BDT {{ item.total }}
+                                                                                </td>
+
+                                                                                <!-- Paid -->
+                                                                                <td v-if="vIndex === 0"
+                                                                                    :rowspan="item.sale_items.length"
+                                                                                    class="center-cell">
+                                                                                    BDT {{ item.paid }}
+                                                                                </td>
+
+                                                                                <!-- Due -->
+                                                                                <td v-if="vIndex === 0"
+                                                                                    :rowspan="item.sale_items.length"
+                                                                                    class="center-cell">
+                                                                                    BDT {{ item.due }}
+                                                                                </td>
+
+                                                                            </tr>
+                                                                        </template>
+                                                                    </tbody>
+
+
+
+
+                                                                </table>
+                                                                <div class="text-center p-2">
+                                                                    <button class="btn btn-success"
+                                                                        @click="print(customer_phone)"><i
+                                                                            class="fa fa-print me-1"></i> Print</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+
+######################
+second part for select opotion
+########################
+<option value="custom_date">Custom Dates</option>
+
+ else if (this.filtering_date_value == 'custom date') {
+                const modalEl = document.getElementsByClassName('custom_date_modal')[0];
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+                this.start_date = '';
+                this.end_date = '';
+                return;
+            }
+
+
+} else if (this.filtering_date_value == 'custom date') {
+                const modal = new bootstrap.Modal(
+                    document.getElementsByClassName('custom_date_modal')
+                );
+                modal.show();
+                return;
+                this.status = 'filter';
+            }
+
+<div class="dashboard_home_select">
+                    <select @change="filterOrderAccordingToDays" v-model="filtering_date_value"
+                        class="form-select w-100">
+                        <option value="all">Filter By Days</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="last 7 days">Last 7 Days</option>
+                        <option value="last 30 days">Last 30 Days</option>
+                        <option value="this month">This Month</option>
+                        <option value="this year">This Year</option>
+                        <option value="last year">Last Year</option>
+                        <option value="custom date">Custom Dates</option>
+                    </select>
+                </div>
+
+computed: {
+        percentageColor() {
+            if (this.percentage >= 80) return '#06D6A0';
+            if (this.percentage >= 60) return '#118AB2';
+            if (this.percentage >= 40) return '#FFD166';
+            if (this.percentage >= 20) return '#4ECDC4';
+            return '#FF6B6B';
+        },
+        progressValue() {
+            if (!this.targetAmount) return '0.00';
+
+            const value =
+                (parseInt(this.current_total_sale) / parseInt(this.targetAmount)) * 100;
+
+            if (value < 10) {
+                return value.toFixed(2);
+            } else {
+                return value;
+            }
+        },
+        formattedDate() {
+            if (this.start_date && this.end_date) {
+                const format = (dateStr) => {
+                    const d = new Date(dateStr);
+                    const year = d.getFullYear();
+                    const month = String(d.getMonth() + 1).padStart(2, '0');
+                    const day = String(d.getDate()).padStart(2, '0');
+                    return `${year}/${month}/${day}`;
+                };
+
+                return `${format(this.start_date)}-${format(this.end_date)}`;
+            } else {
+                return '';
+            }
+        },
+
+        filterText() {
+            if (this.filtering_date_value === 'custom date') {
+                return this.formattedDate;
+            }
+
+            if (this.filtering_date_value === 'all') {
+                return 'last month';
+            }
+
+            return this.filtering_date_value;
+        }
+    },
+
+/* ============================
+   modal css 
+============================ */
+.custom_date_modal .modal-content {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.custom_date_modal .custom-modal-body {
+    padding: 16px 70px 54px 70px;
+}
+
+.modal-header {
+    padding-top: 54px;
+}
+
+
+@media screen and (max-width: 500px) {
+    .custom_date_modal .custom-modal-body {
+        padding: 10px 33px 20px 33px;
+    }
+
+    .modal-header {
+        padding-top: 20px;
+    }
+}
+
+currentDate() {
+            let d = new Date();
+            let month = d.getMonth() + 1;
+            let day = d.getDate();
+            let output =
+                d.getFullYear() +
+                '-' +
+                (('' + month).length < 2 ? '0' : '') +
+                month +
+                '-' +
+                (('' + day).length < 2 ? '0' : '') +
+                day;
+            return output;
+        },
+
+        previousDate(date) {
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            let output =
+                date.getFullYear() +
+                '-' +
+                (('' + month).length < 2 ? '0' : '') +
+                month +
+                '-' +
+                (('' + day).length < 2 ? '0' : '') +
+                day;
+            return output;
+        },
+
+        applyDateFilter() {
+            if (this.start_date && this.end_date) {
+                this.status = 'filter';
+                this.DashboardData();
+
+                setTimeout(() => {
+                   const modalEl = document.querySelector('.custom_date_modal');
+                    if (modalEl) {
+                        const modal = bootstrap.Modal.getInstance(modalEl);
+                        if (modal) {
+                            modal.hide();
+                            this.start_date = '';
+                            this.end_date = '';
+                        }
+                    }
+                }, 300);
+            }
+        }
+
+
+<div class="modal fade custom_date_modal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-md">
+                <div class="modal-content custom-modal">
+
+                    <!-- Header -->
+                    <div class="modal-header border-0 justify-content-center">
+                        <h5 class="modal-title fw-bold">Custom dates</h5>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body custom-modal-body">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="form-label">Start date</label>
+                                <input type="date" v-model="start_date" class="form-control" @change="applyDateFilter">
+                            </div>
+
+                            <div class="col-6">
+                                <label class="form-label">End date</label>
+                                <input type="date" v-model="end_date" class="form-control" @change="applyDateFilter">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>

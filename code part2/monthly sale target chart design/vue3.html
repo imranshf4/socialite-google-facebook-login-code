@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Target Progress Chart</title>
+    <!-- Vue.js -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .dashboard-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .dashboard-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+        
+        .chart-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .chart-container {
+            position: relative;
+            width: 320px;
+            height: 320px;
+            margin: 0 auto;
+        }
+        
+        .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .percentage-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+        }
+        
+        .percentage-label {
+            font-size: 18px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .stats-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .target-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .target-label {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .target-value {
+            font-size: 42px;
+            font-weight: 700;
+        }
+        
+        .percentage-control {
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .percentage-slider {
+            width: 100%;
+            margin-top: 10px;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #FF6B6B 0%, #06D6A0 100%);
+            outline: none;
+        }
+        
+        .percentage-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .time-filters {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .filter-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .filter-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+        }
+        
+        .segment-details {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+        
+        .segment-box {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .chart-container {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .percentage-value {
+                font-size: 40px;
+            }
+            
+            .segment-details {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="dashboard-container">
+            <div class="header">
+                <h1>Target for {{ currentMonth }}</h1>
+                <div class="subtitle">Monthly Sales Performance Dashboard</div>
+            </div>
+            
+            <div class="dashboard-content">
+                <div class="chart-section">
+                    <div class="chart-container">
+                        <canvas ref="chartCanvas"></canvas>
+                        <div class="percentage">
+                            <div class="percentage-value">{{ percentage }}%</div>
+                            <div class="percentage-label">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="segment-details">
+                        <div class="segment-box" v-for="(segment, index) in segmentDetails" :key="index"
+                             :style="{ 
+                                 background: segment.color,
+                                 color: segment.isColored ? 'white' : '#666'
+                             }">
+                            Segment {{ index + 1 }}<br>
+                            {{ segment.value }}%
+                        </div>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #FF6B6B;"></div>
+                            <span>Completed</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #FAFAFA; border: 1px solid #E0E0E0;"></div>
+                            <span>Remaining</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-section">
+                    <div class="target-display">
+                        <div class="target-label">Sales Target:</div>
+                        <div class="target-value">{{ formatCurrency(salesTarget) }}</div>
+                    </div>
+                    
+                    <div class="percentage-control">
+                        <div class="target-label">Adjust Completion Percentage:</div>
+                        <input 
+                            type="range" 
+                            min="0" 
+                            max="100" 
+                            v-model="percentage" 
+                            class="percentage-slider"
+                            @input="updateChartData"
+                        >
+                        <div class="slider-value">
+                            <span>0%</span>
+                            <span>{{ percentage }}%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="time-filters">
+                        <div 
+                            v-for="filter in timeFilters" 
+                            :key="filter"
+                            class="filter-btn"
+                            :class="{ active: activeFilter === filter }"
+                            @click="changeFilter(filter)"
+                        >
+                            {{ filter }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, onMounted, computed, watch } = Vue;
+        
+        createApp({
+            setup() {
+                // Reactive data
+                const currentMonth = ref('December');
+                const percentage = ref(50);
+                const salesTarget = ref(5000000);
+                const activeFilter = ref('All');
+                const chartCanvas = ref(null);
+                let chart = null;
+                
+                // Segment colors
+                const segmentColors = [
+                    '#FF6B6B', // Red
+                    '#4ECDC4', // Teal
+                    '#FFD166', // Yellow
+                    '#06D6A0', // Green
+                    '#118AB2'  // Blue
+                ];
+                
+                const remainingColor = '#FAFAFA';
+                const remainingBorderColor = '#E0E0E0';
+                
+                // Time filters
+                const timeFilters = ref([
+                    'All',
+                    'Custom sales',
+                    'Last 30 days',
+                    'This month',
+                    'Last months',
+                    'Last 6 months',
+                    'Last years',
+                    'Last 3 years'
+                ]);
+                
+                // Calculate segment details based on percentage
+                const segmentDetails = computed(() => {
+                    const segments = [];
+                    const segmentSize = 20; // Each segment is 20%
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const segmentStart = i * segmentSize;
+                        const segmentEnd = (i + 1) * segmentSize;
+                        
+                        if (percentage.value >= segmentEnd) {
+                            // Segment fully completed
+                            segments.push({
+                                value: segmentSize,
+                                color: segmentColors[i],
+                                isColored: true
+                            });
+                        } else if (percentage.value > segmentStart) {
+                            // Segment partially completed
+                            const completedValue = percentage.value - segmentStart;
+                            const remainingValue = segmentSize - completedValue;
+                            
+                            // For display, show completed value
+                            segments.push({
+                                value: completedValue,
+                                color: segmentColors[i],
+                                isColored: true
+                            });
+                        } else {
+                            // Segment not started
+                            segments.push({
+                                value: 0,
+                                color: remainingColor,
+                                isColored: false
+                            });
+                        }
+                    }
+                    
+                    return segments;
+                });
+                
+                // Get chart data based on current percentage
+                const getChartData = () => {
+                    const segmentSize = 20; // Each segment is 20%
+                    const data = [];
+                    const backgroundColors = [];
+                    const borderColors = [];
+                    const borderWidths = [];
+                    
+                    for (let i = 0; i < 5; i++) {
+                        const segmentStart = i * segmentSize;
+                        const segmentEnd = (i + 1) * segmentSize;
+                        
+                        if (percentage.value >= segmentEnd) {
+                            // Segment fully completed
+                            data.push(segmentSize);
+                            backgroundColors.push(segmentColors[i]);
+                            borderColors.push(segmentColors[i]);
+                            borderWidths.push(0);
+                        } else if (percentage.value > segmentStart) {
+                            // Segment partially completed
+                            const completedValue = percentage.value - segmentStart;
+                            const remainingValue = segmentSize - completedValue;
+                            
+                            // Add completed part
+                            data.push(completedValue);
+                            backgroundColors.push(segmentColors[i]);
+                            borderColors.push(segmentColors[i]);
+                            borderWidths.push(0);
+                            
+                            // Add remaining part within this segment
+                            if (remainingValue > 0) {
+                                data.push(remainingValue);
+                                backgroundColors.push(remainingColor);
+                                borderColors.push(remainingBorderColor);
+                                borderWidths.push(1);
+                            }
+                        } else {
+                            // Segment not started
+                            data.push(segmentSize);
+                            backgroundColors.push(remainingColor);
+                            borderColors.push(remainingBorderColor);
+                            borderWidths.push(1);
+                        }
+                    }
+                    
+                    return { data, backgroundColors, borderColors, borderWidths };
+                };
+                
+                // Methods
+                const formatCurrency = (value) => {
+                    return new Intl.NumberFormat('en-IN', {
+                        maximumFractionDigits: 0
+                    }).format(value);
+                };
+                
+                const changeFilter = (filter) => {
+                    activeFilter.value = filter;
+                    // Here you would typically fetch new data based on the filter
+                    updateChartData();
+                };
+                
+                const updateChartData = () => {
+                    if (chart) {
+                        const chartData = getChartData();
+                        
+                        chart.data.datasets[0].data = chartData.data;
+                        chart.data.datasets[0].backgroundColor = chartData.backgroundColors;
+                        chart.data.datasets[0].borderColor = chartData.borderColors;
+                        chart.data.datasets[0].borderWidth = chartData.borderWidths;
+                        
+                        chart.update();
+                    }
+                };
+                
+                // Initialize chart
+                const initChart = () => {
+                    if (!chartCanvas.value) return;
+                    
+                    const ctx = chartCanvas.value.getContext('2d');
+                    const chartData = getChartData();
+                    
+                    // Calculate gap between segments
+                    const totalSegments = chartData.data.length;
+                    const gap = 5; // Smaller gap since we have more segments
+                    const totalGaps = totalSegments * gap;
+                    const availableAngle = 360;
+                    
+                    chart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Array(totalSegments).fill(''),
+                            datasets: [{
+                                data: chartData.data,
+                                backgroundColor: chartData.backgroundColors,
+                                borderColor: chartData.borderColors,
+                                borderWidth: chartData.borderWidths,
+                                borderAlign: 'center',
+                                circumference: availableAngle,
+                                rotation: -90,
+                                spacing: gap,
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: false,
+                            maintainAspectRatio: false,
+                            cutout: '70%',
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    enabled: false
+                                }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true,
+                                duration: 1000,
+                                easing: 'easeOutQuart'
+                            }
+                        }
+                    });
+                };
+                
+                // Watch for percentage changes
+                watch(percentage, () => {
+                    updateChartData();
+                });
+                
+                // Lifecycle hooks
+                onMounted(() => {
+                    initChart();
+                });
+                
+                return {
+                    currentMonth,
+                    percentage,
+                    salesTarget,
+                    segmentDetails,
+                    timeFilters,
+                    activeFilter,
+                    chartCanvas,
+                    formatCurrency,
+                    changeFilter,
+                    updateChartData
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

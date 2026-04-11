@@ -1,5 +1,65 @@
-$monthlySales = collect();
-            for ($i = 4; $i >= 0; $i--) {
+public function  dashboardData()
+      {
+
+            $showroom_id = session()->get('manager')['showroom_id'];
+            $products = array();
+            $products['product_total'] = ShowroomProduct::where('showroom_id', $showroom_id)->sum('stock');
+            $products['product_stock_qty'] = ShowroomProduct::where('showroom_id', $showroom_id)->where('stock', '>', 0)->sum('stock');
+            $products['pending_transaction'] = ProductTransfer::where('showroom_id', $showroom_id)->where('status', 0)->count();
+
+            $s_products = ShowroomProduct::where('showroom_id', $showroom_id)->where('stock', '>', 0)->get();
+            $total_s_amount = 0;
+            foreach ($s_products as  $product) {
+                  $total_s_amount += $product->stock * $product->purchase_price;
+            }
+            $products['product_stock_amount'] = $total_s_amount;
+            //sale analysis
+            $sales = array();
+            $sales['total_sales'] = ShowroomSale::where('showroom_id', $showroom_id)->count();
+            $sales['retail_sales'] = ShowroomSale::where('showroom_id', $showroom_id)->where('sale_type', 1)->count();
+            $sales['whole_sales'] = ShowroomSale::where('showroom_id', $showroom_id)->where('sale_type', 2)->count();
+            //today sale counter
+            $sales['today_sales'] = ShowroomSale::where('showroom_id', $showroom_id)->where('created_at', '>=', Carbon::today()->startOfDay())
+                  ->where('created_at', '<=', Carbon::today()->endOfDay())->count();
+            //yesterday sales
+            $sales['yesterday_sales'] = ShowroomSale::where('showroom_id', $showroom_id)->where('created_at', '>=', Carbon::yesterday()->startOfDay())
+                  ->where('created_at', '<=', Carbon::yesterday()->endOfDay())->count();
+
+            $balance = ShowroomBalance::where('showroom_id', $showroom_id)->with('today_credit_balance', 'total_credit_balance', 'today_debit_balance', 'total_debit_balance')->get();
+
+            $showroom_sale = ShowroomSale::where('showroom_id', $showroom_id)->get();
+            $expense = ShowroomDebit::where('showroom_id', $showroom_id)
+                  ->where('is_expense', 1)->sum('amount');
+
+            $total_purchase_amount = 0;
+            foreach ($showroom_sale as $sale) {
+                  foreach ($sale->sale_items as $sale_item) {
+
+                        $query = ShowroomProduct::where('showroom_id', $showroom_id)
+                              ->where('product_id', $sale_item->product_id);
+
+                        if ($sale_item->variant_id) {
+                              // with variant id
+                              $query->where('variant_id', $sale_item->variant_id);
+                        } else {
+                              // without variant id
+                              $query->whereNull('variant_id');
+                        }
+
+                        $product_purchase_price = $query->value('purchase_price');
+
+                        $total_purchase_amount += ($product_purchase_price ?? 0) * $sale_item->qty;
+                  }
+            }
+
+            $sale_revenue = $showroom_sale->sum('total') - $total_purchase_amount;
+            $total_due = $showroom_sale->sum('due');
+            $total_discount_amount = $showroom_sale->sum('discount');
+
+            $net_profit = $sale_revenue - $total_purchase_amount - $total_discount_amount - $expense;
+
+            $monthlySales = collect();
+            for ($i = 11; $i >= 0; $i--) {
                   $month = Carbon::now()->subMonths($i)->format('Y-m');
                   $startOfMonth = Carbon::now()->subMonths($i)->startOfMonth()->toDateString();
                   $endOfMonth = Carbon::now()->subMonths($i)->endOfMonth()->toDateString();
@@ -11,6 +71,18 @@ $monthlySales = collect();
                   $monthlySales[$month] = $total;
             }
             $monthlySales = $monthlySales->toArray();
+
+            return response()->json([
+                  "status" => "OK",
+                  'products' => $products,
+                  'sales' => $sales,
+                  'balance' => $balance,
+                  'sale_revenue' => $sale_revenue,
+                  'net_profit' => $net_profit,
+                  'monthlySales' => $monthlySales,
+                  'total_due' => $total_due
+            ]);
+      }
 
 
 loadCharts() {

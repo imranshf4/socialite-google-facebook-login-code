@@ -12,27 +12,26 @@
         },
 
 
-if ($data['size_chart']) {
-                $file = $data['size_chart'];
-                $storagePath = 'public/images/products/size_chart/';
+if (!empty($data['size_chart'])) {
 
-                if (strlen($file) > 6 && preg_match('/^data:image\/(\w+);base64,/', $file)) {
+                $file = $data['size_chart'];
+
+                if (preg_match('/^data:image\/(\w+);base64,/', $file)) {
+
                     $image_data = substr($file, strpos($file, ',') + 1);
                     $image_data = base64_decode($image_data);
 
                     if ($image_data === false) {
                         throw new Exception('Base64 decode failed.');
                     }
-                    $img_path = 'thumbnail_' . time() . '_' . rand(1111, 9999) . '.jpg';
-                    Storage::put($storagePath . $img_path, $image_data);
-                    // $image_resize = Image::make(Storage::path($storagePath . $img_path));
-                    // $image_resize->resize(400, 400, function ($constraint) {
-                    //     $constraint->upsize();
-                    // });
-                    // $image_resize->save(Storage::path($storagePath . $img_path));
-                    $data['size_chart'] = 'images/products/size_chart/' . $img_path;
+
+                    $img_path = 'images/size_chart/size_chart_' . time() . '_' . rand(1111, 9999) . '.jpg';
+
+                    Storage::disk('public')->put($img_path, $image_data);
+
+                    $data['size_chart'] = $img_path;
                 }
-            };
+            }
 
 
 
@@ -44,6 +43,13 @@ if (!empty($manager->image)) {
                   }
 
 public function driverAndCarDelete($id)
+
+use Illuminate\Support\Facades\Storage;
+
+if (!Storage::exists('public/images/company_image')) {
+    Storage::makeDirectory('public/images/company_image', 0755, true);
+}
+
       {
             $data = DriverCarProfile::findOrFail($id);
             if (!empty($data->driver_image) && Storage::disk('public')->exists($data->driver_image)) {

@@ -28,3 +28,30 @@
                             </ul>
                         </div>
                         <!-- social media end -->
+
+<aside class="main-sidebar mt-0" id="outlet_sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel" style="border-bottom:1px solid #ddd;">
+            @php
+                $showroom = App\Models\Showroom::where('id', session()->get('manager')['showroom_id'])->first();
+            @endphp
+            <div class="pull-left image">
+                @if ($showroom != null && !empty($showroom->logo))
+                    <img src="{{ asset('storage/' . $showroom->logo) }}" class="img-circle" alt="User Image">
+                @endif
+            </div>
+            <div class="pull-left info" style="top:17px;">
+                @if ($showroom != null)
+                    <h4 style="color:black">{{ explode(' ', trim($showroom->name))[0] }}</h4>
+                @endif
+                <a style="color:green" href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+
+        </div>
+      
+
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <div class="sidebar_menu_part">

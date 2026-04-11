@@ -6,4 +6,4 @@ Route::get('reboot', function () {
     Artisan::call('config:cache');
     Artisan::call('code:ec --no-backup');
     dd("Ready to Start.");
-});
+});2277

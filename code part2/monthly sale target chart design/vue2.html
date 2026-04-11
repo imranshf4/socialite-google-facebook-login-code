@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Target Progress Chart</title>
+    <!-- Vue.js 2 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 1000px;
+            padding: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .dashboard-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .chart-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            margin: 0 auto;
+        }
+
+        .chart-container canvas {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            z-index: 10;
+        }
+
+        .percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1;
+        }
+
+        .percentage-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+        }
+
+        .percentage-label {
+            font-size: 18px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .stats-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .target-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .target-label {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .target-value {
+            font-size: 42px;
+            font-weight: 700;
+        }
+
+        .percentage-control {
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .percentage-slider {
+            width: 100%;
+            margin-top: 10px;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #FF6B6B 0%, #06D6A0 100%);
+            outline: none;
+        }
+
+        .percentage-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .time-filters {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .filter-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .filter-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .legend-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 100%;
+        }
+
+        .segment-details {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .segment-box {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .segment-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .hover-tooltip {
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .hover-tooltip:after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid rgba(0, 0, 0, 0.8);
+        }
+
+        .segment-box:hover .hover-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .chart-tooltip {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 14px;
+            position: absolute;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .chart-container {
+                width: 280px;
+                height: 280px;
+            }
+
+            .percentage-value {
+                font-size: 40px;
+            }
+
+            .segment-details {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="dashboard-container">
+            <div class="header">
+                <h1>Target for {{ currentMonth }}</h1>
+                <div class="subtitle">Monthly Sales Performance Dashboard</div>
+            </div>
+
+            <div class="dashboard-content">
+                <div class="chart-section">
+                    <div class="chart-container">
+                        <canvas ref="chartCanvas" @mousemove="handleChartHover" @mouseleave="hideChartTooltip"></canvas>
+                        <div class="percentage">
+                            <div class="percentage-value">{{ percentage }}%</div>
+                            <div class="percentage-label">Completed</div>
+                        </div>
+                    </div>
+
+                    <div class="segment-details">
+                        <div class="segment-box" v-for="(segment, index) in segmentDetails" :key="index" :style="{ 
+                                background: segment.color,
+                                color: segment.isColored ? 'white' : '#666'
+                            }" @mouseenter="showSegmentTooltip(segment, index)" @mouseleave="hideSegmentTooltip">
+                            Segment {{ index + 1 }}<br>
+                            {{ segment.value }}%
+                            <div class="hover-tooltip">
+                                Segment {{ index + 1 }}: {{ segment.value }}% complete
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item" @mouseenter="showLegendTooltip('Completed', '#FF6B6B')"
+                            @mouseleave="hideSegmentTooltip">
+                            <div class="legend-color" style="background-color: #FF6B6B;"></div>
+                            <span>Completed</span>
+                        </div>
+                        <div class="legend-item" @mouseenter="showLegendTooltip('Remaining', '#FAFAFA')"
+                            @mouseleave="hideSegmentTooltip">
+                            <div class="legend-color" style="background-color: #FAFAFA; border: 1px solid #E0E0E0;">
+                            </div>
+                            <span>Remaining</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <div class="target-display">
+                        <div class="target-label">Sales Target:</div>
+                        <div class="target-value">{{ formatCurrency(salesTarget) }}</div>
+                    </div>
+
+                    <div class="percentage-control">
+                        <div class="target-label">Adjust Completion Percentage:</div>
+                        <input type="range" min="0" max="100" v-model="percentage" class="percentage-slider"
+                            @input="updateChartData">
+                        <div class="slider-value">
+                            <span>0%</span>
+                            <span>{{ percentage }}%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+
+                    <div class="time-filters">
+                        <div v-for="filter in timeFilters" :key="filter" class="filter-btn"
+                            :class="{ active: activeFilter === filter }" @click="changeFilter(filter)"
+                            @mouseenter="showFilterTooltip(filter)" @mouseleave="hideSegmentTooltip">
+                            {{ filter }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                currentMonth: 'December',
+                percentage: 50,
+                salesTarget: 5000000,
+                activeFilter: 'All',
+                timeFilters: [
+                    'All',
+                    'Custom sales',
+                    'Last 30 days',
+                    'This month',
+                    'Last months',
+                    'Last 6 months',
+                    'Last years',
+                    'Last 3 years'
+                ],
+                segmentColors: [
+                    '#FF6B6B', // Red
+                    '#4ECDC4', // Teal
+                    '#FFD166', // Yellow
+                    '#06D6A0', // Green
+                    '#118AB2'  // Blue
+                ],
+                segmentNames: [
+                    'Initial Sales',
+                    'Growth Phase',
+                    'Peak Period',
+                    'Consolidation',
+                    'Final Sales'
+                ],
+                remainingColor: '#FAFAFA',
+                remainingBorderColor: '#E0E0E0',
+                chart: null,
+                chartTooltip: {
+                    show: false,
+                    x: 0,
+                    y: 0,
+                    text: ''
+                },
+                hoveredSegment: null
+            },
+            computed: {
+                segmentDetails: function () {
+                    const segments = [];
+                    const segmentSize = 20; // Each segment is 20%
+
+                    for (let i = 0; i < 5; i++) {
+                        const segmentStart = i * segmentSize;
+                        const segmentEnd = (i + 1) * segmentSize;
+
+                        if (this.percentage >= segmentEnd) {
+                            // Segment fully completed
+                            segments.push({
+                                name: this.segmentNames[i],
+                                value: segmentSize,
+                                color: this.segmentColors[i],
+                                isColored: true,
+                                start: segmentStart,
+                                end: segmentEnd
+                            });
+                        } else if (this.percentage > segmentStart) {
+                            // Segment partially completed
+                            const completedValue = this.percentage - segmentStart;
+                            const remainingValue = segmentSize - completedValue;
+
+                            // For display, show completed value
+                            segments.push({
+                                name: this.segmentNames[i],
+                                value: completedValue,
+                                color: this.segmentColors[i],
+                                isColored: true,
+                                start: segmentStart,
+                                end: segmentEnd,
+                                completed: completedValue,
+                                remaining: remainingValue
+                            });
+                        } else {
+                            // Segment not started
+                            segments.push({
+                                name: this.segmentNames[i],
+                                value: 0,
+                                color: this.remainingColor,
+                                isColored: false,
+                                start: segmentStart,
+                                end: segmentEnd
+                            });
+                        }
+                    }
+
+                    return segments;
+                }
+            },
+            methods: {
+                formatCurrency: function (value) {
+                    return new Intl.NumberFormat('en-IN', {
+                        maximumFractionDigits: 0
+                    }).format(value);
+                },
+
+                changeFilter: function (filter) {
+                    this.activeFilter = filter;
+                    // Here you would typically fetch new data based on the filter
+                    this.updateChartData();
+                },
+
+                getChartData: function () {
+                    const segmentSize = 20; // Each segment is 20%
+                    const data = [];
+                    const backgroundColors = [];
+                    const borderColors = [];
+                    const borderWidths = [];
+                    const segmentInfo = [];
+
+                    for (let i = 0; i < 5; i++) {
+                        const segmentStart = i * segmentSize;
+                        const segmentEnd = (i + 1) * segmentSize;
+
+                        if (this.percentage >= segmentEnd) {
+                            // Segment fully completed
+                            data.push(segmentSize);
+                            backgroundColors.push(this.segmentColors[i]);
+                            borderColors.push(this.segmentColors[i]);
+                            borderWidths.push(0);
+                            segmentInfo.push({
+                                name: this.segmentNames[i],
+                                value: segmentSize,
+                                color: this.segmentColors[i],
+                                isFilled: true
+                            });
+                        } else if (this.percentage > segmentStart) {
+                            // Segment partially completed
+                            const completedValue = this.percentage - segmentStart;
+                            const remainingValue = segmentSize - completedValue;
+
+                            // Add completed part
+                            data.push(completedValue);
+                            backgroundColors.push(this.segmentColors[i]);
+                            borderColors.push(this.segmentColors[i]);
+                            borderWidths.push(0);
+                            segmentInfo.push({
+                                name: this.segmentNames[i],
+                                value: completedValue,
+                                color: this.segmentColors[i],
+                                isFilled: true
+                            });
+
+                            // Add remaining part within this segment
+                            if (remainingValue > 0) {
+                                data.push(remainingValue);
+                                backgroundColors.push(this.remainingColor);
+                                borderColors.push(this.remainingBorderColor);
+                                borderWidths.push(1);
+                                segmentInfo.push({
+                                    name: this.segmentNames[i] + ' (Remaining)',
+                                    value: remainingValue,
+                                    color: this.remainingColor,
+                                    isFilled: false
+                                });
+                            }
+                        } else {
+                            // Segment not started
+                            data.push(segmentSize);
+                            backgroundColors.push(this.remainingColor);
+                            borderColors.push(this.remainingBorderColor);
+                            borderWidths.push(1);
+                            segmentInfo.push({
+                                name: this.segmentNames[i] + ' (Not Started)',
+                                value: segmentSize,
+                                color: this.remainingColor,
+                                isFilled: false
+                            });
+                        }
+                    }
+
+                    return { data, backgroundColors, borderColors, borderWidths, segmentInfo };
+                },
+
+                updateChartData: function () {
+                    if (this.chart) {
+                        const chartData = this.getChartData();
+
+                        this.chart.data.datasets[0].data = chartData.data;
+                        this.chart.data.datasets[0].backgroundColor = chartData.backgroundColors;
+                        this.chart.data.datasets[0].borderColor = chartData.borderColors;
+                        this.chart.data.datasets[0].borderWidth = chartData.borderWidths;
+
+                        this.chart.update();
+                    }
+                },
+
+                initChart: function () {
+                    const canvas = this.$refs.chartCanvas;
+                    if (!canvas) return;
+
+                    const ctx = canvas.getContext('2d');
+                    const chartData = this.getChartData();
+
+                    // Calculate gap between segments
+                    const totalSegments = chartData.data.length;
+                    const gap = 5;
+                    const availableAngle = 360;
+
+                    this.chart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: chartData.segmentInfo.map(info => info.name),
+                            datasets: [{
+                                data: chartData.data,
+                                backgroundColor: chartData.backgroundColors,
+                                borderColor: chartData.borderColors,
+                                borderWidth: chartData.borderWidths,
+                                borderAlign: 'center',
+                                circumference: availableAngle,
+                                rotation: -90,
+                                spacing: gap,
+                                borderRadius: 6,
+                                hoverBackgroundColor: chartData.backgroundColors.map(color => {
+                                    // Lighten color on hover
+                                    if (color === this.remainingColor) return color;
+                                    return this.lightenColor(color, 20);
+                                }),
+                                hoverBorderColor: chartData.borderColors.map(color => {
+                                    if (color === this.remainingBorderColor) return color;
+                                    return this.lightenColor(color, 20);
+                                }),
+                                hoverBorderWidth: 2
+                            }]
+                        },
+                        options: {
+                            responsive: false,
+                            maintainAspectRatio: false,
+                            cutout: '70%',
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    enabled: true,
+                                    callbacks: {
+                                        label: function (context) {
+                                            const segment = chartData.segmentInfo[context.dataIndex];
+                                            return `${segment.name}: ${context.parsed}%`;
+                                        }
+                                    },
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleFont: { size: 12 },
+                                    bodyFont: { size: 12 },
+                                    padding: 10,
+                                    displayColors: true,
+                                    zIndex: 9999
+                                }
+                            },
+                            onHover: (event, elements) => {
+                                if (elements && elements.length > 0) {
+                                    canvas.style.cursor = 'pointer';
+                                } else {
+                                    canvas.style.cursor = 'default';
+                                }
+                            },
+                            animation: {
+                                animateRotate: true,
+                                animateScale: true,
+                                duration: 1000,
+                                easing: 'easeOutQuart'
+                            }
+                        }
+                    });
+                },
+
+                handleChartHover: function (event) {
+                    if (!this.chart) return;
+
+                    const canvas = this.$refs.chartCanvas;
+                    const rect = canvas.getBoundingClientRect();
+                    const x = event.clientX - rect.left;
+                    const y = event.clientY - rect.top;
+
+                    // Get the active segment
+                    const activeElements = this.chart.getElementsAtEventForMode(
+                        event,
+                        'nearest',
+                        { intersect: true },
+                        false
+                    );
+
+                    if (activeElements.length > 0) {
+                        const index = activeElements[0].index;
+                        const segment = this.getChartData().segmentInfo[index];
+
+                        this.chartTooltip = {
+                            show: true,
+                            x: x + 10,
+                            y: y - 40,
+                            text: `${segment.name}: ${segment.value}%`
+                        };
+                    } else {
+                        this.hideChartTooltip();
+                    }
+                },
+
+                hideChartTooltip: function () {
+                    this.chartTooltip.show = false;
+                },
+
+                showSegmentTooltip: function (segment, index) {
+                    this.hoveredSegment = {
+                        name: segment.name,
+                        color: segment.color,
+                        percentage: segment.value,
+                        index: index + 1
+                    };
+                },
+
+                showLegendTooltip: function (name, color) {
+                    this.hoveredSegment = {
+                        name: name,
+                        color: color,
+                        percentage: name === 'Completed' ? this.percentage : 100 - this.percentage,
+                        index: null
+                    };
+                },
+
+                showFilterTooltip: function (filter) {
+                    // Show filter description on hover
+                    const descriptions = {
+                        'All': 'View all sales data',
+                        'Custom sales': 'View custom date range sales',
+                        'Last 30 days': 'View sales from the last 30 days',
+                        'This month': 'View sales for the current month',
+                        'Last months': 'View sales from previous months',
+                        'Last 6 months': 'View sales from the last 6 months',
+                        'Last years': 'View sales from previous years',
+                        'Last 3 years': 'View sales from the last 3 years'
+                    };
+
+                    this.hoveredSegment = {
+                        name: filter,
+                        color: '#667eea',
+                        description: descriptions[filter] || '',
+                        index: null
+                    };
+                },
+
+                hideSegmentTooltip: function () {
+                    this.hoveredSegment = null;
+                },
+
+                lightenColor: function (color, percent) {
+                    // Convert hex to RGB
+                    let r = parseInt(color.slice(1, 3), 16);
+                    let g = parseInt(color.slice(3, 5), 16);
+                    let b = parseInt(color.slice(5, 7), 16);
+
+                    // Lighten
+                    r = Math.min(255, r + (255 - r) * percent / 100);
+                    g = Math.min(255, g + (255 - g) * percent / 100);
+                    b = Math.min(255, b + (255 - b) * percent / 100);
+
+                    // Convert back to hex
+                    return `#${Math.round(r).toString(16).padStart(2, '0')}${Math.round(g).toString(16).padStart(2, '0')}${Math.round(b).toString(16).padStart(2, '0')}`;
+                }
+            },
+            mounted: function () {
+                this.initChart();
+            },
+            watch: {
+                percentage: function () {
+                    this.updateChartData();
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

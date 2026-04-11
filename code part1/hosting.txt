@@ -1,5 +1,11 @@
 /login/super/admin/dashboard
-Pg3B1&9sdP
+amaraoutfit
+mS9n7WytTfGkM3z0i5P1
+
+db
+pXOaqAJv6tAHlU1Wn3D8
+
+https://www.youtube.com/watch?v=ff06LRUwo38
 
 php selector (php version update)
 config(app.php,database.php)
@@ -66,7 +72,7 @@ Hp)+E7A^DVGq2r,h9tw8Cx
 
 RewriteEngine On
 RewriteCond %{SERVER_PORT} 80
-RewriteRule ^(.*)$ https://snowfabric.com/$1 [R,L]
+RewriteRule ^(.*)$ https://luxurystylebd.com/$1 [R,L]
 
 Empty DB Table Data :      /api/empty/table
 

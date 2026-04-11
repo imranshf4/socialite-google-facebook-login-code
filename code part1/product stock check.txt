@@ -1,0 +1,14 @@
+$products = Product::select('id', 'name', 'product_code', 'thumbnail_img', 'stock', 'short_name')->with(['productVariant.variant.attribute:id,name'])->where('status', 1)->where(function ($query) {
+                $query
+                    // Products without variants must have stock > 0
+                    ->where(function ($q) {
+                        $q->doesntHave('productVariant')
+                            ->where('stock', '<=', 0);
+                    })
+                    // Products with variants must have at least one variant with stock > 0
+                    ->orWhere(function ($q) {
+                        $q->whereHas('productVariant', function ($v) {
+                            $v->where('stock', '<=', 0);
+                        });
+                    });
+            })->get();

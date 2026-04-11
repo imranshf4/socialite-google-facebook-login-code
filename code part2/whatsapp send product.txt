@@ -1,0 +1,32 @@
+<script>
+        document.getElementById('whatsappLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default action
+            var whatsappNumber = '{{ $whatsappNumber }}'.trim();
+            if (!whatsappNumber) return;
+            var pageUrl = window.location.href; // Get current page URL
+            // console.log(pageUrl);
+            var message = encodeURIComponent(pageUrl);
+            var whatsappUrl = `https://wa.me/+88${whatsappNumber}?text=${message}`;
+            // Open the WhatsApp URL in a new tab
+            window.open(whatsappUrl, '_blank');
+        });
+    </script>
+
+@php
+                                $whatsappNumber =
+                                    $currentReseller->whatsapp_number ?? $general_settings->whatsapp_number;
+                            @endphp
+                            <a href="https://wa.me/+88{{ $whatsappNumber }}" id="whatsappLink"
+                                class="call_contact_us call_whats">
+                                <div class="whats_up">
+                                    <i class="fa-brands fa-whatsapp"></i>
+                                </div>
+                                <div class="contact_des">
+                                    <h5>{{ dynamic_lang('whatsapp_text') }}</h5>
+                                    <h6>
+                                        {{ $whatsappNumber }}
+                                    </h6>
+                                </div>
+
+                                <div class="status-badge whats_badge"></div>
+                            </a>

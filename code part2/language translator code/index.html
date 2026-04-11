@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Language</title>
+    <style>
+        .dropdown {
+    position: relative;
+    display: inline-block;
+    font-family: Arial, sans-serif;
+}
+
+.dropdown-toggle {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.dropdown-toggle img {
+    width: 20px;
+    height: 14px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 160px;
+    box-shadow: 0px 4px 8px rgba(0,0,0,0.15);
+    z-index: 999;
+}
+
+.dropdown-menu li {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.dropdown-menu li img {
+    width: 20px;
+    height: 14px;
+    border: 1px solid #ddd;
+}
+
+.dropdown-menu li:hover {
+    background: #f5f5f5;
+}
+
+.dropdown.open .dropdown-menu {
+    display: block;
+}
+
+    </style>
+</head>
+<body>
+    <div class="dropdown">
+    <button class="dropdown-toggle" onclick="toggleDropdown()">
+        <img src="https://flagcdn.com/w20/bd.png" alt="Bangla">
+        Bangla
+        <span class="arrow"><svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg></span>
+    </button>
+    <ul class="dropdown-menu" id="languageMenu">
+        <li onclick="selectLanguage('English', 'https://flagcdn.com/w20/us.png')">
+            <img src="https://flagcdn.com/w20/us.png" alt="English"> English
+        </li>
+        <li onclick="selectLanguage('Bangla', 'https://flagcdn.com/w20/bd.png')">
+            <img src="https://flagcdn.com/w20/bd.png" alt="Bangla"> Bangla
+        </li>
+        <li onclick="selectLanguage('Arabic', 'https://flagcdn.com/w20/sa.png')">
+            <img src="https://flagcdn.com/w20/sa.png" alt="Arabic"> Arabic
+        </li>
+        <li onclick="selectLanguage('French', 'https://flagcdn.com/w20/fr.png')">
+            <img src="https://flagcdn.com/w20/fr.png" alt="French"> French
+        </li>
+    </ul>
+</div>
+
+<script>
+    function toggleDropdown() {
+    document.querySelector(".dropdown").classList.toggle("open");
+}
+
+function selectLanguage(language, flagUrl) {
+    let btn = document.querySelector(".dropdown-toggle");
+    btn.innerHTML = `<img src="${flagUrl}" alt="${language}"> ${language} 
+    <span class="arrow">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1">
+                                            <polyline points="6 9 12 15 18 9"></polyline>
+                                        </svg>
+    </span>`;
+    document.querySelector(".dropdown").classList.remove("open");
+}
+
+// Outside click করলে dropdown বন্ধ হবে
+window.onclick = function(event) {
+    if (!event.target.closest(".dropdown")) {
+        document.querySelector(".dropdown").classList.remove("open");
+    }
+}
+
+</script>
+</body>
+</html>

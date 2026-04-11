@@ -1,0 +1,290 @@
+@extends('frontend.app')
+@section('title', 'LogIn')
+@section('content')
+
+    <style>
+        /* Container & Card */
+        .auth_wrap {
+            background: #fff;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Title */
+        .auth_title h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #222;
+        }
+
+        /* Form Items */
+        .auth_form .auth_item {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .auth_form .auth_item label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #444;
+        }
+
+        .auth_form .auth_item input {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .auth_form .auth_item input:focus {
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+        }
+
+        /* Error */
+        .is_error {
+            display: block;
+            margin-top: 4px;
+            font-size: 13px;
+            color: #b91c1c;
+        }
+
+        /* Buttons */
+        .auth_sub_btn_link,
+        .auth_sub_btn_two_link,
+        .auth_google_btn_link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 0;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .auth_sub_btn_link {
+            background: #22c55e;
+            color: #fff;
+            border: none;
+            margin-bottom: 12px;
+        }
+
+
+
+        .auth_sub_btn_two_link {
+            background: #f3f4f6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .auth_sub_btn_two_link:hover {
+            background: #e5e7eb;
+        }
+
+        /* Social login */
+        .social_auth_btn a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 0;
+            width: 100%;
+            font-size: 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            background: #fff;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            color: #444;
+            transition: all 0.3s ease;
+        }
+
+        .social_auth_btn a:hover {
+            background: #f3f4f6;
+        }
+
+        /* Register link */
+        .auth_link_page {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .auth_link_page a.auth_link_page_link {
+            color: #22c55e;
+            font-weight: 500;
+            text-decoration: none;
+            margin-left: 5px;
+            transition: color 0.3s;
+        }
+
+        .auth_link_page a.auth_link_page_link:hover {
+            color: #22c55e;
+        }
+
+        /* Responsive */
+        @media (max-width: 576px) {
+            .auth_wrap {
+                padding: 20px 15px;
+            }
+
+            .auth_title h3 {
+                font-size: 20px;
+            }
+
+            .auth_form .auth_item input {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+        }
+    </style>
+    <!--============ Auth Area Start ============-->
+    <section class="auth_area section_padding">
+        <div class="container">
+            <div class="row">
+                <div class="col-xxl-4 col-xl-5 col-lg-6 col-md-8 col-sm-10 col-12 m-auto">
+                    <div class="auth_wrap">
+                        <div class="auth_title">
+                            <h3>Welcome Back</h3>
+                            {{-- @if (session()->has('error'))
+                                <div class="alert alert-danger" id="loginError">
+                                    {{ session()->get('error') }}
+                                </div>
+                            @endif --}}
+                            <div class="alert alert-danger" id="loginError" style="display:none;"></div>
+                        </div>
+                        <form id="loginForm" action="{{ route('login') }}" method="POST">
+                            @csrf
+                            <div class="auth_form">
+                                <div class="auth_item">
+                                    <label>Mobile No <span class="required_r">*</span></label>
+                                    <input type="text" name="phone" value="{{ old('phone') }}" autocomplete="off"
+                                        placeholder="01xxxxxxxxx">
+                                    <span class="is_error" id="phone_error"></span>
+                                    {{-- @error('phone')
+                                        <span class="is_error">{{ $message }}</span>
+                                    @enderror --}}
+                                </div>
+                                <div class="auth_item">
+                                    <label>Password <span class="required_r">*</span></label>
+                                    <input type="password" name="password" value="{{ old('password') }}"
+                                        autocomplete="new-password" placeholder="password">
+                                    {{-- @error('password')
+                                        <span class="is_error">{{ $message }}</span>
+                                    @enderror --}}
+                                    <span class="is_error" id="password_error"></span>
+                                </div>
+                                <div class="auth_sub_btn">
+                                    <button type="submit" class="auth_sub_btn_link">Login</button>
+                                </div>
+                                <div class="auth_sub_btn_two">
+                                    <a href="{{ route('login.otp') }}" class="auth_sub_btn_two_link">Login With OTP</a>
+                                </div>
+                                {{-- <div class="social_auth_btn">
+                                    <a href="{{ route('login.google') }}" class="auth_google_btn_link">Login With Google
+                                        <img src="https://cdn-icons-png.flaticon.com/512/300/300221.png" alt="Google Icon"
+                                            width="20" height="20">
+                                    </a>
+                                    <a href="{{ route('login.facebook') }}" class="auth_google_btn_link">Facebook 
+                                        <img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook Icon"
+                                            width="20" height="20">
+                                    </a>
+                                </div> --}}
+                                <div class="auth_link_page auth_reg">
+                                    <p>Don't have an account?</p>
+                                    <a href="{{ route('register') }}" class="auth_link_page_link">Register here</a>
+                                </div>
+
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Clear old errors
+            document.getElementById('phone_error').innerText = '';
+            document.getElementById('password_error').innerText = '';
+            document.getElementById('loginError').style.display = 'none';
+
+            let formData = new FormData(this);
+
+            fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) throw data;
+                    return data;
+                })
+                .then(data => {
+                    if (data.status) {
+                        window.location.href = data.redirect;
+                    }
+                })
+                .catch(error => {
+                    // Validation errors
+                    if (error.errors) {
+                        if (error.errors.phone) {
+                            document.getElementById('phone_error').innerText = error.errors.phone[0];
+                        }
+                        if (error.errors.password) {
+                            document.getElementById('password_error').innerText = error.errors.password[0];
+                        }
+                    }
+                    // Auth error (wrong password)
+                    else if (error.message) {
+                        let err = document.getElementById('loginError');
+                        err.style.display = 'block';
+                        err.innerText = error.message;
+                    }
+                });
+        });
+    </script>
+
+    <!--============ Auth Area End ============-->
+
+public function store(Request $request)
+    {
+        $data = $request->validate([
+            'phone' => ['required', 'string'],
+            'password' => ['required'],
+        ]);
+
+        $credential = ['phone' => $data['phone'], 'password' => $data['password']];
+        if (!Auth::guard('customer')->attempt($credential)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Your given credentials do not match our records'
+            ], 401);
+        } else {
+            return response()->json([
+                'status' => true,
+                'redirect' => RouteServiceProvider::DASHBOARD,
+            ]);
+        }
+    }
+@endsection
