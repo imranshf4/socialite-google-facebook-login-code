@@ -1,0 +1,40 @@
+npm install @ckeditor/ckeditor5-build-classic @ckeditor/ckeditor5-vue@latest
+
+app.js
+import '../bootstrap';
+import { createApp } from "vue";
+import App from './components/App.vue';
+import router from './router';
+import { createPinia } from 'pinia';
+import $ from 'jquery'
+window.$ = window.jQuery = $
+
+import toastr from 'toastr';
+import 'toastr/build/toastr.min.css';
+import { CkeditorPlugin } from '@ckeditor/ckeditor5-vue';
+
+window.toastr = toastr
+
+const app = createApp(App);
+const pinia = createPinia()
+
+app.use(pinia);
+app.use(router);
+app.use(CkeditorPlugin);
+app.mount("#app");
+
+
+vite.config.js
+optimizeDeps: {
+        include: ["@ckeditor/ckeditor5-vue"],
+    },
+
+add.vue
+<ckeditor :editor="editor" v-model="editorData" />
+<script setup>
+import { ref } from 'vue';
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+const editor = ClassicEditor;
+const editorData = ref('<p>Hello CKEditor 5!</p>');
+</script>
